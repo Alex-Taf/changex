@@ -94,9 +94,9 @@ const page = ref(1)
 <template>
   <v-card class="!tw-rounded-2xl tw-mb-6">
     <v-tabs v-model="tab" bg-color="white" align-tabs="center">
-      <v-tab value="one" color="blue" width="33.3%">Все</v-tab>
-      <v-tab value="two" color="blue" width="33.3%">Пополнения</v-tab>
-      <v-tab value="three" color="blue" width="33.3%">Списания</v-tab>
+      <v-tab value="one" color="blue" width="33.3%" class="!tw-normal-case">Все</v-tab>
+      <v-tab value="two" color="blue" width="33.3%" class="!tw-normal-case">Пополнения</v-tab>
+      <v-tab value="three" color="blue" width="33.3%" class="!tw-normal-case">Списания</v-tab>
     </v-tabs>
 
     <v-card-text>
