@@ -19,7 +19,7 @@ const navOptions = reactive({
 
 <template>
   <div class="tw-flex">
-    <v-layout class="tw-absolute tw-p-[24px]">
+    <v-layout class="tw-absolute tw-p-[24px] tw-w-full">
       <v-navigation-drawer
         class="tw-rounded-2xl !tw-left-[20px] !tw-top-[10px] !tw-max-h-[96%]"
         :width="navOptions.maxWidth"
@@ -81,12 +81,12 @@ const navOptions = reactive({
               </v-list-item>
             </v-list>
           </div>
-          <div class="tw-flex tw-items-center tw-gap-x-4 tw-w-full" v-show="!navOptions.rail" @click="navOptions.rail = !navOptions.rail">
+          <div class="tw-flex tw-items-center tw-gap-x-4 tw-w-full tw-cursor-pointer" v-show="!navOptions.rail" @click="navOptions.rail = !navOptions.rail">
             <ArrowLeft />
-            <p>Скрыть меню</p>
+            <p class="tw-select-none">Скрыть меню</p>
           </div>
           <div
-            class="tw-flex tw-items-center tw-justify-center tw-self-end tw-w-full"
+            class="tw-flex tw-items-center tw-justify-center tw-self-end tw-w-full tw-cursor-pointer"
             v-show="navOptions.rail"
             @click="navOptions.rail = !navOptions.rail"
           >
@@ -95,8 +95,10 @@ const navOptions = reactive({
         </div>
       </v-navigation-drawer>
 
-      <v-main class="d-flex align-center justify-center" style="min-height: 300px">
-        <RouterView />
+      <v-main class="tw-w-full">
+        <section class="tw-px-4">
+          <RouterView />
+        </section>
       </v-main>
     </v-layout>
   </div>
