@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import FinancesBalanceIcon from '../../icons/FinancesBalanceIcon.vue'
+import FinancesDialog from '../FinancesDialog/FinancesDialog.vue'
+import { ref } from 'vue';
+
+const dialogOpen = ref(false)
+
+function closeDialog(close: boolean) {
+    dialogOpen.value = close
+}
 </script>
 
 <template>
@@ -15,12 +23,13 @@ import FinancesBalanceIcon from '../../icons/FinancesBalanceIcon.vue'
                     <span class="tw-text-[13px] tw-text-gray-400">~65 238 894 RUB</span>
                 </div>
             </section>
-            <v-btn class="!tw-rounded-xl" color="#04B6F5" variant="elevated" size="x-large">
+            <v-btn class="!tw-rounded-xl" color="#04B6F5" variant="elevated" size="x-large" @click="dialogOpen = true">
                 <template v-slot:prepend>
                     <span class="tw-text-white tw-text-xl">+</span>
                 </template>
-                <span class="tw-text-white tw-text-[12px]">Пополнить</span>
+                <span class="tw-text-white tw-text-[12px] !tw-normal-case">Пополнить</span>
             </v-btn>
         </section>
     </v-card>
+    <FinancesDialog :open="dialogOpen" @close="closeDialog"/>
 </template>

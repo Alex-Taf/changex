@@ -35,3 +35,7 @@ body {
     background-color: var(--body-bg);
     padding: 10px;
 }
+
+.v-field {
+    border-radius: 16px !important;
+}

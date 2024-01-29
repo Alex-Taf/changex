@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import Avatar from '../../user/Avatar/Avatar.vue'
+
+const props = defineProps<{
+    title: string  
+}>()
 </script>
 
 <template>
     <header class="tw-flex tw-justify-between tw-w-full tw-mb-6">
-        <span class="tw-text-2xl">Финансы</span>
+        <span class="tw-text-2xl">{{ props.title }}</span>
         <section class="tw-flex tw-items-center">
             <div class="tw-flex tw-items-center tw-gap-x-4">
                 <div class="tw-flex tw-w-fit tw-h-fit tw-bg-[#04b6f50d] tw-rounded-lg">
