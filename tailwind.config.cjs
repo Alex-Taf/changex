@@ -11,6 +11,12 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    screens: {
+      'sm': {'min': '640px', 'max': '767px'},
+      'md': {'min': '768px', 'max': '1280px'},
+      'lg': {'min': '1281px', 'max': '1441px'},
+      'xl': {'min': '1441px'}
+    }
   },
   plugins: [
     {

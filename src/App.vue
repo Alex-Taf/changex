@@ -21,7 +21,7 @@ const navOptions = reactive({
   <div class="tw-flex">
     <v-layout class="tw-absolute tw-p-[24px] tw-w-full">
       <v-navigation-drawer
-        class="tw-rounded-2xl !tw-left-[20px] !tw-top-[10px] !tw-max-h-[96%]"
+        class="tw-rounded-2xl !tw-left-[20px] !tw-top-[24px] !tw-max-h-[95%] !tw-translate-x-0"
         :width="navOptions.maxWidth"
         :rail-width="navOptions.minWidth"
         v-model="navOptions.drawer"
@@ -44,7 +44,7 @@ const navOptions = reactive({
                   <Squares />
                 </template>
                 <template v-slot:title>
-                  <span class="tw-ml-2" v-show="!navOptions.rail">Финансы</span>
+                  <span class="tw-ml-2 tw-text-[15px]" v-show="!navOptions.rail">Финансы</span>
                 </template>
               </v-list-item>
               <v-list-item value="account">
@@ -52,7 +52,7 @@ const navOptions = reactive({
                   <CreditCard />
                 </template>
                 <template v-slot:title>
-                  <span class="tw-ml-2" v-show="!navOptions.rail">Банковские карты</span>
+                  <span class="tw-ml-2 tw-text-[15px]" v-show="!navOptions.rail">Банковские карты</span>
                 </template>
               </v-list-item>
               <v-list-item value="account">
@@ -60,7 +60,7 @@ const navOptions = reactive({
                   <ArrowsLeftRight />
                 </template>
                 <template v-slot:title>
-                  <span class="tw-ml-2" v-show="!navOptions.rail">Платежи</span>
+                  <span class="tw-ml-2 tw-text-[15px]" v-show="!navOptions.rail">Платежи</span>
                 </template>
               </v-list-item>
               <v-list-item value="account">
@@ -68,7 +68,7 @@ const navOptions = reactive({
                   <Warning />
                 </template>
                 <template v-slot:title>
-                  <span class="tw-ml-2" v-show="!navOptions.rail">Диспуты</span>
+                  <span class="tw-ml-2 tw-text-[15px]" v-show="!navOptions.rail">Диспуты</span>
                 </template>
               </v-list-item>
               <v-list-item value="account">
@@ -76,14 +76,14 @@ const navOptions = reactive({
                   <Mobile />
                 </template>
                 <template v-slot:title>
-                  <span class="tw-ml-2" v-show="!navOptions.rail">Устройства</span>
+                  <span class="tw-ml-2 tw-text-[15px]" v-show="!navOptions.rail">Устройства</span>
                 </template>
               </v-list-item>
             </v-list>
           </div>
           <div class="tw-flex tw-items-center tw-gap-x-4 tw-w-full tw-cursor-pointer" v-show="!navOptions.rail" @click="navOptions.rail = !navOptions.rail">
             <ArrowLeft />
-            <p class="tw-select-none">Скрыть меню</p>
+            <p class="tw-select-none tw-text-[15px]">Скрыть меню</p>
           </div>
           <div
             class="tw-flex tw-items-center tw-justify-center tw-self-end tw-w-full tw-cursor-pointer"
@@ -95,7 +95,7 @@ const navOptions = reactive({
         </div>
       </v-navigation-drawer>
 
-      <v-main class="tw-w-full">
+      <v-main class="tw-w-full md:!tw-pl-[74px]">
         <section class="tw-px-4">
           <RouterView />
         </section>
