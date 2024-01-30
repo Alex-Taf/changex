@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Finances from '../views/Finances.vue'
 import Cards from '../views/Cards.vue'
+import Payments from '../views/Payments.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +15,11 @@ const router = createRouter({
       path: '/cards',
       name: 'cards',
       component: Cards
+    },
+    {
+      path: '/payments',
+      name: 'payments',
+      component: Payments
     }
     // {
     //   path: '/about',
