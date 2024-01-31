@@ -3,6 +3,7 @@ import Finances from '../views/Finances.vue'
 import Cards from '../views/Cards.vue'
 import Payments from '../views/Payments.vue'
 import Disputs from '../views/Disputs.vue'
+import Devices from '../views/Devices.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/disputs',
       name: 'disputs',
       component: Disputs
+    },
+    {
+      path: '/devices',
+      name: 'devices',
+      component: Devices
     }
     // {
     //   path: '/about',

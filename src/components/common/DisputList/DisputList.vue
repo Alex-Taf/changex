@@ -238,7 +238,7 @@ onMounted(() => {
             <template v-slot:item.status="{ value }">
                 <div
                     v-if="value === 'await'"
-                    class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-[#0085FF] tw-w-[158px] tw-px-2 tw-py-1 tw-text-center"
+                    class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-[#0085FF] tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                 >
                     <span class="tw-text-[#0085FF] tw-text-xs">Ожидает</span>
                 </div>
