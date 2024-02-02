@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { ref } from 'vue'
+    import { ref, watchEffect } from 'vue'
     import { useDeviceWidth } from '../../utils'
     
     const cw = ref(useDeviceWidth().getWidth())
@@ -16,7 +16,7 @@
     
     const condition = (): boolean => {
         if (props.px) {
-            return useDeviceWidth().lessThan(cw.value, props.px)
+            return useDeviceWidth().moreThan(cw.value, props.px)
         }
 
         if (props.pxMin && props.pxMax) {
