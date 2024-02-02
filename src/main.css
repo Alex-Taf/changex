@@ -39,3 +39,15 @@ body {
 .v-field {
     border-radius: 16px !important;
 }
+
+@media (min-width: 320px) and (max-width: 767px) {
+    .v-btn__prepend {
+        margin-inline: unset !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+    .v-btn__prepend {
+        margin-inline: unset !important;
+    }
+}
