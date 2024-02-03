@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { formatter } from '../../../utils'
 import ArrowUpRight from '../../icons/ArrowUpRight.vue'
 import ArrowDownLeft from '../../icons/ArrowDownLeft.vue'
@@ -8,6 +8,7 @@ const tab = ref(null)
 const headers = ref([
     {
         title: "",
+        sortable: false,
         key: 'type'
     },
     {
@@ -17,6 +18,7 @@ const headers = ref([
     },
     {
         title: "Комментарий",
+        sortable: true,
         key: 'comment'
     },
     {
@@ -112,6 +114,7 @@ const page = ref(1)
                     <template v-for="column in columns" :key="column.key">
                         <td class="tw-cursor-pointer" @click="() => toggleSort(column)">
                             <span class="tw-text-[13px] tw-text-[#677483] tw-mr-2">{{ column.title }}</span>
+                            {{  column.sort  }}
                             <template v-if="column.sortable">
                                 <template v-if="isSorted(column)">
                                     <svg style="transform: rotate(180deg);" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -129,13 +132,13 @@ const page = ref(1)
                 </tr>
             </template>
             <template v-slot:item.date="{ value }">
-                <span class="tw-text-[18px]">{{ value }}</span>
+                <span class="tw-text-[15px]">{{ value }}</span>
             </template>
             <template v-slot:item.comment="{ value }">
-                <span class="tw-text-[18px]">{{ value }}</span>
+                <span class="tw-text-[15px]">{{ value }}</span>
             </template>
             <template v-slot:item.price="{ value }">
-                <span><span class="tw-text-[18px]">{{ formatter.format(value) }}</span> <span class="tw-text-[17px] tw-text-gray-400">USD</span></span>
+                <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
             </template>
             <template v-slot:item.status="{ value }">
                 <div
@@ -188,10 +191,19 @@ const page = ref(1)
                     </template>
                 </tr>
             </template>
+            <template v-slot:item.date="{ value }">
+                <span class="tw-text-[15px]">{{ value }}</span>
+            </template>
+            <template v-slot:item.comment="{ value }">
+                <span class="tw-text-[15px]">{{ value }}</span>
+            </template>
+            <template v-slot:item.price="{ value }">
+                <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
+            </template>
             <template v-slot:item.status="{ value }">
                 <div
                     v-if="value === 'process'"
-                    class="tw-bg-gray-300 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-500 tw-w-[94px] tw-px-2 tw-py-1 tw-text-center"
+                    class="tw-bg-gray-200 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-400 tw-w-[94px] tw-px-2 tw-py-1 tw-text-center"
                 >
                     <span class="tw-text-gray-400 tw-text-xs">В процессе</span>
                 </div>
@@ -239,10 +251,19 @@ const page = ref(1)
                     </template>
                 </tr>
             </template>
+            <template v-slot:item.date="{ value }">
+                <span class="tw-text-[15px]">{{ value }}</span>
+            </template>
+            <template v-slot:item.comment="{ value }">
+                <span class="tw-text-[15px]">{{ value }}</span>
+            </template>
+            <template v-slot:item.price="{ value }">
+                <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
+            </template>
             <template v-slot:item.status="{ value }">
                 <div
                     v-if="value === 'process'"
-                    class="tw-bg-gray-300 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-500 tw-w-[94px] tw-px-2 tw-py-1 tw-text-center"
+                    class="tw-bg-gray-200 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-400 tw-w-[94px] tw-px-2 tw-py-1 tw-text-center"
                 >
                     <span class="tw-text-gray-400 tw-text-xs">В процессе</span>
                 </div>
@@ -288,10 +309,10 @@ const page = ref(1)
             tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer"
             :class="{ 'tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200': !isActive, 'tw-border-[#AEB7C1] tw-text-[#AEB7C1]': isActive }"
         >
-            <div class="tw-mt-[6px]">{{ page }}</div>
+            <div class="tw-text-[15px] tw-font-semibold tw-mt-[6px]">{{ page }}</div>
         </div>
         <div v-if="page === '...'" class="tw-mt-2">
-            <span class="tw-text-xl tw-text-[#AEB7C1]">{{ page }}</span>
+            <span class="tw-text-[15px] tw-text-[#AEB7C1] tw-font-semibold">{{ page }}</span>
         </div>
     </template>
     <template v-slot:next>

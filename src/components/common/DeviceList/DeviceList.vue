@@ -48,6 +48,7 @@ const headers = ref([
     },
     {
         title: '',
+        sortable: false,
         key: 'actions'
     }
 ])
@@ -154,16 +155,16 @@ const itemsAll = ref([
                 </tr>
             </template>
             <template v-slot:item.id="{ value }">
-                <span class="tw-text-[18px] tw-text-gray-500">{{ value }}</span>
+                <span class="tw-text-[15px] tw-text-gray-500">{{ value }}</span>
             </template>
             <template v-slot:item.title="{ value }">
-                <span class="tw-text-[18px]">{{ value }}</span>
+                <span class="tw-text-[15px]">{{ value }}</span>
             </template>
             <template v-slot:item.device="{ value }">
-                <span class="tw-text-[18px]">{{ value }}</span>
+                <span class="tw-text-[15px]">{{ value }}</span>
             </template>
             <template v-slot:item.comment="{ value }">
-                <span class="tw-text-[18px]">{{ value }}</span>
+                <span class="tw-text-[15px]">{{ value }}</span>
             </template>
             <template v-slot:item.actions="{ item }">
                 <v-menu>

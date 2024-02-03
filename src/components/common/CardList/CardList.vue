@@ -49,10 +49,12 @@ const headers = ref([
     },
     {
         title: 'Влючена',
+        sortable: false,
         key: 'switch'
     },
     {
         title: '',
+        sortable: false,
         key: 'actions'
     }
 ])

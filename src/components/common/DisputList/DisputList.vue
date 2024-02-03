@@ -210,10 +210,10 @@ onMounted(() => {
                 </tr>
             </template>
             <template v-slot:item.id="{ value }">
-                <span class="tw-text-[18px] tw-text-gray-500">{{ value }}</span>
+                <span class="tw-text-[15px] tw-text-gray-500">{{ value }}</span>
             </template>
             <template v-slot:item.date="{ value }">
-                <span class="tw-text-[18px]">{{ value }}</span>
+                <span class="tw-text-[15px]">{{ value }}</span>
             </template>
             <template v-slot:item.card="{ value }">
                 <div class="tw-flex tw-items-center tw-gap-x-4">
@@ -223,16 +223,16 @@ onMounted(() => {
             </template>
             <template v-slot:item.sum="{ value }">
                 <span
-                    ><span class="tw-text-[18px]">{{ formatter.format(value) }}</span>
-                    <span class="tw-text-[17px] tw-text-gray-400 tw-ml-1">USD</span></span
+                    ><span class="tw-text-[15px]">{{ formatter.format(value) }}</span>
+                    <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">USD</span></span
                 >
             </template>
             <template v-slot:item.clientSum="{ value }">
-                <span
+                <div class="tw-flex tw-items-center"
                     >
                     <img src="/ETH.png" />
-                    <span class="tw-text-[18px] tw-ml-4">{{ formatter.format(value) }}</span>
-                    <span class="tw-text-[17px] tw-ml-1">ETH</span></span
+                    <span class="tw-text-[15px] tw-ml-2">{{ formatter.format(value) }}</span>
+                    <span class="tw-text-[13px] tw-ml-1">ETH</span></div
                 >
             </template>
             <template v-slot:item.status="{ value }">
@@ -293,10 +293,10 @@ onMounted(() => {
                     'tw-border-[#AEB7C1] tw-text-[#AEB7C1]': isActive
                 }"
             >
-                <div class="tw-mt-[6px]">{{ page }}</div>
+                <div class="tw-text-[15px] tw-font-semibold tw-mt-[6px]">{{ page }}</div>
             </div>
             <div v-if="page === '...'" class="tw-mt-2">
-                <span class="tw-text-xl tw-text-[#AEB7C1]">{{ page }}</span>
+                <span class="tw-text-[15px] tw-text-[#AEB7C1] tw-font-semibold">{{ page }}</span>
             </div>
         </template>
         <template v-slot:next>

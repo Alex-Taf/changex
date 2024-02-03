@@ -199,10 +199,10 @@ onMounted(() => {
                 </tr>
             </template>
             <template v-slot:item.id="{ value }">
-                <span class="tw-text-[18px] tw-text-gray-500">{{ value }}</span>
+                <span class="tw-text-[15px] tw-text-gray-500">{{ value }}</span>
             </template>
             <template v-slot:item.date="{ value }">
-                <span class="tw-text-[18px]">{{ value }}</span>
+                <span class="tw-text-[15px]">{{ value }}</span>
             </template>
             <template v-slot:item.card="{ value }">
                 <div class="tw-flex tw-items-center tw-gap-x-4">
@@ -212,14 +212,14 @@ onMounted(() => {
             </template>
             <template v-slot:item.sum="{ value }">
                 <span
-                    ><span class="tw-text-[18px]">{{ formatter.format(value) }}</span>
-                    <span class="tw-text-[17px] tw-text-gray-400">USD</span></span
+                    ><span class="tw-text-[15px]">{{ formatter.format(value) }}</span>
+                    <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">USD</span></span
                 >
             </template>
             <template v-slot:item.debit="{ value }">
                 <span
-                    ><span class="tw-text-[18px]">{{ formatter.format(value) }}</span>
-                    <span class="tw-text-[17px] tw-text-gray-400">USD</span></span
+                    ><span class="tw-text-[15px]">{{ formatter.format(value) }}</span>
+                    <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">USD</span></span
                 >
             </template>
             <template v-slot:item.status="{ value }">
