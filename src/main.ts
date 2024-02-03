@@ -5,6 +5,8 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
+localStorage.setItem('token', 'uGCiyRSCdXwDVC8fH9OwSzc99Fx0ec')
+
 const app = createApp(App)
 
 // Vuetify
