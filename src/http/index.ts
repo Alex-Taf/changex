@@ -10,14 +10,24 @@ const $authHost = axios.create({
 
 const authInterceptor = (config) => {
     if (!config) {
-        config = {};
+        config = {}
     }
 
     if (!config.headers) {
-        config.headers = {};
+        config.headers = {}
     }
 
-    config.headers.authorization = `Authorization Bearer: ${localStorage.getItem('token')}`
+    if(!config.url) {
+        config.url = ''
+    }
+
+    // On refresh request authorization header replace bearer to refresh token  
+    if (config.url.includes('/refresh')) {
+        config.headers.authorization = `Bearer ${localStorage.getItem('refreshToken')}`
+    } else {
+        config.headers.authorization = `Bearer ${localStorage.getItem('accessToken')}`
+    }
+
     return config
 }
 
