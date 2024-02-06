@@ -10,7 +10,11 @@ module.exports = {
     "./src/**/*.{html,js,vue,ts}"
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        'radial-gradient': 'radial-gradient(50% 50% at 50% 50%, rgba(0, 237, 255, 0.26) 0%, rgba(0, 237, 255, 0) 100%)'
+      }
+    },
     screens: {
       'sm': {'min': '320px', 'max': '767px'},
       'md': {'min': '768px', 'max': '1279px'},

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { ref, watchEffect } from 'vue'
+    import { ref } from 'vue'
     import { useDeviceWidth } from '../../utils'
     
     const cw = ref(useDeviceWidth().getWidth())

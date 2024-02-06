@@ -65,9 +65,10 @@ const navItems = ref([
 
 <template>
     <div class="tw-flex">
-        <v-layout class="tw-absolute tw-p-[24px] tw-w-full">
+        <v-layout class="tw-absolute tw-w-full" :class="{ 'tw-p-[24px]': $route.name !== 'login' }">
             <RenderOn :px="1280">
                 <v-navigation-drawer
+                    v-if="$route.name !== 'login'"
                     class="tw-rounded-2xl !tw-left-[20px] !tw-top-[24px] !tw-max-h-[95%] !tw-translate-x-0"
                     :width="navOptions.maxWidth"
                     :rail-width="navOptions.minWidth"
@@ -137,7 +138,7 @@ const navItems = ref([
             </RenderOn>
 
             <RenderOn :px-min="320" :px-max="1279">
-                <v-app-bar color="white" prominent :height="101">
+                <v-app-bar v-if="$route.name !== 'login'" color="white" prominent :height="101">
                     <div class="tw-flex tw-flex-col tw-items-center tw-w-[calc(100%-0px)] tw-p-4">
                         <div class="tw-flex tw-justify-between tw-items-center tw-w-full">
                             <div class="tw-flex tw-items-center">
@@ -202,7 +203,7 @@ const navItems = ref([
             </RenderOn>
 
             <v-main class="tw-w-full">
-                <section class="tw-px-4">
+                <section :class="{ 'tw-px-4': $route.name !== 'login' }">
                     <RouterView />
                 </section>
             </v-main>
