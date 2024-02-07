@@ -1,15 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { formatter } from '../../../utils'
+import { useFinancesStore } from '@/stores/finances'
+import { storeToRefs } from 'pinia'
 import ArrowUpRight from '../../icons/ArrowUpRight.vue'
 import ArrowDownLeft from '../../icons/ArrowDownLeft.vue'
+import Stars from '../../icons/Stars.vue'
+
+const financesStore = useFinancesStore()
+const { lastPage, itemsAll, itemsDeposit, itemsWithdrawal } = storeToRefs(financesStore)
 
 const tab = ref(null)
 const headers = ref([
     {
         title: "",
         sortable: false,
-        key: 'type'
+        key: 'direction'
     },
     {
         title: "Дата и время",
@@ -24,7 +30,7 @@ const headers = ref([
     {
         title: "Сумма",
         sortable: true,
-        key: 'price'
+        key: 'amount'
     },
     {
         title: "Статус",
@@ -33,68 +39,72 @@ const headers = ref([
     }
 ])
 
-const itemsAll = ref([
-    {
-      id: 0,
-      type: 'credit',
-      date: '12.12.2023 09:45',
-      comment: 'Наименование назначения платежа',
-      price: 10000,
-      status: 'process'
-    },
-    {
-      id: 1,
-      type: 'debit',
-      date: '12.12.2023 09:45',
-      comment: 'Наименование назначения платежа',
-      price: 10000,
-      status: 'done'
-    },
-    {
-      id: 2,
-      type: 'credit',
-      date: '12.12.2023 09:45',
-      comment: 'Наименование назначения платежа',
-      price: 10000,
-      status: 'error'
-    }
-])
+// const itemsAll = ref([
+//     {
+//       id: 0,
+//       type: 'credit',
+//       date: '12.12.2023 09:45',
+//       comment: 'Наименование назначения платежа',
+//       price: 10000,
+//       status: 'process'
+//     },
+//     {
+//       id: 1,
+//       type: 'debit',
+//       date: '12.12.2023 09:45',
+//       comment: 'Наименование назначения платежа',
+//       price: 10000,
+//       status: 'done'
+//     },
+//     {
+//       id: 2,
+//       type: 'credit',
+//       date: '12.12.2023 09:45',
+//       comment: 'Наименование назначения платежа',
+//       price: 10000,
+//       status: 'error'
+//     }
+// ])
 
-const itemsCredit = ref([
-    {
-      id: 0,
-      type: 'credit',
-      date: '12.12.2023 09:45',
-      comment: 'Наименование назначения платежа',
-      price: 10000,
-      status: 'process'
-    },
-    {
-      id: 2,
-      type: 'credit',
-      date: '12.12.2023 09:45',
-      comment: 'Наименование назначения платежа',
-      price: 10000,
-      status: 'error'
-    }
-])
+// const itemsCredit = ref([
+//     {
+//       id: 0,
+//       type: 'credit',
+//       date: '12.12.2023 09:45',
+//       comment: 'Наименование назначения платежа',
+//       price: 10000,
+//       status: 'process'
+//     },
+//     {
+//       id: 2,
+//       type: 'credit',
+//       date: '12.12.2023 09:45',
+//       comment: 'Наименование назначения платежа',
+//       price: 10000,
+//       status: 'error'
+//     }
+// ])
 
-const itemsDebit = ref([
-    {
-      id: 1,
-      type: 'debit',
-      date: '12.12.2023 09:45',
-      comment: 'Наименование назначения платежа',
-      price: 10000,
-      status: 'done'
-    }
-])
+// const itemsDebit = ref([
+//     {
+//       id: 1,
+//       type: 'debit',
+//       date: '12.12.2023 09:45',
+//       comment: 'Наименование назначения платежа',
+//       price: 10000,
+//       status: 'done'
+//     }
+// ])
 
 const page = ref(1)
+
+onMounted(() => {
+    financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 })
+})
 </script>
 
 <template>
-  <v-card class="!tw-rounded-2xl tw-mb-6">
+  <v-card v-if="itemsAll.length > 0" class="!tw-rounded-2xl tw-mb-6">
     <v-tabs v-model="tab" bg-color="white" align-tabs="center">
       <v-tab value="one" color="blue" width="33.3%" class="!tw-normal-case !tw-tracking-normal">Все</v-tab>
       <v-tab value="two" color="blue" width="33.3%" class="!tw-normal-case !tw-tracking-normal">Пополнения</v-tab>
@@ -105,9 +115,9 @@ const page = ref(1)
       <v-window v-model="tab">
         <v-window-item value="one">
           <v-data-table :headers="headers" :items="itemsAll" :footer='false'>
-            <template v-slot:item.type="{ value }">
-                <ArrowUpRight v-if="value === 'credit'" />
-                <ArrowDownLeft v-if="value === 'debit'" />
+            <template v-slot:item.direction="{ value }">
+                <ArrowUpRight v-if="value === 'deposit'" />
+                <ArrowDownLeft v-if="value === 'withdrawal'" />
             </template>
             <template v-slot:headers="{ columns, toggleSort, isSorted }">
                 <tr>
@@ -137,7 +147,7 @@ const page = ref(1)
             <template v-slot:item.comment="{ value }">
                 <span class="tw-text-[15px]">{{ value }}</span>
             </template>
-            <template v-slot:item.price="{ value }">
+            <template v-slot:item.amount="{ value }">
                 <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
             </template>
             <template v-slot:item.status="{ value }">
@@ -165,10 +175,10 @@ const page = ref(1)
         </v-window-item>
 
         <v-window-item value="two">
-          <v-data-table :headers="headers" :items="itemsCredit">
-            <template v-slot:item.type="{ value }">
-                <ArrowUpRight v-if="value === 'credit'" />
-                <ArrowDownLeft v-if="value === 'debit'" />
+          <v-data-table :headers="headers" :items="itemsDeposit">
+            <template v-slot:item.direction="{ value }">
+                <ArrowUpRight v-if="value === 'deposit'" />
+                <ArrowDownLeft v-if="value === 'withdrawal'" />
             </template>
             <template v-slot:headers="{ columns, toggleSort, isSorted }">
                 <tr>
@@ -197,7 +207,7 @@ const page = ref(1)
             <template v-slot:item.comment="{ value }">
                 <span class="tw-text-[15px]">{{ value }}</span>
             </template>
-            <template v-slot:item.price="{ value }">
+            <template v-slot:item.amount="{ value }">
                 <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
             </template>
             <template v-slot:item.status="{ value }">
@@ -225,10 +235,10 @@ const page = ref(1)
         </v-window-item>
 
         <v-window-item value="three">
-          <v-data-table :headers="headers" :items="itemsDebit">
-            <template v-slot:item.type="{ value }">
-                <ArrowUpRight v-if="value === 'credit'" />
-                <ArrowDownLeft v-if="value === 'debit'" />
+          <v-data-table :headers="headers" :items="itemsWithdrawal">
+            <template v-slot:item.direction="{ value }">
+                <ArrowUpRight v-if="value === 'deposit'" />
+                <ArrowDownLeft v-if="value === 'withdrawal'" />
             </template>
             <template v-slot:headers="{ columns, toggleSort, isSorted }">
                 <tr>
@@ -257,7 +267,7 @@ const page = ref(1)
             <template v-slot:item.comment="{ value }">
                 <span class="tw-text-[15px]">{{ value }}</span>
             </template>
-            <template v-slot:item.price="{ value }">
+            <template v-slot:item.amount="{ value }">
                 <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
             </template>
             <template v-slot:item.status="{ value }">
@@ -286,10 +296,17 @@ const page = ref(1)
       </v-window>
     </v-card-text>
   </v-card>
+  <section v-else class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-h-full">
+    <div class="tw-text-center">
+        <Stars /><br>
+        <span class="tw-text-lg tw-text-[#677483] tw-font-semibold">Операции отстутствуют</span>
+    </div>
+  </section>
   <v-pagination
+    v-if="itemsAll.length > 0"
     class="tw-self-start"
     v-model="page"
-    :length="15"
+    :length="lastPage"
     :total-visible="7"
    >
     <template v-slot:prev>

@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
+</script>
+
 <template>
     <div class="tw-flex tw-w-fit tw-h-fit tw-bg-[#04b6f50d] tw-rounded-lg">
         <div class="tw-flex tw-flex-col tw-px-3 min-lg:tw-py-1 sm:tw-py-[2px] md:tw-py-[2px]
@@ -13,7 +21,7 @@
                     sm:tw-leading-[10px] md:tw-leading-[10px] lg:tw-items-start sm:tw-items-center md:tw-items-center"
         >
             <span class="tw-text-[10px] tw-text-gray-500">Курс Обмена</span>
-            <span class="tw-text-[13px]">USDT/RUB: 94.50 RUB</span>
+            <span class="tw-text-[13px]">USDT/RUB: {{ userInfo.exchangeRate }} RUB</span>
         </div>
     </div>
 </template>

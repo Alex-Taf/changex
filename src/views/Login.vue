@@ -17,7 +17,6 @@ function tokenLogin() {
     if (token.value !== '') {
         login(token.value).then(() => {
             form.value.resetValidation()
-            userStore.setIsLogin(true)
             $router.push('/finances')
         }).catch((err) => {
             serverResponseCode.value = err.response.data.code

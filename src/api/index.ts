@@ -1,6 +1,7 @@
 import { $host, $authHost } from '@/http'
 import type { ILocalUserInfo } from './index.interface'
 import { setCookie, deleteCookie } from '@/utils'
+import type { TFilterPaginationOptions } from '@/types'
 
 const _writeLocalUserInfo = (info: ILocalUserInfo): void => {
     Object.entries(info).map(([key, value]) => {
@@ -66,6 +67,23 @@ export const getUserInfo = async () => {
                 const updateRes = await _refreshToken()
                 if (updateRes?.status === 200) {
                     return await $authHost.post('/me', {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const getFinancesStory = async (options: TFilterPaginationOptions) => {
+    try {
+        return await $authHost.post('/balance/history', { ...options })
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post('/balance/history', { ...options })
                 }
             } else {
                 return

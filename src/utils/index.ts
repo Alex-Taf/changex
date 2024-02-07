@@ -41,7 +41,7 @@ export const setCookie = (name: string, value: string, options: ICookieOptions) 
 }
 
 export const deleteCookie = (name: string) => {
-    setCookie(name, "", {
+    setCookie(name, '', {
         'max-age': -1
     })
 }
@@ -51,4 +51,20 @@ export const getCookie = (name: string) => {
         new RegExp('(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)')
     )
     return matches ? decodeURIComponent(matches[1]) : undefined
+}
+
+export const timestampToDatetime = (timestamp: number): string => {
+    const dateFormat = new Date(timestamp)
+    //const formattedDate = `${dateFormat.getDay()}.${dateFormat.getMonth() + 1}.${dateFormat.getFullYear()} ${dateFormat.getHours()}:${dateFormat.getMinutes()}`
+    const formatter = new Intl.DateTimeFormat('ru', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        minute: '2-digit',
+        hour: '2-digit'
+    })
+
+    const formattedDate = formatter.format(dateFormat)
+
+    return formattedDate
 }

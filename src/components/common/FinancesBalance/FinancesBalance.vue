@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
 import FinancesBalanceIcon from '../../icons/FinancesBalanceIcon.vue'
 import FinancesDialog from '../FinancesDialog/FinancesDialog.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
-import { storeToRefs } from 'pinia';
-import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore()
 const { userInfo } = storeToRefs(userStore)
@@ -30,7 +30,7 @@ onMounted(() => {
                     <span>
                         <span class="tw-text-[30px] tw-text-[#2B3A4C] tw-font-bold">{{ userInfo.balance }}</span> <span class="tw-text-[16px] tw-text-[#AEB7C1]">USDT</span>
                     </span>
-                    <span class="tw-text-[13px] tw-text-[#677483]">~65 238 894 RUB</span>
+                    <span class="tw-text-[13px] tw-text-[#677483]">~{{ userInfo.balanceRUR }} RUB</span>
                 </div>
             </section>
             <v-btn class="!tw-rounded-xl !tw-min-w-[52px] min-lg:!tw-w-[172px] min-lg:!tw-h-[52px]
