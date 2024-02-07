@@ -1,8 +1,8 @@
-import type { IUseDeviceWidth, IGetNavItemStroke } from "./index.interface";
+import type { IUseDeviceWidth, IGetNavItemStroke, ICookieOptions } from './index.interface'
 
-export const formatter = new Intl.NumberFormat("ru", {
+export const formatter = new Intl.NumberFormat('ru', {
     minimumFractionDigits: 2
-});
+})
 
 export const getNavItemStroke: IGetNavItemStroke = (navItemRouteName, currentRouteName, colors) => {
     return navItemRouteName === currentRouteName ? colors.active : colors.default
@@ -14,6 +14,41 @@ export const useDeviceWidth: IUseDeviceWidth = () => ({
     isEqual: (cw, px) => px === cw,
     lessThan: (cw, px) => cw <= px,
     moreThan: (cw, px) => cw >= px,
-    between: (cw, pxMin, pxMax) =>
-        cw >= pxMin && cw <= pxMax   
+    between: (cw, pxMin, pxMax) => cw >= pxMin && cw <= pxMax
 })
+
+export const setCookie = (name: string, value: string, options: ICookieOptions) => {
+    options = {
+        path: '/',
+        ...options
+    }
+
+    if (options.expires instanceof Date) {
+        options.expires = options.expires.toUTCString()
+    }
+
+    let updatedCookie = encodeURIComponent(name) + '=' + encodeURIComponent(value)
+
+    for (const optionKey in options) {
+        updatedCookie += '; ' + optionKey
+        const optionValue = options[optionKey]
+        if (optionValue !== true) {
+            updatedCookie += '=' + optionValue
+        }
+    }
+
+    document.cookie = updatedCookie
+}
+
+export const deleteCookie = (name: string) => {
+    setCookie(name, "", {
+        'max-age': -1
+    })
+}
+
+export const getCookie = (name: string) => {
+    const matches = document.cookie.match(
+        new RegExp('(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)')
+    )
+    return matches ? decodeURIComponent(matches[1]) : undefined
+}

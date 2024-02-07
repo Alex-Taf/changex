@@ -1,15 +1,14 @@
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { defineStore } from 'pinia'
 import { getUserInfo } from '@/api'
 
 export const useUserStore = defineStore('user', () => {
-  const userInfo = ref([])
+  let userInfo = reactive({})
   const isLogin = ref(false)
 
   async function fetchUserInfo() {
-    const userInfo = await getUserInfo()
-
-    console.log(userInfo)
+    const res = await getUserInfo()
+    userInfo = res?.data.user
   }
 
   function setIsLogin(bool: boolean) {

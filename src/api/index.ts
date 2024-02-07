@@ -1,5 +1,6 @@
 import { $host, $authHost } from '@/http'
 import type { ILocalUserInfo } from './index.interface'
+import { setCookie, deleteCookie } from '@/utils'
 
 const _writeLocalUserInfo = (info: ILocalUserInfo): void => {
     Object.entries(info).map(([key, value]) => {
@@ -41,7 +42,9 @@ const _refreshToken = async () => {
 export const login = async (token: string) => {
     const res = await $host.post('/auth/login', { token })
     _writeLocalUserInfo(res.data)
-    
+
+    setCookie('changexlogin', 'true', { secure: true })
+
     return res
 }
 
@@ -50,6 +53,7 @@ export const logout = async () => {
 
     if (res.status === 200) {
         _purgeLocalUserInfo()
+        deleteCookie('changexlogin')
     }
 }
 
@@ -60,7 +64,7 @@ export const getUserInfo = async () => {
         if (error.response.data.code === 'jwt_error') {
             if (localStorage.getItem('refreshToken')) {
                 const updateRes = await _refreshToken()
-                if (updateRes.status === 200) {
+                if (updateRes?.status === 200) {
                     return await $authHost.post('/me', {})
                 }
             } else {

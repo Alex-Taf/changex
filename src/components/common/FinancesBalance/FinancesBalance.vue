@@ -1,14 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import FinancesBalanceIcon from '../../icons/FinancesBalanceIcon.vue'
 import FinancesDialog from '../FinancesDialog/FinancesDialog.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
+import { storeToRefs } from 'pinia';
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const dialogOpen = ref(false)
 
 function closeDialog(close: boolean) {
     dialogOpen.value = close
 }
+
+onMounted(() => {
+    userStore.fetchUserInfo()
+})
 </script>
 
 <template>
@@ -19,7 +28,7 @@ function closeDialog(close: boolean) {
                 <div class="tw-flex tw-flex-col tw-leading-7">
                     <span class="tw-text-[13px] tw-text-[#AEB7C1]">Баланс</span>
                     <span>
-                        <span class="tw-text-[30px] tw-text-[#2B3A4C] tw-font-bold">345 000.00</span> <span class="tw-text-[16px] tw-text-[#AEB7C1]">USDT</span>
+                        <span class="tw-text-[30px] tw-text-[#2B3A4C] tw-font-bold">{{ userInfo.balance }}</span> <span class="tw-text-[16px] tw-text-[#AEB7C1]">USDT</span>
                     </span>
                     <span class="tw-text-[13px] tw-text-[#677483]">~65 238 894 RUB</span>
                 </div>
