@@ -33,14 +33,16 @@ const _refreshToken = async () => {
     }
 
     const res = await $authHost.post('/auth/refresh', {})
-
     _writeLocalUserInfo(res.data)
 
     return res
 }
 
 export const login = async (token: string) => {
-    return await $host.post('/auth/login', { token })
+    const res = await $host.post('/auth/login', { token })
+    _writeLocalUserInfo(res.data)
+    
+    return res
 }
 
 export const logout = async () => {
