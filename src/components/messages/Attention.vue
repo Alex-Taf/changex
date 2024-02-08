@@ -6,7 +6,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="tw-flex tw-gap-x-2 tw-bg-[#FA3E3E0D] tw-min-w-[426px] tw-max-w-[440px] tw-p-3 tw-rounded-xl" :class="props.class">
+  <div class="tw-flex tw-gap-x-2 tw-bg-[#FA3E3E0D] tw-min-w-[300px] tw-max-w-[440px] tw-p-3 tw-rounded-xl" :class="props.class">
     <span>
         <svg width="25" height="25" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
