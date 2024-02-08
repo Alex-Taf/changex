@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { RouterView, useRouter } from 'vue-router'
+import { RouterView, useRouter, type RouteLocationRaw } from 'vue-router'
 import { getNavItemStroke } from '@/utils'
+import type { TMenuToggleOptions } from './types'
 import RenderOn from './components/utils/RenderOn.vue'
 import ArrowLeft from './components/icons/ArrowLeft.vue'
 import ArrowRight from './components/icons/ArrowRight.vue'
@@ -23,6 +24,15 @@ const navOptions = reactive({
     minWidth: 74,
     maxWidth: 297
 })
+
+function toggleMenu(options?: TMenuToggleOptions) {
+    if (options?.mobileItem) {
+        navOptions.drawer = !navOptions.drawer
+        $router.push(options?.routerLink as string)
+    } else {
+        navOptions.drawer = !navOptions.drawer
+    }
+}
 
 const navItems = ref([
     {
@@ -150,7 +160,7 @@ const navItems = ref([
                                     >Changeex</span
                                 >
                             </div>
-                            <div class="tw-cursor-pointer" @click.stop="navOptions.drawer = !navOptions.drawer">
+                            <div class="tw-cursor-pointer" @click.stop="toggleMenu()">
                               <Menu v-if="navOptions.drawer" />
                               <Close v-else />
                             </div>
@@ -170,7 +180,7 @@ const navItems = ref([
                                 class="tw-h-[68px]"
                                 :value="navItem.name"
                                 active-color="#F8FCFE"
-                                @click="$router.push(navItem.path)"
+                                @click.stop="toggleMenu({ mobileItem: true, routerLink: navItem.path })"
                             >
                                 <template v-slot:prepend>
                                     <component

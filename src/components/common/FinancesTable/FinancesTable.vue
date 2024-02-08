@@ -40,68 +40,11 @@ const headers = ref([
     }
 ])
 
-// const itemsAll = ref([
-//     {
-//       id: 0,
-//       type: 'credit',
-//       date: '12.12.2023 09:45',
-//       comment: 'Наименование назначения платежа',
-//       price: 10000,
-//       status: 'process'
-//     },
-//     {
-//       id: 1,
-//       type: 'debit',
-//       date: '12.12.2023 09:45',
-//       comment: 'Наименование назначения платежа',
-//       price: 10000,
-//       status: 'done'
-//     },
-//     {
-//       id: 2,
-//       type: 'credit',
-//       date: '12.12.2023 09:45',
-//       comment: 'Наименование назначения платежа',
-//       price: 10000,
-//       status: 'error'
-//     }
-// ])
-
-// const itemsCredit = ref([
-//     {
-//       id: 0,
-//       type: 'credit',
-//       date: '12.12.2023 09:45',
-//       comment: 'Наименование назначения платежа',
-//       price: 10000,
-//       status: 'process'
-//     },
-//     {
-//       id: 2,
-//       type: 'credit',
-//       date: '12.12.2023 09:45',
-//       comment: 'Наименование назначения платежа',
-//       price: 10000,
-//       status: 'error'
-//     }
-// ])
-
-// const itemsDebit = ref([
-//     {
-//       id: 1,
-//       type: 'debit',
-//       date: '12.12.2023 09:45',
-//       comment: 'Наименование назначения платежа',
-//       price: 10000,
-//       status: 'done'
-//     }
-// ])
-
 const page = ref(1)
 
-// onMounted(() => {
-//     financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 })
-// })
+onMounted(() => {
+    financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 })
+})
 </script>
 
 <template>
@@ -311,7 +254,7 @@ const page = ref(1)
         <v-window-item value="one">
             <section class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-p-2 tw-h-[420px]">
                 <template v-for="item in itemsAll" :key="item">
-                    <div class="tw-flex tw-flex-col tw-w-full tw-h-[104px] tw-bg-white tw-p-4 tw-rounded-2xl">
+                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-p-4 tw-rounded-2xl">
                         <div class="tw-flex tw-justify-between tw-mb-2">
                             <div class="tw-flex tw-items-center tw-gap-x-2">
                                 <ArrowUpRight v-if="item.direction === 'deposit'" :width="32" :height="32" />
@@ -341,7 +284,7 @@ const page = ref(1)
                             </div>
                         </div>
                         <div class="tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed">
-                            <span class="tw-text-[13px]">{{ item.comment }}</span>
+                            <span class="tw-text-[13px] tw-min-w-[300px]">{{ item.comment }}</span>
                         </div>
                     </div>
                 </template>
