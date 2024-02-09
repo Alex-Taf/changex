@@ -42,6 +42,29 @@ const headers = ref([
 
 const page = ref(1)
 
+function changePage(newPage: string, isActive: boolean) {
+    if (isActive) {
+        return
+    }
+
+    page.value = Number(newPage)
+    financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 })
+}
+
+function decPage() {
+    if (page.value !== 1) {
+        page.value--
+        financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 })
+    }
+}
+
+function incPage() {
+    if (page.value !== lastPage.value) {
+        page.value++
+        financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 })
+    }
+}
+
 onMounted(() => {
     financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 })
 })
@@ -293,7 +316,7 @@ onMounted(() => {
         <v-window-item value="two"></v-window-item>
         <v-window-item value="three"></v-window-item>
     </v-window>
-    <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5">
+    <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="financesStore.loadMoreFinances({ page, countPerPage: 10 })">
         <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
     </v-btn>
   </RenderOn>
@@ -317,6 +340,7 @@ onMounted(() => {
             <div class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
                 tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer
                 tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200"
+                @click="decPage"
             >
                 <div class="tw-mt-[6px]">
                     <svg width="10" height="16" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -329,6 +353,7 @@ onMounted(() => {
             <div v-if="page !== '...'" class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
                 tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer"
                 :class="{ 'tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200': !isActive, 'tw-border-[#AEB7C1] tw-text-[#AEB7C1]': isActive }"
+                @click="changePage(page, isActive)"
             >
                 <div class="tw-text-[15px] tw-font-semibold tw-mt-[6px]">{{ page }}</div>
             </div>
@@ -340,6 +365,7 @@ onMounted(() => {
             <div class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
                 tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer
                 tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200"
+                @click="incPage"
             >
                 <div class="tw-mt-[6px]">
                     <svg width="10" height="16" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
