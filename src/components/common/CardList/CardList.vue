@@ -3,9 +3,12 @@ import { ref } from 'vue'
 import { formatter } from '@/utils'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import Stars from '@/components/icons/Stars.vue'
+import Filter from '@/components/icons/Filter.vue'
+import { watchEffect } from 'vue';
 
 const dialog = ref(false)
 const dialogConfirm = ref(false)
+const mobileFilter = ref(false)
 
 function switchToConfirm() {
     dialog.value = false
@@ -132,6 +135,10 @@ const itemsAll = ref([
         switch: false
     }
 ])
+
+watchEffect(() => {
+    console.log(dialogConfirm.value)
+})
 </script>
 
 <template>
@@ -275,7 +282,14 @@ const itemsAll = ref([
     </RenderOn>
 
     <RenderOn :px-min="320" :px-max="839">
-        <section v-if="itemsAll.length > 0" class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-h-[420px]">
+        <section class="tw-flex tw-justify-between tw-w-full tw-mb-5">
+            <div></div>
+            <div class="tw-flex tw-items-center tw-cursor-pointer" @click="mobileFilter = !mobileFilter">
+                <span class="tw-text-[13px] tw-text-[#04B6F5] tw-select-none">Фильтр</span>
+                <Filter />
+            </div>
+        </section>
+        <section v-if="itemsAll.length > 0" class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-h-[520px]">
                 <template v-for="item in itemsAll" :key="item">
                     <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-px-3 tw-py-1 tw-rounded-2xl">
                         <div class="tw-flex tw-justify-between tw-items-center tw-w-full">
@@ -298,7 +312,7 @@ const itemsAll = ref([
                     </div>
                 </template>
             </section>
-            <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="elevated" color="#04B6F5">
+            <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="elevated" color="#04B6F5" @click="openDialog">
                 <template v-slot:prepend>
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M3.125 10H16.875" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
@@ -316,63 +330,154 @@ const itemsAll = ref([
         </div>
     </section>
 
-    <v-dialog v-model="dialog" width="auto">
-        <v-card class="tw-flex tw-flex-col tw-items-center tw-h-fit !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px]">
-            <span class="tw-text-2xl tw-mb-[14px]">Добавление новой карты</span>
-            <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                <span class="tw-text-[13px] tw-text-[#677483]">Банк</span>
-                <v-select class="tw-w-full" label="Выберите" variant="outlined"></v-select>
+    <RenderOn :px="840">
+        <v-dialog v-model="dialog" width="auto">
+            <v-card class="tw-flex tw-flex-col tw-items-center tw-h-fit !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px]">
+                <span class="tw-text-2xl tw-mb-[14px]">Добавление новой карты</span>
+                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <span class="tw-text-[13px] tw-text-[#677483]">Банк</span>
+                    <v-select class="tw-w-full" label="Выберите" variant="outlined"></v-select>
+                </div>
+                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <span class="tw-text-[13px] tw-text-[#677483]">Устройство</span>
+                    <v-select class="tw-w-full" label="Выберите" variant="outlined"></v-select>
+                </div>
+                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <span class="tw-text-[13px] tw-text-[#677483]">Номер карты</span>
+                    <v-text-field class="tw-w-full" label="0000 0000 0000 0000" variant="outlined"></v-text-field>
+                </div>
+                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
+                    <v-textarea class="tw-w-full" label="Комментарий к карте" variant="outlined"></v-textarea>
+                </div>
+                <v-card-actions>
+                    <section class="tw-flex tw-flex-col tw-gap-y-4">
+                        <v-btn class="tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="switchToConfirm">
+                            <span class="tw-text-white tw-text-[15px] !tw-normal-case">Сохранить</span>
+                        </v-btn>
+                        <v-btn class="tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="closeDialog">
+                            Отмена
+                        </v-btn>
+                    </section>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <v-dialog
+        v-model="dialogConfirm"
+        width="auto"
+        >
+        <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl !tw-p-[48px]">
+            <div class="tw-mb-[24px]">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M32 6C26.8577 6 21.8309 7.52487 17.5552 10.3818C13.2795 13.2387 9.94702 17.2994 7.97914 22.0502C6.01127 26.8011 5.49638 32.0288 6.49959 37.0723C7.50281 42.1159 9.97907 46.7486 13.6152 50.3848C17.2514 54.0209 21.8842 56.4972 26.9277 57.5004C31.9712 58.5036 37.1989 57.9887 41.9498 56.0209C46.7007 54.053 50.7613 50.7205 53.6182 46.4448C56.4751 42.1691 58 37.1423 58 32C57.9868 25.1084 55.2433 18.5029 50.3702 13.6298C45.4971 8.75674 38.8916 6.01321 32 6ZM30 20C30 19.4696 30.2107 18.9609 30.5858 18.5858C30.9609 18.2107 31.4696 18 32 18C32.5304 18 33.0392 18.2107 33.4142 18.5858C33.7893 18.9609 34 19.4696 34 20V34C34 34.5304 33.7893 35.0391 33.4142 35.4142C33.0392 35.7893 32.5304 36 32 36C31.4696 36 30.9609 35.7893 30.5858 35.4142C30.2107 35.0391 30 34.5304 30 34V20ZM32 46C31.4067 46 30.8266 45.8241 30.3333 45.4944C29.84 45.1648 29.4554 44.6962 29.2284 44.148C29.0013 43.5999 28.9419 42.9967 29.0577 42.4147C29.1734 41.8328 29.4591 41.2982 29.8787 40.8787C30.2982 40.4591 30.8328 40.1734 31.4147 40.0576C31.9967 39.9419 32.5999 40.0013 33.1481 40.2284C33.6962 40.4554 34.1648 40.8399 34.4944 41.3333C34.8241 41.8266 35 42.4067 35 43C35 43.7957 34.6839 44.5587 34.1213 45.1213C33.5587 45.6839 32.7957 46 32 46Z" fill="#EFC327"/>
+                </svg>
             </div>
-            <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                <span class="tw-text-[13px] tw-text-[#677483]">Устройство</span>
-                <v-select class="tw-w-full" label="Выберите" variant="outlined"></v-select>
-            </div>
-            <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                <span class="tw-text-[13px] tw-text-[#677483]">Номер карты</span>
-                <v-text-field class="tw-w-full" label="0000 0000 0000 0000" variant="outlined"></v-text-field>
-            </div>
-            <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
-                <v-textarea class="tw-w-full" label="Комментарий к карте" variant="outlined"></v-textarea>
+            <span class="tw-text-2xl tw-mb-[24px] tw-text-center">Подтверждение<br>действия</span>
+            <div class="tw-mb-[24px] tw-w-[320px] tw-text-center">
+            <span class="tw-text-[15px] tw-break-words tw-overflow-ellipsis">
+                Lorem ipsum dolor sit amet consectetur. Volutpat sit dui congue massa aliquam sed cursus. Odio sed eget ultrices urna phasellus nibh. Tortor amet sed velit amet. Fames ut lacus non lectus blandit mi faucibus amet nulla. Lectus urna sollicitudin est proin. Sodales mauris.
+            </span>
             </div>
             <v-card-actions>
-                <section class="tw-flex tw-flex-col tw-gap-y-4">
-                    <v-btn class="tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="switchToConfirm">
-                        <span class="tw-text-white tw-text-[15px] !tw-normal-case">Сохранить</span>
-                    </v-btn>
-                    <v-btn class="tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="closeDialog">
-                        Отмена
-                    </v-btn>
-                </section>
-            </v-card-actions>
+                    <section class="tw-flex tw-flex-col tw-gap-y-4">
+                        <v-btn class="tw-w-[320px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="switchToConfirm">
+                            <span class="tw-text-white tw-text-[15px] !tw-normal-case">Подтвердить</span>
+                        </v-btn>
+                        <v-btn class="tw-w-[320px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="closeConfirmDialog">
+                            Отмена
+                        </v-btn>
+                    </section>
+                </v-card-actions>
         </v-card>
-    </v-dialog>
-    <v-dialog
-      v-model="dialogConfirm"
-      width="auto"
-    >
-      <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl !tw-p-[48px]">
-        <div class="tw-mb-[24px]">
-            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M32 6C26.8577 6 21.8309 7.52487 17.5552 10.3818C13.2795 13.2387 9.94702 17.2994 7.97914 22.0502C6.01127 26.8011 5.49638 32.0288 6.49959 37.0723C7.50281 42.1159 9.97907 46.7486 13.6152 50.3848C17.2514 54.0209 21.8842 56.4972 26.9277 57.5004C31.9712 58.5036 37.1989 57.9887 41.9498 56.0209C46.7007 54.053 50.7613 50.7205 53.6182 46.4448C56.4751 42.1691 58 37.1423 58 32C57.9868 25.1084 55.2433 18.5029 50.3702 13.6298C45.4971 8.75674 38.8916 6.01321 32 6ZM30 20C30 19.4696 30.2107 18.9609 30.5858 18.5858C30.9609 18.2107 31.4696 18 32 18C32.5304 18 33.0392 18.2107 33.4142 18.5858C33.7893 18.9609 34 19.4696 34 20V34C34 34.5304 33.7893 35.0391 33.4142 35.4142C33.0392 35.7893 32.5304 36 32 36C31.4696 36 30.9609 35.7893 30.5858 35.4142C30.2107 35.0391 30 34.5304 30 34V20ZM32 46C31.4067 46 30.8266 45.8241 30.3333 45.4944C29.84 45.1648 29.4554 44.6962 29.2284 44.148C29.0013 43.5999 28.9419 42.9967 29.0577 42.4147C29.1734 41.8328 29.4591 41.2982 29.8787 40.8787C30.2982 40.4591 30.8328 40.1734 31.4147 40.0576C31.9967 39.9419 32.5999 40.0013 33.1481 40.2284C33.6962 40.4554 34.1648 40.8399 34.4944 41.3333C34.8241 41.8266 35 42.4067 35 43C35 43.7957 34.6839 44.5587 34.1213 45.1213C33.5587 45.6839 32.7957 46 32 46Z" fill="#EFC327"/>
-            </svg>
-        </div>
-        <span class="tw-text-2xl tw-mb-[24px] tw-text-center">Подтверждение<br>действия</span>
-        <div class="tw-mb-[24px] tw-w-[320px] tw-text-center">
-          <span class="tw-text-[15px] tw-break-words tw-overflow-ellipsis">
-            Lorem ipsum dolor sit amet consectetur. Volutpat sit dui congue massa aliquam sed cursus. Odio sed eget ultrices urna phasellus nibh. Tortor amet sed velit amet. Fames ut lacus non lectus blandit mi faucibus amet nulla. Lectus urna sollicitudin est proin. Sodales mauris.
-          </span>
-        </div>
-        <v-card-actions>
-                <section class="tw-flex tw-flex-col tw-gap-y-4">
-                    <v-btn class="tw-w-[320px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="switchToConfirm">
-                        <span class="tw-text-white tw-text-[15px] !tw-normal-case">Подтвердить</span>
-                    </v-btn>
-                    <v-btn class="tw-w-[320px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="closeConfirmDialog">
-                        Отмена
-                    </v-btn>
-                </section>
-            </v-card-actions>
-      </v-card>
-    </v-dialog>
+        </v-dialog>
+    </RenderOn>
+
+    <!-- MOBILE DIALOGS -->
+    <RenderOn :px-min="320" :px-max="839">
+        <v-card v-if="dialog" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[10000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-center !tw-items-center !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px] sm:!tw-p-[20px]">
+                <span class="tw-text-2xl tw-mb-[14px]">Добавление новой карты</span>
+                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <span class="tw-text-[13px] tw-text-[#677483]">Банк</span>
+                    <v-select class="tw-w-full" label="Выберите" variant="outlined"></v-select>
+                </div>
+                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <span class="tw-text-[13px] tw-text-[#677483]">Устройство</span>
+                    <v-select class="tw-w-full" label="Выберите" variant="outlined"></v-select>
+                </div>
+                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <span class="tw-text-[13px] tw-text-[#677483]">Номер карты</span>
+                    <v-text-field class="tw-w-full" label="0000 0000 0000 0000" variant="outlined"></v-text-field>
+                </div>
+                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
+                    <v-textarea class="tw-w-full" label="Комментарий к карте" variant="outlined"></v-textarea>
+                </div>
+                <v-card-actions>
+                    <section class="tw-flex tw-flex-col tw-gap-y-4">
+                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="switchToConfirm">
+                            <span class="tw-text-white tw-text-[15px] !tw-normal-case">Сохранить</span>
+                        </v-btn>
+                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="closeDialog">
+                            Отмена
+                        </v-btn>
+                    </section>
+                </v-card-actions>
+            </v-card>
+
+            <v-card v-if="dialogConfirm" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[10000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-center !tw-items-center !tw-rounded-2xl !tw-p-[48px]">
+                <div class="tw-mb-[24px]">
+                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M32 6C26.8577 6 21.8309 7.52487 17.5552 10.3818C13.2795 13.2387 9.94702 17.2994 7.97914 22.0502C6.01127 26.8011 5.49638 32.0288 6.49959 37.0723C7.50281 42.1159 9.97907 46.7486 13.6152 50.3848C17.2514 54.0209 21.8842 56.4972 26.9277 57.5004C31.9712 58.5036 37.1989 57.9887 41.9498 56.0209C46.7007 54.053 50.7613 50.7205 53.6182 46.4448C56.4751 42.1691 58 37.1423 58 32C57.9868 25.1084 55.2433 18.5029 50.3702 13.6298C45.4971 8.75674 38.8916 6.01321 32 6ZM30 20C30 19.4696 30.2107 18.9609 30.5858 18.5858C30.9609 18.2107 31.4696 18 32 18C32.5304 18 33.0392 18.2107 33.4142 18.5858C33.7893 18.9609 34 19.4696 34 20V34C34 34.5304 33.7893 35.0391 33.4142 35.4142C33.0392 35.7893 32.5304 36 32 36C31.4696 36 30.9609 35.7893 30.5858 35.4142C30.2107 35.0391 30 34.5304 30 34V20ZM32 46C31.4067 46 30.8266 45.8241 30.3333 45.4944C29.84 45.1648 29.4554 44.6962 29.2284 44.148C29.0013 43.5999 28.9419 42.9967 29.0577 42.4147C29.1734 41.8328 29.4591 41.2982 29.8787 40.8787C30.2982 40.4591 30.8328 40.1734 31.4147 40.0576C31.9967 39.9419 32.5999 40.0013 33.1481 40.2284C33.6962 40.4554 34.1648 40.8399 34.4944 41.3333C34.8241 41.8266 35 42.4067 35 43C35 43.7957 34.6839 44.5587 34.1213 45.1213C33.5587 45.6839 32.7957 46 32 46Z" fill="#EFC327"/>
+                    </svg>
+                </div>
+                <span class="tw-text-2xl tw-mb-[24px] tw-text-center">Подтверждение<br>действия</span>
+                <div class="tw-mb-[24px] tw-w-[320px] tw-text-center">
+                <span class="tw-text-[15px] tw-break-words tw-overflow-ellipsis">
+                    Lorem ipsum dolor sit amet consectetur. Volutpat sit dui congue massa aliquam sed cursus. Odio sed eget ultrices urna phasellus nibh. Tortor amet sed velit amet. Fames ut lacus non lectus blandit mi faucibus amet nulla. Lectus urna sollicitudin est proin. Sodales mauris.
+                </span>
+                </div>
+                <v-card-actions>
+                        <section class="tw-flex tw-flex-col tw-gap-y-4">
+                            <v-btn class="tw-w-[320px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="switchToConfirm">
+                                <span class="tw-text-white tw-text-[15px] !tw-normal-case">Подтвердить</span>
+                            </v-btn>
+                            <v-btn class="tw-w-[320px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="closeConfirmDialog">
+                                Отмена
+                            </v-btn>
+                        </section>
+                    </v-card-actions>
+        </v-card>
+
+        <v-card v-if="mobileFilter" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[10000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-center !tw-items-center !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px] sm:!tw-p-[20px]">
+                <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-4">
+                    <span class="tw-text-2xl">Фильтр</span>
+                    <span class="tw-text-[13px] tw-text-[#677483] tw-select-none">Очистить фильтр</span>
+                </div>
+                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <v-text-field
+                        class="tw-w-full"
+                            variant="outlined"
+                            label="Поиск"
+                            append-inner-icon="mdi mdi-magnify"
+                            single-line
+                        ></v-text-field>
+                </div>
+                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <v-select class="tw-w-full" label="Все банки" variant="outlined"></v-select>
+                </div>
+                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <v-select class="tw-w-full" label="Все статусы" variant="outlined"></v-select>
+                </div>
+                <v-card-actions>
+                    <section class="tw-flex tw-flex-col tw-gap-y-4">
+                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block>
+                            <span class="tw-text-white tw-text-[15px] !tw-normal-case">Применить</span>
+                        </v-btn>
+                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="mobileFilter = !mobileFilter">
+                            Отмена
+                        </v-btn>
+                    </section>
+                </v-card-actions>
+            </v-card>
+    </RenderOn>
 </template>
