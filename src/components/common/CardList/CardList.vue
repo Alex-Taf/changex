@@ -1,10 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { formatter } from '@/utils'
+import { debounce } from 'vue-debounce'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import Stars from '@/components/icons/Stars.vue'
 import Filter from '@/components/icons/Filter.vue'
-import { watchEffect } from 'vue';
+import { useCardsStore } from '@/stores/cards'
+import { storeToRefs } from 'pinia'
+import { onMounted } from 'vue'
+import { reactive } from 'vue'
+
+const cardsStore = useCardsStore()
+const { itemsAll, bankItems, lastPage } = storeToRefs(cardsStore)
+
+const searchModel = ref('')
+const searchQuery = ref('')
 
 const dialog = ref(false)
 const dialogConfirm = ref(false)
@@ -65,79 +75,71 @@ const headers = ref([
     }
 ])
 
-const itemsAll = ref([
-    {
-        id: 0,
-        card: {
-            type: 'jcb',
-            num: '**** **** **** 4353'
-        },
-        bank: {
-            id: 1,
-            slug: 'raiff',
-            name: 'Райфайзен'
-        },
-        device: 'Моё устройство 1',
-        comment: 'Lorem ipsum dolor sit amet',
-        amount: 10000,
-        status: 'active',
-        switch: true
-    },
-    {
-        id: 1,
-        card: {
-            type: 'maestro',
-            num: '**** **** **** 4353'
-        },
-        bank: {
-            id: 2,
-            slug: 'sbank',
+const banks = reactive({
+    select: undefined,
+    items: [
+        {
+            value: 'sber',
             name: 'Сбербанк'
-        },
-        device: 'Моё устройство 1',
-        comment: 'Lorem ipsum dolor sit amet',
-        amount: 10000,
-        status: 'active',
-        switch: true
-    },
-    {
-        id: 3,
-        card: {
-            type: 'unionpay',
-            num: '**** **** **** 4353'
-        },
-        bank: {
-            id: 3,
-            slug: 'tinkoff',
-            name: 'Тинькофф'
-        },
-        device: 'Моё устройство 1',
-        comment: 'Lorem ipsum dolor sit amet',
-        amount: 10000,
-        status: 'disabled',
-        switch: true
-    },
-    {
-        id: 3,
-        card: {
-            type: 'visa',
-            num: '**** **** **** 4678'
-        },
-        bank: {
-            id: 4,
-            slug: 'alpha',
-            name: 'Альфабанк'
-        },
-        device: 'Моё устройство 1',
-        comment: 'Lorem ipsum dolor sit amet',
-        amount: 10000,
-        status: 'connect',
-        switch: false
-    }
-])
+        }
+    ]
+})
 
-watchEffect(() => {
-    console.log(dialogConfirm.value)
+const statuses = reactive({
+    select: undefined,
+    items: [
+        {
+            value: 'active',
+            name: 'Активна'
+        },
+        {
+            value: 'stopped',
+            name: 'Отключена'
+        }
+    ]
+})
+
+const page = ref(1)
+
+function searchValue(queryText: string) {
+    searchQuery.value = queryText
+    cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })
+}
+
+function changePage(newPage: string, isActive: boolean) {
+    if (isActive) {
+        return
+    }
+
+    page.value = Number(newPage)
+    cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })
+}
+
+function decPage() {
+    if (page.value !== 1) {
+        page.value--
+        cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })
+    }
+}
+
+function incPage() {
+    if (page.value !== lastPage.value) {
+        page.value++
+        cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })
+    }
+}
+
+function reset() {
+    searchModel.value = ''
+    searchQuery.value = ''
+    banks.select = null
+    statuses.select = null
+    cardsStore.fetchCards({ page: page.value, countPerPage: 10 })
+}
+
+onMounted(() => {
+    cardsStore.fetchBanks()
+    cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10 })
 })
 </script>
 
@@ -148,17 +150,35 @@ watchEffect(() => {
                 <section class="tw-w-full tw-flex tw-items-center tw-gap-x-4">
                     <v-responsive class="mx-auto" min-width="92" max-width="462">
                         <v-text-field
+                            v-model="searchModel"
                             variant="outlined"
                             label="Поиск"
                             append-inner-icon="mdi mdi-magnify"
                             single-line
+                            @update:model-value="debounce((val: any) => searchValue(val as string), 1000)(searchModel)"
                         ></v-text-field>
                     </v-responsive>
                     <v-responsive class="mx-auto" min-width="92" max-width="462">
-                        <v-select label="Все банки" variant="outlined"></v-select>
+                        <v-select
+                            v-model="banks.select"
+                            :items="banks.items"
+                            label="Все банки"
+                            variant="outlined"
+                            item-title="name"
+                            item-value="value"
+                            @update:model-value="cardsStore.fetchCards({ search: searchQuery, page, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })"
+                        ></v-select>
                     </v-responsive>
                     <v-responsive class="mx-auto" min-width="92" max-width="462">
-                        <v-select label="Все статусы" variant="outlined"></v-select>
+                        <v-select
+                            v-model="statuses.select"
+                            :items="statuses.items"
+                            label="Все статусы"
+                            variant="outlined"
+                            item-title="name"
+                            item-value="value"
+                            @update:model-value="cardsStore.fetchCards({ search: searchQuery, page, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })"
+                        ></v-select>
                     </v-responsive>
                     <v-responsive class="mx-auto -tw-mt-5" min-width="92" max-width="262">
                         <v-btn
@@ -166,6 +186,7 @@ watchEffect(() => {
                             variant="outlined"
                             color="#04B6F5"
                             size="x-large"
+                            @click="reset"
                             >
                                 <span class="tw-text-[#04B6F5] tw-text-[15px] tw-tracking-normal">Сбросить фильтр</span>
                             </v-btn
@@ -212,7 +233,7 @@ watchEffect(() => {
                 <template v-slot:item.card="{ value }">
                     <div class="tw-flex tw-items-center tw-gap-x-4">
                         <img :src="`/payment/${value.type}.png`" />
-                        <span class="tw-text-[15px]">{{ value.num }}</span>
+                        <span class="tw-text-[15px]">**** **** **** {{ value.num }}</span>
                     </div>
                 </template>
                 <template v-slot:item.bank="{ value }">
@@ -241,7 +262,7 @@ watchEffect(() => {
                         <span class="tw-text-gray-400 tw-text-xs">Подключение</span>
                     </div>
                     <div
-                        v-if="value === 'disabled'"
+                        v-if="value === 'stopped'"
                         class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-yellow-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                     >
                         <span class="tw-text-yellow-400 tw-text-xs">Отключена</span>
@@ -254,7 +275,7 @@ watchEffect(() => {
                     </div>
                 </template>
                 <template v-slot:item.switch="{ value }">
-                    <v-switch :model-value="value" color="#04B6F5"></v-switch>
+                    <v-switch :model-value="value.isSwitched" color="#04B6F5" @click="cardsStore.toggleCard(value.cardUid, value.isSwitched)"></v-switch>
                 </template>
                 <template v-slot:item.actions="{ item }">
                     <v-menu>
@@ -268,10 +289,10 @@ watchEffect(() => {
 
                         <v-list>
                             <v-list-item>
-                                <v-list-item-title>Редактировать</v-list-item-title>
+                                <v-list-item-title><span class="tw-select-none">Редактировать</span></v-list-item-title>
                             </v-list-item>
                             <v-list-item>
-                                <v-list-item-title>Удалить</v-list-item-title>
+                                <v-list-item-title><span class="tw-select-none">Удалить</span></v-list-item-title>
                             </v-list-item>
                         </v-list>
                     </v-menu>
@@ -480,4 +501,52 @@ watchEffect(() => {
                 </v-card-actions>
             </v-card>
     </RenderOn>
+    <RenderOn :px="840">
+        <v-pagination
+            v-if="itemsAll.length > 0"
+            class="tw-self-start"
+            v-model="page"
+            :length="lastPage"
+            :total-visible="7"
+        >
+            <template v-slot:prev>
+                <div class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+                    tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer
+                    tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200"
+                    @click="decPage"
+                >
+                    <div class="tw-mt-[6px]">
+                        <svg width="10" height="16" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7.5 13.25L1.25 7L7.5 0.75" stroke="#04B6F5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </template>
+            <template v-slot:item="{ isActive, page }">
+                <div v-if="page !== '...'" class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+                    tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer"
+                    :class="{ 'tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200': !isActive, 'tw-border-[#AEB7C1] tw-text-[#AEB7C1]': isActive }"
+                    @click="changePage(page, isActive)"
+                >
+                    <div class="tw-text-[15px] tw-font-semibold tw-mt-[6px]">{{ page }}</div>
+                </div>
+                <div v-if="page === '...'" class="tw-mt-2">
+                    <span class="tw-text-[15px] tw-text-[#AEB7C1] tw-font-semibold">{{ page }}</span>
+                </div>
+            </template>
+            <template v-slot:next>
+                <div class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+                    tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer
+                    tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200"
+                    @click="incPage"
+                >
+                    <div class="tw-mt-[6px]">
+                        <svg width="10" height="16" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.500001 0.749999L6.75 7L0.5 13.25" stroke="#04B6F5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </template>
+    </v-pagination>
+  </RenderOn>
 </template>
