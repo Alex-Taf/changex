@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getCards, setShutdownCard, setTurnOnCard, getBanks } from '@/api'
+import { getCards, addCard, setShutdownCard, setTurnOnCard, getBanks } from '@/api'
 import type { TFilterPaginationOptions } from '@/types'
 
 export const useCardsStore = defineStore('cards', {
@@ -59,6 +59,10 @@ export const useCardsStore = defineStore('cards', {
     bankItems: (state) => state.bankList
   },
   actions: {
+    async checkCard(search: string) {
+        const res = await getCards({ search })
+        return res?.data.list[0] ? true : false 
+    },
     async fetchCards(options: TFilterPaginationOptions) {
       const res = await getCards(options)
       this.cardsList = res?.data.list
@@ -76,6 +80,17 @@ export const useCardsStore = defineStore('cards', {
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
+    },
+    async createCard(newCard: Record<string, unknown>) {
+        const createdCard = {
+            bank: newCard.bank.select,
+            pan: newCard.cardNum.replace(/\s/g, ''),
+            deviceId: newCard.device.select,
+            comment: newCard.comment
+        }
+        const res = await addCard(createdCard)
+        console.log(res?.data.card)
+        this.cardsList.unshift(res?.data.card)
     },
     async toggleCard(uid: string, isSwitched: boolean) {
         if (isSwitched) {

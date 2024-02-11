@@ -11,7 +11,14 @@ export const useDevicesStore = defineStore('devices', {
     totalCount: 1
   }),
   getters: {
-    deviceItemsAll: (state) => state.deviceList
+    deviceItemsAll: (state) => {
+      return state.deviceList.map((item: Record<string, unknown>) => {
+        return {
+            value: item.deviceId,
+            name: item.name
+        }
+      })
+    }
   },
   actions: {
     async fetchDevices(options: TFilterPaginationOptions) {

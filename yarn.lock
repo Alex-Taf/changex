@@ -1563,6 +1563,11 @@ magic-string@^0.30.5:
   dependencies:
     "@jridgewell/sourcemap-codec" "^1.4.15"
 
+maska@^2.1.11:
+  version "2.1.11"
+  resolved "https://registry.yarnpkg.com/maska/-/maska-2.1.11.tgz#71ef39a0c7121beda374f9a309bded5c129dd3f1"
+  integrity sha512-IGqWjBnKxMYcVa06pb4mPfag9sJjnR2T15CdGfQ2llR3gajiSd4AxXCvNqHMEq9W3UBhjjTazgWumsP3sWrUSg==
+
 memorystream@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/memorystream/-/memorystream-0.3.1.tgz#86d7090b30ce455d63fbae12dda51a47ddcaf9b2"

@@ -109,6 +109,23 @@ export const getCards = async (options: TFilterPaginationOptions) => {
     }
 }
 
+export const addCard = async (data: Record<string, unknown>) => {
+    try {
+        return await $authHost.post('/cards/add', { ...data })
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post('/cards/add', { ...data })
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
 export const setShutdownCard = async (cardUid: string) => {
     try {
         return await $authHost.post(`/cards/${cardUid}/off`, {})
