@@ -14,8 +14,11 @@ export const useDevicesStore = defineStore('devices', {
     deviceItemsAll: (state) => {
       return state.deviceList.map((item: Record<string, unknown>) => {
         return {
-            value: item.deviceId,
-            name: item.name
+            id: item.deviceId,
+            title: item.title,
+            device: item.name,
+            status: item.status,
+            comment: item.comment
         }
       })
     }
