@@ -194,6 +194,23 @@ export const getPayments = async (options: TFilterPaginationOptions) => {
     }
 }
 
+export const getDisputes = async (options: TFilterPaginationOptions) => {
+    try {
+        return await $authHost.post('/disputes/list', { ...options })
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post('/disputes/list', { ...options })
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
 export const getDevices = async (options: TFilterPaginationOptions) => {
     try {
         return await $authHost.post('/devices/list', { ...options })
