@@ -6,6 +6,7 @@ import Cards from '../views/Cards.vue'
 import Payments from '../views/Payments.vue'
 import Disputs from '../views/Disputs.vue'
 import Devices from '../views/Devices.vue'
+import Notifications from '../views/Notifications.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,6 +46,12 @@ const router = createRouter({
       name: 'devices',
       meta: { auth: true },
       component: Devices
+    },
+    {
+      path: '/notifications',
+      name: 'notifications',
+      meta: { auth: true },
+      component: Notifications
     }
   ]
 })

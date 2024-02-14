@@ -11,6 +11,7 @@ import CreditCard from './components/icons/CreditCard.vue'
 import ArrowsLeftRight from './components/icons/ArrowsLeftRight.vue'
 import Warning from './components/icons/Warning.vue'
 import Mobile from './components/icons/Mobile.vue'
+import NotificationsIcon from './components/icons/NotificationsIcon.vue'
 import Menu from './components/icons/Menu.vue'
 import Close from './components/icons/Close.vue'
 import Avatar from './components/user/Avatar/Avatar.vue'
@@ -69,6 +70,13 @@ const navItems = ref([
         path: '/devices',
         name: 'devices',
         icon: Mobile
+    },
+    {
+        id: 5,
+        title: 'Уведомления',
+        path: '/notifications',
+        name: 'notifications',
+        icon: NotificationsIcon
     }
 ])
 </script>
