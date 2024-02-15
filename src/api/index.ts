@@ -109,6 +109,23 @@ export const getCards = async (options: TFilterPaginationOptions) => {
     }
 }
 
+export const getCardByUID = async (uid: string) => {
+    try {
+        return await $authHost.post(`/cards/${uid}/info`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/cards/${uid}/info`, {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
 export const addCard = async (data: Record<string, unknown>) => {
     try {
         return await $authHost.post('/cards/add', { ...data })
@@ -152,6 +169,40 @@ export const setTurnOnCard = async (cardUid: string) => {
                 const updateRes = await _refreshToken()
                 if (updateRes?.status === 200) {
                     return await $authHost.post(`/cards/${cardUid}/on`, {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const editCard = async (uid: string, onSaveCard: Record<string, unknown>) => {
+    try {
+        return await $authHost.post(`/cards/${uid}/edit`, { ...onSaveCard })
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/cards/${uid}/edit`, { ...onSaveCard })
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const deleteCard = async (uid: string) => {
+    try {
+        return await $authHost.post(`/cards/${uid}/trash`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/cards/${uid}/trash`, {})
                 }
             } else {
                 return

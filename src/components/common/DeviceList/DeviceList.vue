@@ -120,6 +120,13 @@ function incPage() {
     }
 }
 
+function loadMore() {
+    if (page.value < lastPage.value) {
+        page.value++
+        devicesStore.loadMoreDevices({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+    }
+}
+
 onMounted(() => {
     devicesStore.fetchDevices({ search: searchQuery.value, page: page.value, countPerPage: 10 })
 })
@@ -273,7 +280,7 @@ onMounted(() => {
                     </div>
                 </template>
             </section>
-            <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="financesStore.loadMoreFinances({ page, countPerPage: 10 })">
+            <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="loadMore">
                 <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
             </v-btn>
             <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="elevated" color="#04B6F5" @click="openDialog">

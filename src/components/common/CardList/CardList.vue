@@ -13,10 +13,11 @@ import Filter from '@/components/icons/Filter.vue'
 
 const cardsStore = useCardsStore()
 const deviceStore = useDevicesStore()
-const { itemsAll, bankItems, lastPage } = storeToRefs(cardsStore)
+const { itemsAll, lastPage } = storeToRefs(cardsStore)
 const { deviceItemsAll } = storeToRefs(deviceStore)
 
 const newCardForm = ref<HTMLFormElement>(null)
+const editCardForm = ref<HTMLFormElement>(null)
 
 const maskOptions = {
     mask: '#### #### #### ####'
@@ -25,8 +26,38 @@ const maskOptions = {
 const searchModel = ref('')
 const searchQuery = ref('')
 
+const sort = reactive({
+    value: '',
+    name: 'Не сортировать'
+})
+
+const sortOptions = ref([
+    {
+        value: '',
+        name: 'Не сортировать'
+    },
+    {
+        value: 'pan',
+        name: 'Картам'
+    },
+    {
+        value: 'bank',
+        name: 'Банкам'
+    },
+    {
+        value: 'deviceName',
+        name: 'Устройствам'
+    },
+    {
+        value: 'comment',
+        name: 'Комментариям'
+    }
+])
+
 const dialog = ref(false)
 const dialogConfirm = ref(false)
+const editDialog = ref(false)
+
 const mobileFilter = ref(false)
 
 function switchToConfirm() {
@@ -44,6 +75,20 @@ function closeDialog() {
 
 function closeConfirmDialog() {
     dialogConfirm.value = false
+}
+
+async function openEditDialog(cardUid: string) {
+    editDialog.value = true
+
+    const card = await cardsStore.fetchCardByUID(cardUid)
+
+    editCard.uid = cardUid
+    editCard.cardNum = card.pan
+    editCard.comment = card.comment
+}
+
+function closeEditDialog() {
+    editDialog.value = false
 }
 
 const headers = ref([
@@ -126,11 +171,23 @@ const newCard = reactive({
     comment: ''
 })
 
+const editCard = reactive({
+    uid: '',
+    cardNum: '',
+    comment: ''
+})
+
 const page = ref(1)
+
+function setSort(sortOption: Record<string, unknown>) {
+    sort.value = sortOption.value
+    sort.name = sortOption.name
+    cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, sort: sort.value, filter: { bank: banks.select, status: statuses.select } })
+}
 
 function searchValue(queryText: string) {
     searchQuery.value = queryText
-    cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })
+    cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, sort: sort.value, filter: { bank: banks.select, status: statuses.select } })
 }
 
 function changePage(newPage: string, isActive: boolean) {
@@ -139,20 +196,27 @@ function changePage(newPage: string, isActive: boolean) {
     }
 
     page.value = Number(newPage)
-    cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })
+    cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, sort: sort.value, filter: { bank: banks.select, status: statuses.select } })
 }
 
 function decPage() {
     if (page.value !== 1) {
         page.value--
-        cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })
+        cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, sort: sort.value, filter: { bank: banks.select, status: statuses.select } })
     }
 }
 
 function incPage() {
     if (page.value !== lastPage.value) {
         page.value++
-        cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })
+        cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, sort: sort.value, filter: { bank: banks.select, status: statuses.select } })
+    }
+}
+
+function loadMore() {
+    if (page.value < lastPage.value) {
+        page.value++
+        cardsStore.loadMoreCards({ page: page.value, countPerPage: 10 })
     }
 }
 
@@ -177,12 +241,35 @@ async function submitNewCard() {
     }
 }
 
+async function submitEditCard() {
+    const { valid } = await editCardForm.value.validate()
+
+    if (valid) {
+        cardsStore.saveEditCard(editCard)
+        closeEditDialog()
+    }
+}
+
 const newCardValidationRules = reactive({
     required: (value: string) => !!value || 'Поле обязвательно для заполнения',
     isCardOccupied: async (value: string) => {
         const num = value.replace(/\s/g, '')
         if (num.length === 16) {
             const isOccupied = await cardsStore.checkCard(value)
+            
+            if (isOccupied) {
+                return 'Такая карта уже добавлена'
+            }
+        }
+    }
+})
+
+const editCardValidationRules = reactive({
+    required: (value: string) => !!value || 'Поле обязвательно для заполнения',
+    isCardOccupied: async (value: string) => {
+        const num = value.replace(/\s/g, '')
+        if (num.length === 16) {
+            const isOccupied = await cardsStore.checkCardNotCurrent(value, editCard.uid)
             
             if (isOccupied) {
                 return 'Такая карта уже добавлена'
@@ -358,10 +445,10 @@ onMounted(async () => {
                         </template>
 
                         <v-list>
-                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200">
+                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="openEditDialog(item.id)">
                                 <v-list-item-title><span class="tw-select-none">Редактировать</span></v-list-item-title>
                             </v-list-item>
-                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200">
+                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="cardsStore.removeCard(item.id)">
                                 <v-list-item-title><span class="tw-select-none">Удалить</span></v-list-item-title>
                             </v-list-item>
                         </v-list>
@@ -374,7 +461,23 @@ onMounted(async () => {
 
     <RenderOn :px-min="320" :px-max="839">
         <section class="tw-flex tw-justify-between tw-w-full tw-mb-5">
-            <div></div>
+            <div>
+                <span class="tw-text-[13px] tw-select-none">
+                    Сортировать по <v-menu>
+                        <template v-slot:activator="{ props }">
+                            <span class="tw-text-[#04B6F5]" v-bind="props">{{ sort.name }}</span>
+                        </template>
+
+                        <v-list>
+                            <template v-for="option in sortOptions" :key="option">
+                                <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="setSort(option)">
+                                    <v-list-item-title><span class="tw-select-none">{{ option.name }}</span></v-list-item-title>
+                                </v-list-item>
+                            </template>
+                        </v-list>
+                    </v-menu>
+                </span>
+            </div>
             <div class="tw-flex tw-items-center tw-cursor-pointer" @click="mobileFilter = !mobileFilter">
                 <span class="tw-text-[13px] tw-text-[#04B6F5] tw-select-none">Фильтр</span>
                 <Filter />
@@ -441,6 +544,9 @@ onMounted(async () => {
                     </div>
                 </template>
             </section>
+            <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="loadMore">
+                <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
+            </v-btn>
             <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="elevated" color="#04B6F5" @click="openDialog">
                 <template v-slot:prepend>
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -563,6 +669,57 @@ onMounted(async () => {
                 </v-card-actions>
         </v-card>
         </v-dialog>
+
+        <!-- EDIT -->
+        <v-dialog v-model="editDialog" width="auto">
+            <v-card class="tw-flex tw-flex-col tw-items-center tw-h-fit !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px]">
+                <span class="tw-text-2xl tw-mb-[14px]">Редактирование карты</span>
+                <v-form ref="editCardForm">
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <span class="tw-text-[13px] tw-text-[#677483]">Номер карты</span>
+                        <v-text-field
+                            v-model="editCard.cardNum"
+                            class="tw-w-full"
+                            label="0000 0000 0000 0000"
+                            variant="outlined"
+                            v-maska:[maskOptions]
+                            :rules="[editCardValidationRules.required, editCardValidationRules.isCardOccupied]"
+                        ></v-text-field>
+                    </div>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
+                        <v-textarea
+                            v-model="editCard.comment"
+                            class="tw-w-full"
+                            label="Комментарий к карте"
+                            variant="outlined"
+                            :rules="[editCardValidationRules.required]"
+                        ></v-textarea>
+                    </div>
+                    <v-card-actions>
+                        <section class="tw-flex tw-flex-col tw-gap-y-4">
+                            <v-btn
+                                class="tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case"
+                                color="#04B6F5"
+                                variant="elevated"
+                                block
+                                @click="submitEditCard"
+                            >
+                                <span class="tw-text-white tw-text-[15px] !tw-normal-case">Сохранить</span>
+                            </v-btn>
+                            <v-btn
+                                class="tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto"
+                                color="#04B6F5"
+                                variant="outlined"
+                                @click="closeEditDialog"
+                            >
+                                Отмена
+                            </v-btn>
+                        </section>
+                    </v-card-actions>
+                </v-form>
+            </v-card>
+        </v-dialog>
     </RenderOn>
 
     <!-- MOBILE DIALOGS -->
@@ -652,47 +809,49 @@ onMounted(async () => {
                     </v-card-actions>
         </v-card>
 
-        <v-card v-if="mobileFilter" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[10000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-center !tw-items-center !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px] sm:!tw-p-[20px]">
-                <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-4">
-                    <span class="tw-text-2xl">Фильтр</span>
-                    <span class="tw-text-[13px] tw-text-[#677483] tw-select-none tw-cursor-pointer" @click="reset">Очистить фильтр</span>
-                </div>
-                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                    <v-text-field
-                        v-model="searchModel"
-                        class="tw-w-full"
-                        variant="outlined"
-                        label="Поиск"
-                        append-inner-icon="mdi mdi-magnify"
-                        single-line
-                        @update:model-value="debounce((val: any) => searchValue(val as string), 1000)(searchModel)"
-                    ></v-text-field>
-                </div>
-                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                    <v-select
-                        v-model="banks.select"
-                        :items="banks.items"
-                        label="Все банки"
-                        class="tw-w-full"
-                        variant="outlined"
-                        item-title="name"
-                        item-value="value"
-                        @update:model-value="cardsStore.fetchCards({ search: searchQuery, page, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })"
-                    ></v-select>
-                </div>
-                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                    <v-select
-                        v-model="statuses.select"
-                        :items="statuses.items"
-                        class="tw-w-full"
-                        label="Все статусы"
-                        variant="outlined"
-                        item-title="name"
-                        item-value="value"
-                        @update:model-value="cardsStore.fetchCards({ search: searchQuery, page, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })"
-                    ></v-select>
-                </div>
-                <v-card-actions>
+        <v-card v-if="mobileFilter" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[10000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-between !tw-items-center !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px] sm:!tw-p-[20px]">
+                <section class="tw-w-full">
+                    <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-4">
+                        <span class="tw-text-2xl">Фильтр</span>
+                        <span class="tw-text-[13px] tw-text-[#677483] tw-select-none tw-cursor-pointer" @click="reset">Очистить фильтр</span>
+                    </div>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <v-text-field
+                            v-model="searchModel"
+                            class="tw-w-full"
+                            variant="outlined"
+                            label="Поиск"
+                            append-inner-icon="mdi mdi-magnify"
+                            single-line
+                            @update:model-value="debounce((val: any) => searchValue(val as string), 1000)(searchModel)"
+                        ></v-text-field>
+                    </div>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <v-select
+                            v-model="banks.select"
+                            :items="banks.items"
+                            label="Все банки"
+                            class="tw-w-full"
+                            variant="outlined"
+                            item-title="name"
+                            item-value="value"
+                            @update:model-value="cardsStore.fetchCards({ search: searchQuery, page, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })"
+                        ></v-select>
+                    </div>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <v-select
+                            v-model="statuses.select"
+                            :items="statuses.items"
+                            class="tw-w-full"
+                            label="Все статусы"
+                            variant="outlined"
+                            item-title="name"
+                            item-value="value"
+                            @update:model-value="cardsStore.fetchCards({ search: searchQuery, page, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })"
+                        ></v-select>
+                    </div>
+                </section>
+                <v-card-actions class="tw-absolute tw-bottom-0">
                     <section class="tw-flex tw-flex-col tw-gap-y-4">
                         <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="applyMobileFilter">
                             <span class="tw-text-white tw-text-[15px] !tw-normal-case">Применить</span>

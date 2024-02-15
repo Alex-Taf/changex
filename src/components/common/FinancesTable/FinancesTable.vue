@@ -65,6 +65,13 @@ function incPage() {
     }
 }
 
+function loadMore() {
+    if (page.value < lastPage.value) {
+        page.value++
+        financesStore.loadMoreFinances({ page: page.value, countPerPage: 10 })
+    }
+}
+
 onMounted(() => {
     financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 })
 })
@@ -313,10 +320,86 @@ onMounted(() => {
                 </template>
             </section>
         </v-window-item>
-        <v-window-item value="two"></v-window-item>
-        <v-window-item value="three"></v-window-item>
+        <v-window-item value="two">
+            <section class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-p-2 tw-h-[420px]">
+                <template v-for="item in itemsDeposit" :key="item">
+                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-p-4 tw-rounded-2xl">
+                        <div class="tw-flex tw-justify-between tw-mb-2">
+                            <div class="tw-flex tw-items-center tw-gap-x-2">
+                                <ArrowUpRight v-if="item.direction === 'deposit'" :width="32" :height="32" />
+                                <ArrowDownLeft v-if="item.direction === 'withdrawal'" :width="32" :height="32" />
+                                <div class="tw-leading-4">
+                                    <span class="tw-text-[10px] tw-text-[#AEB7C1]">{{ item.date }}</span><br>
+                                    <span><span class="tw-text-[15px]">{{ formatter.format(item.amount) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
+                                </div>
+                            </div>
+                            <div
+                                v-if="item.status === 'process'"
+                                class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-bg-gray-200 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-400 tw-w-[79px] tw-h-[20px] tw-px-2 tw-text-center"
+                            >
+                                <span class="tw-text-gray-400 tw-text-[10px]">В процессе</span>
+                            </div>
+                            <div
+                                v-if="item.status === 'error'"
+                                class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-rounded-xl tw-border-2 tw-border-solid tw-border-yellow-500 tw-w-[79px] tw-h-[20px] tw-px-2 tw-text-center"
+                            >
+                                <span class="tw-text-yellow-400 tw-text-[10px]">Ошибка</span>
+                            </div>
+                            <div
+                                v-if="item.status === 'done'"
+                                class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-rounded-xl tw-border-2 tw-border-solid tw-border-green-500 tw-w-[75px] tw-h-[20px] tw-px-2 tw-text-center"
+                            >
+                                <span class="tw-text-green-400 tw-text-[10px]">Выполнено</span>
+                            </div>
+                        </div>
+                        <div class="tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed">
+                            <span class="tw-text-[13px] tw-min-w-[300px]">{{ item.comment }}</span>
+                        </div>
+                    </div>
+                </template>
+            </section>
+        </v-window-item>
+        <v-window-item value="three">
+            <section class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-p-2 tw-h-[420px]">
+                <template v-for="item in itemsWithdrawal" :key="item">
+                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-p-4 tw-rounded-2xl">
+                        <div class="tw-flex tw-justify-between tw-mb-2">
+                            <div class="tw-flex tw-items-center tw-gap-x-2">
+                                <ArrowUpRight v-if="item.direction === 'deposit'" :width="32" :height="32" />
+                                <ArrowDownLeft v-if="item.direction === 'withdrawal'" :width="32" :height="32" />
+                                <div class="tw-leading-4">
+                                    <span class="tw-text-[10px] tw-text-[#AEB7C1]">{{ item.date }}</span><br>
+                                    <span><span class="tw-text-[15px]">{{ formatter.format(item.amount) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
+                                </div>
+                            </div>
+                            <div
+                                v-if="item.status === 'process'"
+                                class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-bg-gray-200 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-400 tw-w-[79px] tw-h-[20px] tw-px-2 tw-text-center"
+                            >
+                                <span class="tw-text-gray-400 tw-text-[10px]">В процессе</span>
+                            </div>
+                            <div
+                                v-if="item.status === 'error'"
+                                class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-rounded-xl tw-border-2 tw-border-solid tw-border-yellow-500 tw-w-[79px] tw-h-[20px] tw-px-2 tw-text-center"
+                            >
+                                <span class="tw-text-yellow-400 tw-text-[10px]">Ошибка</span>
+                            </div>
+                            <div
+                                v-if="item.status === 'done'"
+                                class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-rounded-xl tw-border-2 tw-border-solid tw-border-green-500 tw-w-[75px] tw-h-[20px] tw-px-2 tw-text-center"
+                            >
+                                <span class="tw-text-green-400 tw-text-[10px]">Выполнено</span>
+                            </div>
+                        </div>
+                        <div class="tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed">
+                            <span class="tw-text-[13px] tw-min-w-[300px]">{{ item.comment }}</span>
+                        </div>
+                    </div>
+                </template>
+            </section>
+        </v-window-item>
     </v-window>
-    <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="financesStore.loadMoreFinances({ page, countPerPage: 10 })">
+    <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="loadMore">
         <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
     </v-btn>
   </RenderOn>

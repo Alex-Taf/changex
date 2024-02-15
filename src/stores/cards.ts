@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getCards, addCard, setShutdownCard, setTurnOnCard, getBanks } from '@/api'
+import { getCards, getCardByUID, addCard, setShutdownCard, setTurnOnCard, getBanks, deleteCard } from '@/api'
 import type { TFilterPaginationOptions } from '@/types'
 
 export const useCardsStore = defineStore('cards', {
@@ -34,7 +34,7 @@ export const useCardsStore = defineStore('cards', {
         return state.cardsList.map((item) => {
             const switchStatus = item.status === 'active' ? true : false
             const bankName = state.banks.find((bank) => bank.slug === item.bank).name
-            const pan = item.maskedPan.slice(1)
+            const pan = item.pan.slice(12, 16)
 
             return {
                 id: item.uid,
@@ -62,6 +62,28 @@ export const useCardsStore = defineStore('cards', {
     async checkCard(search: string) {
         const res = await getCards({ search })
         return res?.data.list[0] ? true : false 
+    },
+    async checkCardNotCurrent(search: string, currentUid: string) {
+        const res = await getCards({ search })
+        return res?.data.list[0].uid !== currentUid ? true : false
+    },
+    async fetchCardByUID(uid: string) {
+        const res = await getCardByUID(uid)
+        return res?.data.card
+    },
+    async saveEditCard(editedCard: Record<string, unknown>) {
+        const uid = editedCard.uid
+
+        const onSaveCard = {
+            pan: editedCard.cardNum,
+            comment: editedCard.comment
+        }
+
+        await editCard(uid, onSaveCard)
+    },
+    async removeCard(uid: string) {
+        this.cardsList = this.cardsList.filter((card) => card.uid !== uid)
+        await deleteCard(uid)
     },
     async fetchCards(options: TFilterPaginationOptions) {
       const res = await getCards(options)

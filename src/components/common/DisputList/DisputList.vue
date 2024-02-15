@@ -107,6 +107,13 @@ function incPage() {
     }
 }
 
+function loadMore() {
+    if (page.value < lastPage.value) {
+        page.value++
+        paymentsStore.loadMorePayments({ page: page.value, countPerPage: 10 })
+    }
+}
+
 onMounted(() => {
     const startDate = new Date()
     const endDate = new Date(new Date().setDate(startDate.getDate() + 7))
@@ -380,7 +387,7 @@ onMounted(() => {
                     </div>
                 </template>
             </section>
-            <v-btn v-if="disputsItemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="paymentsStore.loadMorePayments({ page, countPerPage: 10 })">
+            <v-btn v-if="disputsItemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="loadMore">
                 <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
             </v-btn>
 

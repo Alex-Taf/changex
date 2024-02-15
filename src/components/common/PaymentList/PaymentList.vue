@@ -21,22 +21,22 @@ const page = ref(1)
 
 const mobileFilter = ref(false)
 
-function switchToConfirm() {
-    dialog.value = false
-    dialogConfirm.value = true
-}
+// function switchToConfirm() {
+//     dialog.value = false
+//     dialogConfirm.value = true
+// }
 
-function openDialog() {
-    dialog.value = true
-}
+// function openDialog() {
+//     dialog.value = true
+// }
 
-function closeDialog() {
-    dialog.value = false
-}
+// function closeDialog() {
+//     dialog.value = false
+// }
 
-function closeConfirmDialog() {
-    dialogConfirm.value = false
-}
+// function closeConfirmDialog() {
+//     dialogConfirm.value = false
+// }
 
 const headers = ref([
     {
@@ -105,6 +105,13 @@ function incPage() {
     if (page.value !== lastPage.value) {
         page.value++
         paymentsStore.fetchPayments({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+    }
+}
+
+function loadMore() {
+    if (page.value < lastPage.value) {
+        page.value++
+        paymentsStore.loadMorePayments({ page: page.value, countPerPage: 10 })
     }
 }
 
@@ -381,7 +388,7 @@ onMounted(() => {
                     </div>
                 </template>
             </section>
-            <v-btn v-if="paymentsItemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="paymentsStore.loadMorePayments({ page, countPerPage: 10 })">
+            <v-btn v-if="paymentsItemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="loadMore">
                 <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
             </v-btn>
 

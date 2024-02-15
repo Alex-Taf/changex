@@ -92,6 +92,13 @@ function incPage() {
     }
 }
 
+function loadMore() {
+    if (page.value < lastPage.value) {
+        page.value++
+        accountsStore.loadMoreAccounts({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+    }
+}
+
 onMounted(() => {
     accountsStore.fetchAccounts({ search: searchQuery.value, page: page.value, countPerPage: 10 })
 })
@@ -245,7 +252,7 @@ onMounted(() => {
                     </div>
                 </template>
             </section>
-            <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="financesStore.loadMoreFinances({ page, countPerPage: 10 })">
+            <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="loadMore">
                 <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
             </v-btn>
             <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="elevated" color="#04B6F5" @click="openDialog">
@@ -262,7 +269,7 @@ onMounted(() => {
     <section v-if="itemsAll.length === 0" class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-h-[calc(100vh-400px)]">
         <div class="tw-text-center">
             <Stars /><br>
-            <span class="tw-text-lg tw-text-[#677483] tw-font-semibold">Устройства отсутствуют</span>
+            <span class="tw-text-lg tw-text-[#677483] tw-font-semibold">Нет подключенных аккаунтов</span>
         </div>
     </section>
 
