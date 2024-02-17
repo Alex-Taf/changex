@@ -68,3 +68,12 @@ export const timestampToDatetime = (timestamp: number): string => {
 
     return formattedDate
 }
+
+export const datetimeToTimestamp = (datetime: string | Date): number => {
+    if (typeof datetime === 'string') {
+        const date = new Date(datetime)
+        return date.getTime()
+    } else {
+        return datetime.getTime()
+    }
+}

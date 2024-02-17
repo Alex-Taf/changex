@@ -10,7 +10,6 @@ import RenderOn from '@/components/utils/RenderOn.vue'
 import Stars from '@/components/icons/Stars.vue'
 import Filter from '@/components/icons/Filter.vue'
 
-
 const cardsStore = useCardsStore()
 const deviceStore = useDevicesStore()
 const { itemsAll, lastPage } = storeToRefs(cardsStore)
@@ -460,7 +459,7 @@ onMounted(async () => {
     </RenderOn>
 
     <RenderOn :px-min="320" :px-max="839">
-        <section class="tw-flex tw-justify-between tw-w-full tw-mb-5">
+        <section class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-5">
             <div>
                 <span class="tw-text-[13px] tw-select-none">
                     Сортировать по <v-menu>
@@ -724,7 +723,7 @@ onMounted(async () => {
 
     <!-- MOBILE DIALOGS -->
     <RenderOn :px-min="320" :px-max="839">
-        <v-card v-if="dialog" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[10000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-center !tw-items-center !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px] sm:!tw-p-[20px]">
+        <v-card v-if="dialog" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[2000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-center !tw-items-center !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px] sm:!tw-p-[20px]">
                 <span class="tw-text-2xl tw-mb-[14px]">Добавление новой карты</span>
                 <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                     <span class="tw-text-[13px] tw-text-[#677483]">Банк</span>
@@ -785,7 +784,7 @@ onMounted(async () => {
                 </v-card-actions>
             </v-card>
 
-            <v-card v-if="dialogConfirm" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[10000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-center !tw-items-center !tw-rounded-2xl !tw-p-[48px]">
+            <v-card v-if="dialogConfirm" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[2000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-center !tw-items-center !tw-rounded-2xl !tw-p-[48px]">
                 <div class="tw-mb-[24px]">
                     <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M32 6C26.8577 6 21.8309 7.52487 17.5552 10.3818C13.2795 13.2387 9.94702 17.2994 7.97914 22.0502C6.01127 26.8011 5.49638 32.0288 6.49959 37.0723C7.50281 42.1159 9.97907 46.7486 13.6152 50.3848C17.2514 54.0209 21.8842 56.4972 26.9277 57.5004C31.9712 58.5036 37.1989 57.9887 41.9498 56.0209C46.7007 54.053 50.7613 50.7205 53.6182 46.4448C56.4751 42.1691 58 37.1423 58 32C57.9868 25.1084 55.2433 18.5029 50.3702 13.6298C45.4971 8.75674 38.8916 6.01321 32 6ZM30 20C30 19.4696 30.2107 18.9609 30.5858 18.5858C30.9609 18.2107 31.4696 18 32 18C32.5304 18 33.0392 18.2107 33.4142 18.5858C33.7893 18.9609 34 19.4696 34 20V34C34 34.5304 33.7893 35.0391 33.4142 35.4142C33.0392 35.7893 32.5304 36 32 36C31.4696 36 30.9609 35.7893 30.5858 35.4142C30.2107 35.0391 30 34.5304 30 34V20ZM32 46C31.4067 46 30.8266 45.8241 30.3333 45.4944C29.84 45.1648 29.4554 44.6962 29.2284 44.148C29.0013 43.5999 28.9419 42.9967 29.0577 42.4147C29.1734 41.8328 29.4591 41.2982 29.8787 40.8787C30.2982 40.4591 30.8328 40.1734 31.4147 40.0576C31.9967 39.9419 32.5999 40.0013 33.1481 40.2284C33.6962 40.4554 34.1648 40.8399 34.4944 41.3333C34.8241 41.8266 35 42.4067 35 43C35 43.7957 34.6839 44.5587 34.1213 45.1213C33.5587 45.6839 32.7957 46 32 46Z" fill="#EFC327"/>
@@ -809,7 +808,7 @@ onMounted(async () => {
                     </v-card-actions>
         </v-card>
 
-        <v-card v-if="mobileFilter" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[10000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-between !tw-items-center !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px] sm:!tw-p-[20px]">
+        <v-card v-if="mobileFilter" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[2000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-between !tw-items-center !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px] sm:!tw-p-[20px]">
                 <section class="tw-w-full">
                     <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-4">
                         <span class="tw-text-2xl">Фильтр</span>

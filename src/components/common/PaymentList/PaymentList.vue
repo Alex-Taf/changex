@@ -1,42 +1,31 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { formatter } from '@/utils' 
-import VueDatePicker from '@vuepic/vue-datepicker'
-import '@vuepic/vue-datepicker/dist/main.css'
+import { onMounted, reactive, ref, watchEffect } from 'vue'
+import { debounce } from 'vue-debounce'
+import Datepicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 import { usePaymentsStore } from '@/stores/payments';
+import { useCardsStore } from '@/stores/cards';
 import { storeToRefs } from 'pinia';
 import RenderOn from '@/components/utils/RenderOn.vue';
 import Stars from '@/components/icons/Stars.vue';
+import { datetimeToTimestamp } from '@/utils';
 
 const paymentsStore = usePaymentsStore()
 const { paymentsItemsAll, lastPage } = storeToRefs(paymentsStore)
 
+const cardsStore = useCardsStore()
+const { itemsAll } = storeToRefs(cardsStore)
+
 const searchModel = ref('')
 const searchQuery = ref('')
 
-const dialog = ref(false)
-const dialogConfirm = ref(false)
-const date = ref(new Date())
+const cardSearchModel = ref('')
+const cardSearchQuery = ref('')
+
+const date = ref()
 const page = ref(1)
 
 const mobileFilter = ref(false)
-
-// function switchToConfirm() {
-//     dialog.value = false
-//     dialogConfirm.value = true
-// }
-
-// function openDialog() {
-//     dialog.value = true
-// }
-
-// function closeDialog() {
-//     dialog.value = false
-// }
-
-// function closeConfirmDialog() {
-//     dialogConfirm.value = false
-// }
 
 const headers = ref([
     {
@@ -71,9 +60,143 @@ const headers = ref([
     }
 ])
 
+const statuses = reactive({
+    select: undefined,
+    items: [
+        {
+            value: 'cancelled',
+            name: 'Отменённые'
+        },
+        {
+            value: 'dispute',
+            name: 'Диспуты'
+        },
+        {
+            value: 'done',
+            name: 'Завершённые'
+        },
+        {
+            value: 'dispute_closed',
+            name: 'Завершённые диспуты'
+        }
+    ]
+})
+
+function clearStatuses() {
+    statuses.select = undefined
+    fetchData()
+}
+
+const cards = reactive({
+    selected: undefined,
+    items: []
+})
+
+function fetchCardsToRef() {
+    if (cards.items.length === 0) {
+        cardsStore.fetchCards({}).then(() => {
+            cards.items = itemsAll.value.map((cardItem) => {
+                return {
+                    type: cardItem.card.type,
+                    num: cardItem.card.num
+                }
+            })
+        })
+    }
+}
+
+function searchCardValue(queryText: string) {
+    console.log(cardSearchModel.value)
+    cardSearchQuery.value = queryText
+        cardsStore.fetchCards({ search: cardSearchQuery.value }).then(() => {
+            cards.items = itemsAll.value.map((cardItem) => {
+                return {
+                    uid: cardItem.id,
+                    type: cardItem.card.type,
+                    num: cardItem.card.num
+                }
+            })
+        })
+}
+
+function setSelectedCard(value) {
+    cards.selected = value
+    fetchData()
+}
+
+function clearAutocomplete() {
+    cards.selected = undefined
+    fetchData()
+}
+
+function fetchData() {
+    paymentsStore.fetchPayments({
+        search: searchQuery.value,
+        page: page.value,
+        countPerPage: 10,
+        sort: sort.value,
+        filter: {
+            fromTimestamp: datetimeToTimestamp(date?.value[0]),
+            toTimestamp: datetimeToTimestamp(date?.value[1]),
+            cardUID: cards.selected?.uid,
+            status: statuses.select
+        }
+    })
+}
+
+const sort = reactive({
+    value: '',
+    name: 'Не сортировать'
+})
+
+const sortOptions = ref([
+    {
+        value: '',
+        name: 'Не сортировать'
+    },
+    {
+        value: 'paymentId',
+        name: 'ID'
+    },
+    {
+        value: 'timestamp',
+        name: 'Времени'
+    },
+    {
+        value: 'amount',
+        name: 'Сумме'
+    },
+    {
+        value: 'withdrawalAmount',
+        name: 'Списано'
+    },
+    {
+        value: 'card',
+        name: 'Карте'
+    },
+    {
+        value: 'status',
+        name: 'Статусу'
+    }
+])
+
+function setSort(sortOption: Record<string, unknown>) {
+    sort.value = sortOption.value
+    sort.name = sortOption.name
+    fetchData()
+}
+
 function searchValue(queryText: string) {
     searchQuery.value = queryText
-    paymentsStore.fetchPayments({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+    fetchData()
+}
+
+function reset() {
+    searchModel.value = ''
+    searchQuery.value = ''
+    searchCardValue.value = ''
+    cards.selected = undefined
+    statuses.select = undefined
 }
 
 function applyMobileFilter() {
@@ -91,36 +214,42 @@ function changePage(newPage: string, isActive: boolean) {
     }
 
     page.value = Number(newPage)
-    paymentsStore.fetchPayments({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+    fetchData()
 }
 
 function decPage() {
     if (page.value !== 1) {
         page.value--
-        paymentsStore.fetchPayments({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+        fetchData()
     }
 }
 
 function incPage() {
     if (page.value !== lastPage.value) {
         page.value++
-        paymentsStore.fetchPayments({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+        fetchData()
     }
 }
 
 function loadMore() {
     if (page.value < lastPage.value) {
         page.value++
-        paymentsStore.loadMorePayments({ page: page.value, countPerPage: 10 })
+        paymentsStore.loadMorePayments({
+            search: searchQuery.value,
+            page: page.value,
+            countPerPage: 10,
+            sort: sort.value,
+            filter: {
+                cardUID: cards.selected?.uid,
+                status: statuses.select
+            }
+        })
     }
 }
 
 onMounted(() => {
-    const startDate = new Date()
-    const endDate = new Date(new Date().setDate(startDate.getDate() + 7))
-    date.value = [startDate, endDate]
-
-    paymentsStore.fetchPayments({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+    date.value = ['', ''] // Datepicker init
+    fetchData()
 })
 </script>
 
@@ -131,25 +260,60 @@ onMounted(() => {
                 <section class="tw-w-full tw-flex tw-items-center tw-gap-x-4">
                     <v-responsive class="mx-auto" min-width="92" max-width="462">
                         <v-text-field
+                            v-model="searchModel"
                             variant="outlined"
                             label="Поиск по ID"
                             append-inner-icon="mdi mdi-magnify"
                             single-line
+                            @update:model-value="debounce((val: any) => searchValue(val as string), 1000)(searchModel)"
                         ></v-text-field>
                     </v-responsive>
                     <v-responsive class="mx-auto -tw-mt-5" min-width="92" max-width="462">
-                        <!-- <v-select label="Все банки" variant="outlined"></v-select> -->
-                        <VueDatePicker
+                        <Datepicker
                             v-model="date"
                             input-class-name="tw-h-[56px] !tw-rounded-xl !tw-border-gray-400 !tw-w-full"
+                            :teleport="true"
+                            @internal-model-change="fetchData"
+                            @cleared="date = ['', '']"
                             range
-                        ></VueDatePicker>
+                        />
                     </v-responsive>
                     <v-responsive class="mx-auto" min-width="92" max-width="462">
-                        <v-select label="Все карты" variant="outlined"></v-select>
+                        <v-autocomplete
+                            v-model="cards.selected"
+                            label="Все карты"
+                            variant="outlined"
+                            item-title="num"
+                            no-filter
+                            return-object
+                            clearable
+                            :items="cards.items"
+                            @update:search="(value) => debounce((val: any) => searchCardValue(val as string), 1000)(value)"
+                            @update:model-value="fetchData"
+                            @click:clear="clearAutocomplete"
+                        >
+                            <!-- <template v-slot:item="{ item, props }">
+                                <v-list-item v-bind="props">
+                                    <div class="tw-flex tw-items-center">
+                                        <img :src="`/payment/${item.value.type}.png`" :alt="item.value.type"/>
+                                        <span class="tw-ml-2">**** **** **** {{ item.value.num }}</span>
+                                    </div>
+                                </v-list-item>
+                            </template> -->
+                        </v-autocomplete>
                     </v-responsive>
                     <v-responsive class="mx-auto" min-width="92" max-width="462">
-                        <v-select label="Все статусы" variant="outlined"></v-select>
+                        <v-select
+                            v-model="statuses.select"
+                            :items="statuses.items"
+                            label="Все статусы"
+                            variant="outlined"
+                            item-title="name"
+                            item-value="value"
+                            clearable
+                            @click:clear="clearStatuses"
+                            @update:model-value="fetchData"
+                        ></v-select>
                     </v-responsive>
                     <v-responsive class="mx-auto -tw-mt-5" min-width="92" max-width="462">
                         <v-btn
@@ -157,6 +321,7 @@ onMounted(() => {
                             variant="outlined"
                             color="#04B6F5"
                             size="x-large"
+                            @click="reset"
                         >
                             <span class="tw-text-[#04B6F5] tw-text-[15px] tw-tracking-normal"
                                 >Сбросить фильтр</span
@@ -317,7 +482,23 @@ onMounted(() => {
 
     <RenderOn :px-min="320" :px-max="839">
         <section class="tw-flex tw-justify-between tw-w-full tw-mb-5">
-            <div></div>
+            <div>
+                <span class="tw-text-[13px] tw-select-none">
+                    Сортировать по <v-menu>
+                        <template v-slot:activator="{ props }">
+                            <span class="tw-text-[#04B6F5]" v-bind="props">{{ sort.name }}</span>
+                        </template>
+
+                        <v-list>
+                            <template v-for="option in sortOptions" :key="option">
+                                <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="setSort(option)">
+                                    <v-list-item-title><span class="tw-select-none">{{ option.name }}</span></v-list-item-title>
+                                </v-list-item>
+                            </template>
+                        </v-list>
+                    </v-menu>
+                </span>
+            </div>
             <div class="tw-flex tw-items-center tw-cursor-pointer" @click="mobileFilter = !mobileFilter">
                 <span class="tw-text-[13px] tw-text-[#04B6F5] tw-select-none">Фильтр</span>
                 <Filter />
@@ -392,7 +573,7 @@ onMounted(() => {
                 <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
             </v-btn>
 
-            <v-card v-if="mobileFilter" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[10000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-center !tw-items-center !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px] sm:!tw-p-[20px]">
+            <v-card v-if="mobileFilter" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[2000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-items-center !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px] sm:!tw-p-[20px]">
                 <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-4">
                     <span class="tw-text-2xl">Фильтр</span>
                     <span class="tw-text-[13px] tw-text-[#677483] tw-select-none tw-cursor-pointer" @click="reset">Очистить фильтр</span>
@@ -402,25 +583,48 @@ onMounted(() => {
                         v-model="searchModel"
                         class="tw-w-full"
                         variant="outlined"
-                        label="Поиск"
+                        label="Поиск по ID"
                         append-inner-icon="mdi mdi-magnify"
                         single-line
                         @update:model-value="debounce((val: any) => searchValue(val as string), 1000)(searchModel)"
                     ></v-text-field>
                 </div>
-                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                    <v-select
-                        v-model="banks.select"
-                        :items="banks.items"
-                        label="Все банки"
-                        class="tw-w-full"
-                        variant="outlined"
-                        item-title="name"
-                        item-value="value"
-                        @update:model-value="cardsStore.fetchCards({ search: searchQuery, page, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })"
-                    ></v-select>
+                <div class="tw-flex tw-flex-col tw-items-start tw-w-full tw-mb-5">
+                    <Datepicker
+                        v-model="date"
+                        input-class-name="tw-h-[56px] !tw-rounded-xl !tw-border-gray-400 !tw-w-full"
+                        :teleport="true"
+                        @internal-model-change="fetchData"
+                        @cleared="date = ['', '']"
+                        range
+                    />
                 </div>
                 <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <v-autocomplete
+                        v-model="cards.selected"
+                        label="Все карты"
+                        class="tw-w-full"
+                        variant="outlined"
+                        item-title="num"
+                        no-filter
+                        return-object
+                        clearable
+                        :items="cards.items"
+                        @update:search="(value) => debounce((val: any) => searchCardValue(val as string), 1000)(value)"
+                        @update:model-value="fetchData"
+                        @click:clear="clearAutocomplete"
+                    >
+                            <!-- <template v-slot:item="{ item, props }">
+                                <v-list-item v-bind="props">
+                                    <div class="tw-flex tw-items-center">
+                                        <img :src="`/payment/${item.value.type}.png`" :alt="item.value.type"/>
+                                        <span class="tw-ml-2">**** **** **** {{ item.value.num }}</span>
+                                    </div>
+                                </v-list-item>
+                            </template> -->
+                    </v-autocomplete>
+                </div>
+                <div class="tw-w-full">
                     <v-select
                         v-model="statuses.select"
                         :items="statuses.items"
@@ -429,10 +633,13 @@ onMounted(() => {
                         variant="outlined"
                         item-title="name"
                         item-value="value"
-                        @update:model-value="cardsStore.fetchCards({ search: searchQuery, page, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })"
+                        clearable
+                        :open="true"
+                        @click:clear="clearStatuses"
+                        @update:model-value="fetchData"
                     ></v-select>
                 </div>
-                <v-card-actions>
+                <v-card-actions class="tw-absolute tw-bottom-1">
                     <section class="tw-flex tw-flex-col tw-gap-y-4">
                         <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="applyMobileFilter">
                             <span class="tw-text-white tw-text-[15px] !tw-normal-case">Применить</span>
