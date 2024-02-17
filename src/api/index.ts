@@ -279,6 +279,23 @@ export const getDisputes = async (options: TFilterPaginationOptions) => {
     }
 }
 
+export const getDeviceId = async (id: string) => {
+    try {
+        return await $authHost.post(`/devices/${id}/info`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/devices/${id}/info`, {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
 export const getDevices = async (options: TFilterPaginationOptions) => {
     try {
         return await $authHost.post('/devices/list', { ...options })
@@ -288,6 +305,40 @@ export const getDevices = async (options: TFilterPaginationOptions) => {
                 const updateRes = await _refreshToken()
                 if (updateRes?.status === 200) {
                     return await $authHost.post('/devices/list', { ...options })
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const editDevice = async (id: string, onSaveOptions: Record<string, unknown>) => {
+    try {
+        return await $authHost.post(`/devices/${id}/rename`, { ...onSaveOptions })
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/devices/${id}/rename`, { ...onSaveOptions })
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const deleteDevice = async (id: string) => {
+    try {
+        return await $authHost.post(`/devices/${id}/remove`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/devices/${uid}/remove`, {})
                 }
             } else {
                 return

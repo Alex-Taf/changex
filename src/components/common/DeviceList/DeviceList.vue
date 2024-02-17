@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import QrcodeVue, { Level, RenderAs } from 'qrcode.vue'
 import { useDevicesStore } from '@/stores/devices'
 import { storeToRefs } from 'pinia'
@@ -8,6 +8,8 @@ import RenderOn from '@/components/utils/RenderOn.vue'
 import { onMounted } from 'vue'
 
 const dialog = ref(false)
+const editDialog = ref(false)
+
 // const qrValue = ref('https://example.com')
 const level = ref<Level>('H')
 const renderAs = ref<RenderAs>('svg')
@@ -21,6 +23,24 @@ const { deviceItemsAll, qr, lastPage } = storeToRefs(devicesStore)
 function switchToConfirm() {
     dialog.value = false
     dialogConfirm.value = true
+}
+
+const editDevice = reactive({
+    id: '',
+    name: ''
+})
+
+async function openEditDialog(deviceId: string) {
+    editDialog.value = true
+
+    const device = await devicesStore.fetchDeviceById(deviceId)
+
+    editDevice.id = device.deviceId
+    editDevice.name = device.name
+}
+
+function submitEditDevice() {
+    devicesStore.saveEditDevice(editDevice)
 }
 
 function openDialog() {
@@ -203,10 +223,10 @@ onMounted(() => {
                         </template>
 
                         <v-list>
-                            <v-list-item>
+                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="openEditDialog(item.id)">
                                 <v-list-item-title>Редактировать</v-list-item-title>
                             </v-list-item>
-                            <v-list-item>
+                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="accountsStore.removeAccount(item.id)">
                                 <v-list-item-title>Удалить</v-list-item-title>
                             </v-list-item>
                         </v-list>
@@ -293,6 +313,31 @@ onMounted(() => {
             <Download /> <span class="tw-text-[15px] tw-text-[#04B6F5] tw-select-none">Скачать APK приложение</span>
         </div>
       </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="editDialog" width="auto">
+            <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl sm:!tw-p-[28px] md:!tw-p-[48px] min-lg:!tw-p-[48px]">
+                <span class="tw-text-2xl tw-mb-[14px]">Редактировать устройство</span>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <span class="tw-text-[13px] tw-text-[#677483]">Название</span>
+                        <v-text-field
+                            v-model="editDevice.name"
+                            class="tw-w-full"
+                            label="Название устройства"
+                            variant="outlined"
+                        ></v-text-field>
+                    </div>
+                <v-card-actions>
+                    <section class="tw-flex tw-flex-col tw-gap-y-4">
+                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="submitEditDevice">
+                            <span class="tw-text-white tw-text-[15px] !tw-normal-case">Сохранить</span>
+                        </v-btn>
+                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="editDialog = !editDialog">
+                            Отмена
+                        </v-btn>
+                    </section>
+                </v-card-actions>
+            </v-card>
     </v-dialog>
 
     <RenderOn :px="840">
