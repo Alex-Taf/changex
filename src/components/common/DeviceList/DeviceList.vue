@@ -8,7 +8,7 @@ import RenderOn from '@/components/utils/RenderOn.vue'
 import { onMounted } from 'vue'
 
 const dialog = ref(false)
-const qrValue = ref('https://example.com')
+// const qrValue = ref('https://example.com')
 const level = ref<Level>('H')
 const renderAs = ref<RenderAs>('svg')
 
@@ -16,7 +16,7 @@ const searchModel = ref('')
 const searchQuery = ref('')
 
 const devicesStore = useDevicesStore()
-const { deviceItemsAll, lastPage } = storeToRefs(devicesStore)
+const { deviceItemsAll, qr, lastPage } = storeToRefs(devicesStore)
 
 function switchToConfirm() {
     dialog.value = false
@@ -25,6 +25,7 @@ function switchToConfirm() {
 
 function openDialog() {
     dialog.value = true
+    devicesStore.loadQR()
 }
 
 function closeDialog() {
@@ -60,33 +61,6 @@ const headers = ref([
         title: '',
         sortable: false,
         key: 'actions'
-    }
-])
-
-const itemsAll = ref([
-    {
-        id: 1256,
-        title: "Моё устройство 1",
-        device: "Iphone SE",
-        comment: "Lorem ipsum dolor sit amet"
-    },
-    {
-        id: 1257,
-        title: "Моё устройство 2",
-        device: "Iphone XR",
-        comment: "Lorem ipsum dolor sit amet"
-    },
-    {
-        id: 1258,
-        title: "Моё устройство 3",
-        device: "Realme Pro 6",
-        comment: "Lorem ipsum dolor sit amet"
-    },
-    {
-        id: 1259,
-        title: "Моё устройство 4",
-        device: "Google Pixel",
-        comment: "Lorem ipsum dolor sit amet"
     }
 ])
 
@@ -149,7 +123,7 @@ onMounted(() => {
                         class="!-tw-mt-5 !tw-rounded-xl !tw-w-[245px] !tw-h-[52px] hover:!tw-shadow-[0px_10px_18px_2px_rgba(4,182,245,0.2)]"
                         color="#04B6F5"
                         variant="elevated"
-                        @click="dialog = !dialog"
+                        @click="openDialog"
                     >
                             <template v-slot:prepend>
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -162,8 +136,8 @@ onMounted(() => {
                 </section>
             </section>
         </v-card>
-        <v-card v-if="itemsAll.length > 0" class="!tw-rounded-2xl tw-mb-6">
-            <v-data-table :headers="headers" :items="itemsAll" :footer="false">
+        <v-card v-if="deviceItemsAll.length > 0" class="!tw-rounded-2xl tw-mb-6">
+            <v-data-table :headers="headers" :items="deviceItemsAll" :footer="false">
                 <template v-slot:headers="{ columns, toggleSort, isSorted }">
                     <tr>
                         <template v-for="column in columns" :key="column.key">
@@ -244,8 +218,8 @@ onMounted(() => {
     </RenderOn>
 
     <RenderOn :px-min="320" :px-max="839">
-        <section v-if="itemsAll.length > 0" class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-p-2 tw-h-[420px]">
-                <template v-for="item in itemsAll" :key="item">
+        <section v-if="deviceItemsAll.length > 0" class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-p-2 tw-h-[420px]">
+                <template v-for="item in deviceItemsAll" :key="item">
                     <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-p-4 tw-rounded-2xl">
                         <div class="tw-flex tw-justify-between tw-mb-2">
                             <div class="tw-flex tw-flex-col tw-gap-x-2">
@@ -275,15 +249,16 @@ onMounted(() => {
                                 </v-menu>
                         </div>
                         <div class="tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed">
-                            <span class="tw-text-[13px] tw-min-w-[300px]">{{ item.comment }}</span>
+                            <span v-if="item.comment !== ''" class="tw-text-[13px] tw-min-w-[300px]">{{ item.comment }}</span>
+                            <span v-else class="tw-text-[#8f8f8f] tw-text-[13px] tw-min-w-[300px]">Комментарий отсутствует</span>
                         </div>
                     </div>
                 </template>
             </section>
-            <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="loadMore">
+            <v-btn v-if="deviceItemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="loadMore">
                 <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
             </v-btn>
-            <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="elevated" color="#04B6F5" @click="openDialog">
+            <v-btn v-if="deviceItemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="elevated" color="#04B6F5" @click="openDialog">
                 <template v-slot:prepend>
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M3.125 10H16.875" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
@@ -294,7 +269,7 @@ onMounted(() => {
             </v-btn>
     </RenderOn>
 
-    <section v-if="itemsAll.length === 0" class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-h-[calc(100vh-400px)]">
+    <section v-if="deviceItemsAll.length === 0" class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-h-[calc(100vh-400px)]">
         <div class="tw-text-center">
             <Stars /><br>
             <span class="tw-text-lg tw-text-[#677483] tw-font-semibold">Устройства отсутствуют</span>
@@ -311,7 +286,7 @@ onMounted(() => {
                     tw-mb-[24px] tw-w-[352px] tw-h-[352px] tw-text-center tw-border tw-border-solid tw-border-[#AEB7C1]
                     tw-rounded-xl"
         >
-            <qrcode-vue :value="value" :level="level" :size="184" :render-as="renderAs" />
+            <qrcode-vue :value="qr" :level="level" :size="184" :render-as="renderAs" />
             <span class="tw-text-[15px] tw-text-[#2B3A4C]">Отсканируйте в приложении<br> данный QR-Код</span>
         </div>
         <div class="tw-flex tw-items-center tw-gap-x-2 tw-cursor-pointer">
@@ -322,7 +297,7 @@ onMounted(() => {
 
     <RenderOn :px="840">
         <v-pagination
-            v-if="itemsAll.length > 0"
+            v-if="deviceItemsAll.length > 0"
             class="tw-self-start"
             v-model="page"
             :length="lastPage"

@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
-import { getDevices } from '@/api'
+import { getDevices, getTempToken } from '@/api'
 import type { TFilterPaginationOptions } from '@/types'
 
 export const useDevicesStore = defineStore('devices', {
   state: () => ({
     deviceList: [] as any,
+    qr: '',
     page: 1,
     lastPage: 1,
     offset: 1,
@@ -15,8 +16,8 @@ export const useDevicesStore = defineStore('devices', {
       return state.deviceList.map((item: Record<string, unknown>) => {
         return {
             id: item.deviceId,
-            title: item.title,
-            device: item.name,
+            title: item.name,
+            device: item.model,
             status: item.status,
             comment: item.comment
         }
@@ -41,6 +42,10 @@ export const useDevicesStore = defineStore('devices', {
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
+    },
+    async loadQR() {
+      const res = getTempToken()
+      this.qr = res?.qr
     }
   }
 })

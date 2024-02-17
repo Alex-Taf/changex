@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import QrcodeVue, { Level, RenderAs } from 'qrcode.vue'
 import { useAccountStore } from '@/stores/accounts'
 import { storeToRefs } from 'pinia'
@@ -9,6 +9,7 @@ import RenderOn from '@/components/utils/RenderOn.vue'
 import { onMounted } from 'vue'
 
 const dialog = ref(false)
+const editDialog = ref(false)
 
 const searchModel = ref('')
 const searchQuery = ref('')
@@ -24,6 +25,26 @@ function switchToConfirm() {
 function openDialog() {
     dialog.value = true
     accountsStore.getConnectCode()
+}
+
+const editAccount = reactive({
+    uid: '',
+    username: '',
+    comment: ''
+})
+
+async function openEditDialog(accoundUID: string) {
+    editDialog.value = true
+
+    const account = await accountsStore.fetchAccountByUID(accoundUID)
+
+    editAccount.uid = account.uid
+    editAccount.username = account.username
+    editAccount.comment = account.comment
+}
+
+function submitEditAccount() {
+    accountsStore.saveEditAccount(editAccount)
 }
 
 function closeDialog() {
@@ -201,10 +222,10 @@ onMounted(() => {
                         </template>
 
                         <v-list>
-                            <v-list-item>
+                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="openEditDialog(item.id)">
                                 <v-list-item-title>Редактировать</v-list-item-title>
                             </v-list-item>
-                            <v-list-item>
+                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="accountsStore.removeAccount(item.id)">
                                 <v-list-item-title>Удалить</v-list-item-title>
                             </v-list-item>
                         </v-list>
@@ -237,10 +258,10 @@ onMounted(() => {
                                     </template>
 
                                     <v-list>
-                                        <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200">
+                                        <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="openEditDialog(item.id)">
                                             <v-list-item-title><span class="tw-select-none">Редактировать</span></v-list-item-title>
                                         </v-list-item>
-                                        <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200">
+                                        <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="accountsStore.removeAccount(item.id)">
                                             <v-list-item-title><span class="tw-select-none">Удалить</span></v-list-item-title>
                                         </v-list-item>
                                     </v-list>
@@ -293,6 +314,40 @@ onMounted(() => {
             <span class="tw-tracking-normal tw-normal-case">Отмена</span>
         </v-btn>
       </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="editDialog" width="auto">
+            <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl sm:!tw-p-[28px] md:!tw-p-[48px] min-lg:!tw-p-[48px]">
+                <span class="tw-text-2xl tw-mb-[14px]">Редактировать аккаунт</span>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
+                        <v-text-field
+                            v-model="editAccount.username"
+                            class="tw-w-full"
+                            label="Имя аккаунта"
+                            variant="outlined"
+                        ></v-text-field>
+                    </div>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
+                        <v-textarea
+                            v-model="editAccount.comment"
+                            class="tw-w-full"
+                            label="Комментарий к подключению"
+                            variant="outlined"
+                        ></v-textarea>
+                    </div>
+                <v-card-actions>
+                    <section class="tw-flex tw-flex-col tw-gap-y-4">
+                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="submitEditAccount">
+                            <span class="tw-text-white tw-text-[15px] !tw-normal-case">Сохранить</span>
+                        </v-btn>
+                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="editDialog = !editDialog">
+                            Отмена
+                        </v-btn>
+                    </section>
+                </v-card-actions>
+            </v-card>
     </v-dialog>
 
     <RenderOn :px="840">

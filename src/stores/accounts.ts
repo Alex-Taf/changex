@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getAccounts, getAccountCode } from '@/api'
+import { getAccounts, getAccountCode, getAccountUID, editAccount, deleteAccount } from '@/api'
 import type { TFilterPaginationOptions } from '@/types'
 import { timestampToDatetime } from '@/utils'
 
@@ -16,7 +16,7 @@ export const useAccountStore = defineStore('accounts', {
     itemsAll: (state) => {
       return state.accountsList.map((item: Record<string, unknown>) => {
         return {
-            id: item.tgId,
+            id: item.uid,
             account: item.username,
             date: timestampToDatetime(item.timestamp),
             comment: item.comment
@@ -25,6 +25,10 @@ export const useAccountStore = defineStore('accounts', {
     }
   },
   actions: {
+    async fetchAccountByUID(uid: string) {
+      const res = await getAccountUID(uid)
+      return res?.data.account
+    },
     async fetchAccounts(options: TFilterPaginationOptions) {
       const res = await getAccounts(options)
       this.accountsList = res?.data.list
@@ -48,6 +52,19 @@ export const useAccountStore = defineStore('accounts', {
             const res = await getAccountCode()
             this.code = res?.data.code
         }
-    }
+    },
+    async saveEditAccount(edited: Record<string, unknown>) {
+      const uid = edited.uid as string
+      const editedOptions = {
+        username: edited.username,
+        comment: edited.comment
+      }
+
+      await editAccount(uid, editedOptions)
+    },
+    async removeAccount(uid: string) {
+      this.accountsList = this.accountsList.filter((account) => account.uid !== uid)
+      await deleteAccount(uid)
+    },
   }
 })

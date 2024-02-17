@@ -58,6 +58,23 @@ export const logout = async () => {
     }
 }
 
+export const getTempToken = async () => {
+    try {
+        return await $authHost.post('/auth/getTempToken', {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post('/auth/getTempToken', {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
 export const getUserInfo = async () => {
     try {
         return await $authHost.post('/me', {})
@@ -279,6 +296,24 @@ export const getDevices = async (options: TFilterPaginationOptions) => {
     }
 }
 
+export const getAccountUID = async (uid: string) => {
+    try {
+        return await $authHost.post(`/tg/${uid}/info`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/tg/${uid}/info`, {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+
 export const getAccounts = async (options: TFilterPaginationOptions) => {
     try {
         return await $authHost.post('/tg/list', { ...options })
@@ -305,6 +340,40 @@ export const getAccountCode = async () => {
                 const updateRes = await _refreshToken()
                 if (updateRes?.status === 200) {
                     return await $authHost.post('/tg/generateCode', {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const editAccount = async (uid: string, onSaveAccount: Record<string, unknown>) => {
+    try {
+        return await $authHost.post(`/tg/${uid}/edit`, { ...onSaveAccount })
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/tg/${uid}/edit`, { ...onSaveAccount })
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const deleteAccount = async (uid: string) => {
+    try {
+        return await $authHost.post(`/tg/${uid}/remove`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/tg/${uid}/remove`, {})
                 }
             } else {
                 return
