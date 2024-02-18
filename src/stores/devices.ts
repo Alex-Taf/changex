@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { deleteDevice, editDevice, getDeviceId, getDevices, getTempToken } from '@/api'
+import { deleteDevice, editDeviceName, editDeviceComment, getDeviceId, getDevices, getTempToken } from '@/api'
 import type { TFilterPaginationOptions } from '@/types'
 
 export const useDevicesStore = defineStore('devices', {
@@ -53,11 +53,23 @@ export const useDevicesStore = defineStore('devices', {
     },
     async saveEditDevice(edited: Record<string, unknown>) {
       const id = edited.id as string
-      const editedOptions = {
+
+      const idx = this.deviceList.findIndex((device) => device.deviceId === id)
+      
+      const editedOptionsRename = {
         name: edited.name
       }
 
-      await editDevice(id, editedOptions)
+      const editedOptionsComment = {
+        comment: edited.comment
+      }
+
+      await editDeviceName(id, editedOptionsRename)
+      await editDeviceComment(id, editedOptionsComment)
+
+      const newDevice = await getDeviceId(id)
+      
+      this.deviceList[idx] = newDevice?.data.device
     },
     async removeDevice(id: string) {
       this.deviceList = this.deviceList.filter((device) => device.deviceId !== id)

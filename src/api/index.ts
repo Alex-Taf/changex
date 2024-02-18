@@ -44,7 +44,7 @@ export const login = async (token: string) => {
     const res = await $host.post('/auth/login', { token })
     _writeLocalUserInfo(res.data)
 
-    setCookie('changexlogin', 'true', { secure: true })
+    setCookie('changexlogin', 'true')
 
     return res
 }
@@ -313,7 +313,7 @@ export const getDevices = async (options: TFilterPaginationOptions) => {
     }
 }
 
-export const editDevice = async (id: string, onSaveOptions: Record<string, unknown>) => {
+export const editDeviceName = async (id: string, onSaveOptions: Record<string, unknown>) => {
     try {
         return await $authHost.post(`/devices/${id}/rename`, { ...onSaveOptions })
     } catch (error) {
@@ -322,6 +322,23 @@ export const editDevice = async (id: string, onSaveOptions: Record<string, unkno
                 const updateRes = await _refreshToken()
                 if (updateRes?.status === 200) {
                     return await $authHost.post(`/devices/${id}/rename`, { ...onSaveOptions })
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const editDeviceComment = async (id: string, onSaveOptions: Record<string, unknown>) => {
+    try {
+        return await $authHost.post(`/devices/${id}/edit`, { ...onSaveOptions })
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/devices/${id}/edit`, { ...onSaveOptions })
                 }
             } else {
                 return

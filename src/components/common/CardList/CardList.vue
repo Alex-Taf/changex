@@ -294,7 +294,14 @@ function closeMobileFilter() {
 onMounted(async () => {
     await cardsStore.fetchBanks()
     await deviceStore.fetchDevices({ page: page.value, countPerPage: 10 })
-    newCard.device.items = deviceItemsAll.value
+    
+    newCard.device.items = deviceItemsAll.value.map((device) => {
+        return {
+            value: device.id,
+            name: device.title
+        }
+    })
+
     await cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10 })
 })
 </script>

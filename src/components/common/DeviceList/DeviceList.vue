@@ -27,7 +27,8 @@ function switchToConfirm() {
 
 const editDevice = reactive({
     id: '',
-    name: ''
+    name: '',
+    comment: ''
 })
 
 async function openEditDialog(deviceId: string) {
@@ -37,10 +38,12 @@ async function openEditDialog(deviceId: string) {
 
     editDevice.id = device.deviceId
     editDevice.name = device.name
+    editDevice.comment = device.comment
 }
 
 function submitEditDevice() {
     devicesStore.saveEditDevice(editDevice)
+    editDialog.value = false
 }
 
 function openDialog() {
@@ -326,6 +329,15 @@ onMounted(() => {
                             label="Название устройства"
                             variant="outlined"
                         ></v-text-field>
+                    </div>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
+                        <v-textarea
+                            v-model="editDevice.comment"
+                            class="tw-w-full"
+                            label="Комментарий к устройству"
+                            variant="outlined"
+                        ></v-textarea>
                     </div>
                 <v-card-actions>
                     <section class="tw-flex tw-flex-col tw-gap-y-4">

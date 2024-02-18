@@ -17,7 +17,7 @@ export const useDeviceWidth: IUseDeviceWidth = () => ({
     between: (cw, pxMin, pxMax) => cw >= pxMin && cw <= pxMax
 })
 
-export const setCookie = (name: string, value: string, options: ICookieOptions) => {
+export const setCookie = (name: string, value: string, options?: ICookieOptions) => {
     options = {
         path: '/',
         ...options
