@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import QrcodeVue, { Level, RenderAs } from 'qrcode.vue'
+import { debounce } from 'vue-debounce'
+import QrcodeVue from 'qrcode.vue'
+import type { Level, RenderAs } from 'qrcode.vue'
 import { useDevicesStore } from '@/stores/devices'
 import { storeToRefs } from 'pinia'
 import Download from '../../icons/Download.vue'
@@ -19,11 +21,6 @@ const searchQuery = ref('')
 
 const devicesStore = useDevicesStore()
 const { deviceItemsAll, qr, lastPage } = storeToRefs(devicesStore)
-
-function switchToConfirm() {
-    dialog.value = false
-    dialogConfirm.value = true
-}
 
 const editDevice = reactive({
     id: '',
@@ -49,14 +46,6 @@ function submitEditDevice() {
 function openDialog() {
     dialog.value = true
     devicesStore.loadQR()
-}
-
-function closeDialog() {
-    dialog.value = false
-}
-
-function closeConfirmDialog() {
-    dialogConfirm.value = false
 }
 
 const headers = ref([
@@ -136,10 +125,12 @@ onMounted(() => {
                 <section class="tw-w-full tw-flex tw-items-center tw-gap-x-4">
                     <v-responsive class="mx-auto" min-width="92" max-width="1600">
                         <v-text-field
+                            v-model="searchModel"
                             variant="outlined"
                             label="Поиск по ID/Названию"
                             append-inner-icon="mdi mdi-magnify"
                             single-line
+                            @update:model-value="debounce((val: any) => searchValue(val as string), 1000)(searchModel)"
                         ></v-text-field>
                     </v-responsive>
                     <v-btn
