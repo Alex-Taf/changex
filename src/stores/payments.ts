@@ -8,6 +8,7 @@ export const usePaymentsStore = defineStore('payments', {
     paymentsList: [] as any,
     disputsList: [] as any,
     loading: true,
+    hasItems: true,
     page: 1,
     lastPage: 1,
     offset: 1,
@@ -68,6 +69,13 @@ export const usePaymentsStore = defineStore('payments', {
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
+
+      if (this.paymentsList.length === 0) {
+        this.hasItems = false
+      } else {
+        this.hasItems = true
+      }
+
       console.log(this.paymentsList)
     },
     async loadMorePayments(options: TFilterPaginationOptions) {
@@ -81,6 +89,12 @@ export const usePaymentsStore = defineStore('payments', {
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
+
+      if (this.paymentsList.length === 0) {
+        this.hasItems = false
+      } else {
+        this.hasItems = true
+      }
     },
     async fetchDisputs(options: TFilterPaginationOptions) {
       this.showLoading()
@@ -92,6 +106,12 @@ export const usePaymentsStore = defineStore('payments', {
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
+
+      if (this.disputsList.length === 0) {
+        this.hasItems = false
+      } else {
+        this.hasItems = true
+      }
       console.log(this.disputsList)
     },
     async loadMoreDisputs(options: TFilterPaginationOptions) {
@@ -105,12 +125,18 @@ export const usePaymentsStore = defineStore('payments', {
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
+
+      if (this.disputsList.length === 0) {
+        this.hasItems = false
+      } else {
+        this.hasItems = true
+      }
     },
     showLoading() {
       this.loading = true
     },
     hideLoading() {
-        this.loading = false
+      this.loading = false
     }
   }
 })

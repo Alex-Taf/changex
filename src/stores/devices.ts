@@ -7,6 +7,7 @@ export const useDevicesStore = defineStore('devices', {
     deviceList: [] as any,
     qr: '',
     loading: true,
+    hasItems: true,
     page: 1,
     lastPage: 1,
     offset: 1,
@@ -40,6 +41,13 @@ export const useDevicesStore = defineStore('devices', {
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
+
+      if (this.deviceList.length === 0) {
+        this.hasItems = false
+      } else {
+        this.hasItems = true
+      }
+
       console.log(this.deviceList)
     },
     async loadMoreDevices(options: TFilterPaginationOptions) {
@@ -53,6 +61,12 @@ export const useDevicesStore = defineStore('devices', {
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
+
+      if (this.deviceList.length === 0) {
+        this.hasItems = false
+      } else {
+        this.hasItems = true
+      }
     },
     async loadQR() {
       const res = getTempToken()

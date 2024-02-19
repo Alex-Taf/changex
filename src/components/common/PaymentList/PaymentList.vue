@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watchEffect } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { debounce } from 'vue-debounce'
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
@@ -11,7 +11,7 @@ import Stars from '@/components/icons/Stars.vue';
 import { datetimeToTimestamp } from '@/utils';
 
 const paymentsStore = usePaymentsStore()
-const { loading, paymentsItemsAll, lastPage } = storeToRefs(paymentsStore)
+const { hasItems, loading, paymentsItemsAll, lastPage } = storeToRefs(paymentsStore)
 
 const cardsStore = useCardsStore()
 const { itemsAll } = storeToRefs(cardsStore)
@@ -335,7 +335,7 @@ onMounted(() => {
                 </section>
             </section>
         </v-card>
-        <v-card class="!tw-rounded-2xl tw-mb-6">
+        <v-card v-if="hasItems" class="!tw-rounded-2xl tw-mb-6">
             <v-data-table :headers="headers" :items="paymentsItemsAll" :footer="false" :loading="loading">
                 <template v-slot:headers="{ columns, toggleSort, isSorted }">
                     <tr>

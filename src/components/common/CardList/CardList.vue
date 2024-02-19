@@ -12,7 +12,7 @@ import Filter from '@/components/icons/Filter.vue'
 
 const cardsStore = useCardsStore()
 const deviceStore = useDevicesStore()
-const { loading, itemsAll, lastPage } = storeToRefs(cardsStore)
+const { loading, hasItems, itemsAll, lastPage } = storeToRefs(cardsStore)
 const { deviceItemsAll } = storeToRefs(deviceStore)
 
 const newCardForm = ref<HTMLFormElement>(null)
@@ -394,7 +394,7 @@ onMounted(async () => {
     </RenderOn>
 
     <RenderOn :px="840">
-        <v-card class="!tw-rounded-2xl tw-mb-6">
+        <v-card v-if="hasItems" class="!tw-rounded-2xl tw-mb-6">
             <v-data-table :headers="headers" :items="itemsAll" :footer="false" :loading="loading">
                 <template v-slot:headers="{ columns, toggleSort, isSorted }">
                     <tr>

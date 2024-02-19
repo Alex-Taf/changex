@@ -20,7 +20,7 @@ const searchModel = ref('')
 const searchQuery = ref('')
 
 const devicesStore = useDevicesStore()
-const { loading, deviceItemsAll, qr, lastPage } = storeToRefs(devicesStore)
+const { loading, hasItems, deviceItemsAll, qr, lastPage } = storeToRefs(devicesStore)
 
 const editDevice = reactive({
     id: '',
@@ -158,7 +158,7 @@ onMounted(() => {
                 </section>
             </section>
         </v-card>
-        <v-card class="!tw-rounded-2xl tw-mb-6">
+        <v-card v-if="hasItems" class="!tw-rounded-2xl tw-mb-6">
             <v-data-table :headers="headers" :items="deviceItemsAll" :footer="false" :loading="loading">
                 <template v-slot:headers="{ columns, toggleSort, isSorted }">
                     <tr>

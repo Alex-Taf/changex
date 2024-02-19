@@ -9,7 +9,7 @@ import ArrowDownLeft from '../../icons/ArrowDownLeft.vue'
 import Stars from '../../icons/Stars.vue'
 
 const financesStore = useFinancesStore()
-const { loading, lastPage, itemsAll, itemsDeposit, itemsWithdrawal } = storeToRefs(financesStore)
+const { loading, lastPage, hasItems, itemsAll, itemsDeposit, itemsWithdrawal } = storeToRefs(financesStore)
 
 const tab = ref(null)
 const headers = ref([
@@ -81,7 +81,7 @@ onMounted(() => {
 
 <template>
   <RenderOn :px="840">
-    <v-card class="!tw-rounded-2xl tw-mb-6">
+    <v-card v-if="hasItems" class="!tw-rounded-2xl tw-mb-6">
         <v-tabs v-model="tab" bg-color="white" align-tabs="center">
         <v-tab value="one" color="blue" width="33.3%" class="!tw-normal-case !tw-tracking-normal">Все</v-tab>
         <v-tab value="two" color="blue" width="33.3%" class="!tw-normal-case !tw-tracking-normal">Пополнения</v-tab>

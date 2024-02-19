@@ -11,7 +11,7 @@ import Stars from '@/components/icons/Stars.vue';
 import { datetimeToTimestamp } from '@/utils';
 
 const paymentsStore = usePaymentsStore()
-const { loading, disputsItemsAll, lastPage } = storeToRefs(paymentsStore)
+const { loading, hasItems, disputsItemsAll, lastPage } = storeToRefs(paymentsStore)
 
 const cardsStore = useCardsStore()
 const { itemsAll } = storeToRefs(cardsStore)
@@ -335,7 +335,7 @@ onMounted(() => {
                 </section>
             </section>
         </v-card>
-        <v-card class="!tw-rounded-2xl tw-mb-6">
+        <v-card v-if="hasItems" class="!tw-rounded-2xl tw-mb-6">
             <v-data-table :headers="headers" :items="disputsItemsAll" :footer="false" :loading="loading">
                 <template v-slot:headers="{ columns, toggleSort, isSorted }">
                     <tr>
