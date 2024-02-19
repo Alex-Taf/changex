@@ -26,7 +26,7 @@ function tokenLogin() {
 }
 
 const validationRules = reactive({
-    required: (value: string) => !!value || 'Поле обязвательно для заполнения',
+    required: (value: string) => !!value || 'Поле обязательно для заполнения',
     wrongToken: (_value: string) => {
         console.log(serverResponseCode.value)
         if (serverResponseCode.value === 'wrong_token') {
@@ -39,7 +39,11 @@ const validationRules = reactive({
 </script>
 
 <template>
-    <section class="tw-flex tw-flex-col tw-justify-center tw-h-[calc(100vh-0px)] sm:tw-bg-white">
+    <section
+        tabindex="0"
+        class="tw-flex tw-flex-col tw-justify-center tw-h-[calc(100vh-0px)] sm:tw-bg-white"
+        @keydown.enter="tokenLogin"
+    >
         <RenderOn :px="1280">
             <div
                 class="tw-absolute tw-bg-radial-gradient tw-h-2/3 tw-w-1/2 -tw-bottom-[100px] -tw-left-[300px] -tw-z-10"
@@ -67,6 +71,7 @@ const validationRules = reactive({
                             variant="outlined"
                             single-line
                             :rules="[validationRules.required, validationRules.wrongToken]"
+                            @keydown.enter="tokenLogin"
                         ></v-text-field>
                     </v-responsive>
                     <v-responsive class="mx-auto" min-width="320" max-width="462" min-height="72" max-height="72">
