@@ -6,6 +6,7 @@ export const useDevicesStore = defineStore('devices', {
   state: () => ({
     deviceList: [] as any,
     qr: '',
+    loading: true,
     page: 1,
     lastPage: 1,
     offset: 1,
@@ -30,7 +31,10 @@ export const useDevicesStore = defineStore('devices', {
       return res?.data.device
     },
     async fetchDevices(options: TFilterPaginationOptions) {
+      this.showLoading()
+
       const res = await getDevices(options)
+      
       this.deviceList = res?.data.list
       this.page = res?.data.page
       this.offset = res?.data.offset
@@ -39,8 +43,11 @@ export const useDevicesStore = defineStore('devices', {
       console.log(this.deviceList)
     },
     async loadMoreDevices(options: TFilterPaginationOptions) {
+      this.showLoading()
+
       const res = await getDevices(options)
       const newListItems = res?.data.list
+      
       this.deviceList.push(...newListItems)
       this.page = res?.data.page
       this.offset = res?.data.offset
@@ -75,5 +82,11 @@ export const useDevicesStore = defineStore('devices', {
       this.deviceList = this.deviceList.filter((device) => device.deviceId !== id)
       await deleteDevice(id)
     },
+    showLoading() {
+      this.loading = true
+    },
+    hideLoading() {
+      this.loading = false
+    }
   }
 })

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import QrcodeVue, { Level, RenderAs } from 'qrcode.vue'
+import { debounce } from 'vue-debounce'
 import { useAccountStore } from '@/stores/accounts'
 import { storeToRefs } from 'pinia'
-import Download from '../../icons/Download.vue'
 import CopyIcon from '@/components/icons/CopyIcon.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import { onMounted } from 'vue'
@@ -15,12 +14,7 @@ const searchModel = ref('')
 const searchQuery = ref('')
 
 const accountsStore = useAccountStore()
-const { itemsAll, code, lastPage } = storeToRefs(accountsStore)
-
-function switchToConfirm() {
-    dialog.value = false
-    dialogConfirm.value = true
-}
+const { loading, hasItems, itemsAll, code, lastPage } = storeToRefs(accountsStore)
 
 function openDialog() {
     dialog.value = true
@@ -45,14 +39,6 @@ async function openEditDialog(accoundUID: string) {
 
 function submitEditAccount() {
     accountsStore.saveEditAccount(editAccount)
-}
-
-function closeDialog() {
-    dialog.value = false
-}
-
-function closeConfirmDialog() {
-    dialogConfirm.value = false
 }
 
 const headers = ref([
@@ -85,9 +71,15 @@ const headers = ref([
 
 const page = ref(1)
 
+function fetchData() {
+    accountsStore.fetchAccounts({ search: searchQuery.value, page: page.value, countPerPage: 10 }).then(() => {
+        accountsStore.hideLoading()
+    })
+}
+
 function searchValue(queryText: string) {
     searchQuery.value = queryText
-    accountsStore.fetchAccounts({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+    fetchData()
 }
 
 function changePage(newPage: string, isActive: boolean) {
@@ -96,32 +88,34 @@ function changePage(newPage: string, isActive: boolean) {
     }
 
     page.value = Number(newPage)
-    accountsStore.fetchAccounts({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+    fetchData()
 }
 
 function decPage() {
     if (page.value !== 1) {
         page.value--
-        accountsStore.fetchAccounts({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+        fetchData()
     }
 }
 
 function incPage() {
     if (page.value !== lastPage.value) {
         page.value++
-        accountsStore.fetchAccounts({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+        fetchData()
     }
 }
 
 function loadMore() {
     if (page.value < lastPage.value) {
         page.value++
-        accountsStore.loadMoreAccounts({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+        accountsStore.loadMoreAccounts({ search: searchQuery.value, page: page.value, countPerPage: 10 }).then(() => {
+            accountsStore.hideLoading()
+        })
     }
 }
 
 onMounted(() => {
-    accountsStore.fetchAccounts({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+    fetchData()
 })
 </script>
 
@@ -132,10 +126,12 @@ onMounted(() => {
                 <section class="tw-w-full tw-flex tw-items-center tw-gap-x-4">
                     <v-responsive class="mx-auto" min-width="92" max-width="1600">
                         <v-text-field
+                            v-model="searchModel"
                             variant="outlined"
                             label="Поиск по ID/Названию"
                             append-inner-icon="mdi mdi-magnify"
                             single-line
+                            @update:model-value="debounce((val: any) => searchValue(val as string), 1000)(searchModel)"
                         ></v-text-field>
                     </v-responsive>
                     <v-btn
@@ -155,8 +151,8 @@ onMounted(() => {
                 </section>
             </section>
         </v-card>
-        <v-card v-if="itemsAll.length > 0" class="!tw-rounded-2xl tw-mb-6">
-            <v-data-table :headers="headers" :items="itemsAll" :footer="false">
+        <v-card v-if="hasItems" class="!tw-rounded-2xl tw-mb-6">
+            <v-data-table :headers="headers" :items="itemsAll" :footer="false" :loading="loading">
                 <template v-slot:headers="{ columns, toggleSort, isSorted }">
                     <tr>
                         <template v-for="column in columns" :key="column.key">
@@ -231,6 +227,9 @@ onMounted(() => {
                         </v-list>
                     </v-menu>
                 </template>
+                <template v-slot:loading>
+                    <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
+                </template>
                 <template v-slot:bottom></template>
             </v-data-table>
         </v-card>
@@ -273,6 +272,12 @@ onMounted(() => {
                     </div>
                 </template>
             </section>
+            <div v-if="loading" class="tw-flex tw-justify-center tw-items-center tw-w-full tw-h-[326px]">
+                <v-progress-circular
+                    indeterminate
+                    color="#04B6F5"
+                ></v-progress-circular>
+            </div>
             <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="loadMore">
                 <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
             </v-btn>
@@ -303,7 +308,8 @@ onMounted(() => {
         <div class="tw-flex tw-flex-col tw-items-center tw-mb-5">
             <span class="tw-text-[15px] tw-text-[#677483]">Ваш код</span>
             <div class="tw-flex tw-items-center">
-                <span class="sm:tw-text-[10px] md:tw-text-lg min-lg:tw-text-lg tw-font-semibold">{{ code }}</span>
+                <span v-if="code !== ''" class="sm:tw-text-[10px] md:tw-text-lg min-lg:tw-text-lg tw-font-semibold">{{ code }}</span>
+                <v-skeleton-loader v-else type="text" width="450"></v-skeleton-loader>
                 <span class="tw-ml-2"><CopyIcon /></span>
             </div>
         </div>

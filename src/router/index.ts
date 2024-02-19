@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { getCookie } from '@/utils'
 import Login from '../views/Login.vue'
 import Finances from '../views/Finances.vue'
@@ -9,7 +9,7 @@ import Devices from '../views/Devices.vue'
 import Notifications from '../views/Notifications.vue'
 
 const router = createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',

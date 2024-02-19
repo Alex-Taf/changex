@@ -20,13 +20,19 @@ const searchModel = ref('')
 const searchQuery = ref('')
 
 const devicesStore = useDevicesStore()
-const { deviceItemsAll, qr, lastPage } = storeToRefs(devicesStore)
+const { loading, deviceItemsAll, qr, lastPage } = storeToRefs(devicesStore)
 
 const editDevice = reactive({
     id: '',
     name: '',
     comment: ''
 })
+
+function fetchData() {
+    devicesStore.fetchDevices({ search: searchQuery.value, page: page.value, countPerPage: 10 }).then(() => {
+        devicesStore.hideLoading()
+    })
+}
 
 async function openEditDialog(deviceId: string) {
     editDialog.value = true
@@ -80,7 +86,7 @@ const page = ref(1)
 
 function searchValue(queryText: string) {
     searchQuery.value = queryText
-    devicesStore.fetchDevices({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+    fetchData()
 }
 
 function changePage(newPage: string, isActive: boolean) {
@@ -89,32 +95,34 @@ function changePage(newPage: string, isActive: boolean) {
     }
 
     page.value = Number(newPage)
-    devicesStore.fetchDevices({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+    fetchData()
 }
 
 function decPage() {
     if (page.value !== 1) {
         page.value--
-        devicesStore.fetchDevices({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+        fetchData()
     }
 }
 
 function incPage() {
     if (page.value !== lastPage.value) {
         page.value++
-        devicesStore.fetchDevices({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+        fetchData()
     }
 }
 
 function loadMore() {
     if (page.value < lastPage.value) {
         page.value++
-        devicesStore.loadMoreDevices({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+        devicesStore.loadMoreDevices({ search: searchQuery.value, page: page.value, countPerPage: 10 }).then(() => {
+            devicesStore.hideLoading()
+        })
     }
 }
 
 onMounted(() => {
-    devicesStore.fetchDevices({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+    fetchData()
 })
 </script>
 
@@ -150,8 +158,8 @@ onMounted(() => {
                 </section>
             </section>
         </v-card>
-        <v-card v-if="deviceItemsAll.length > 0" class="!tw-rounded-2xl tw-mb-6">
-            <v-data-table :headers="headers" :items="deviceItemsAll" :footer="false">
+        <v-card class="!tw-rounded-2xl tw-mb-6">
+            <v-data-table :headers="headers" :items="deviceItemsAll" :footer="false" :loading="loading">
                 <template v-slot:headers="{ columns, toggleSort, isSorted }">
                     <tr>
                         <template v-for="column in columns" :key="column.key">
@@ -220,11 +228,14 @@ onMounted(() => {
                             <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="openEditDialog(item.id)">
                                 <v-list-item-title>Редактировать</v-list-item-title>
                             </v-list-item>
-                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="accountsStore.removeAccount(item.id)">
+                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="devicesStore.removeDevice(item.id)">
                                 <v-list-item-title>Удалить</v-list-item-title>
                             </v-list-item>
                         </v-list>
                     </v-menu>
+                </template>
+                <template v-slot:loading>
+                    <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
                 </template>
                 <template v-slot:bottom></template>
             </v-data-table>
@@ -269,6 +280,12 @@ onMounted(() => {
                     </div>
                 </template>
             </section>
+            <div v-if="loading" class="tw-flex tw-justify-center tw-items-center tw-w-full tw-h-[326px]">
+                <v-progress-circular
+                    indeterminate
+                    color="#04B6F5"
+                ></v-progress-circular>
+            </div>
             <v-btn v-if="deviceItemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="loadMore">
                 <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
             </v-btn>

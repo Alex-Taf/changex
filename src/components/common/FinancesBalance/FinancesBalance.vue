@@ -28,7 +28,9 @@ onMounted(() => {
                 <div class="tw-flex tw-flex-col tw-leading-7">
                     <span class="tw-text-[13px] tw-text-[#AEB7C1]">Баланс</span>
                     <span>
-                        <span class="tw-text-[30px] tw-text-[#2B3A4C] tw-font-bold">{{ userInfo.balance }}</span> <span class="tw-text-[16px] tw-text-[#AEB7C1]">USDT</span>
+                        <span v-if="userInfo && userInfo.balance" class="tw-text-[30px] tw-text-[#2B3A4C] tw-font-bold">{{ userInfo.balance.toFixed(4) }}</span>
+                        <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
+                        <span class="tw-text-[16px] tw-text-[#AEB7C1]"> USDT</span>
                     </span>
                     <span class="tw-text-[13px] tw-text-[#677483]">~{{ userInfo.balanceRUR }} RUB</span>
                 </div>

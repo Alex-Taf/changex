@@ -24,6 +24,7 @@ export const useCardsStore = defineStore('cards', {
     ],
     bankList: [],
     cardsList: [] as any,
+    loading: true,
     page: 1,
     lastPage: 1,
     offset: 1,
@@ -86,7 +87,10 @@ export const useCardsStore = defineStore('cards', {
         await deleteCard(uid)
     },
     async fetchCards(options: TFilterPaginationOptions) {
+      this.showLoading()
+
       const res = await getCards(options)
+      
       this.cardsList = res?.data.list
       this.page = res?.data.page
       this.offset = res?.data.offset
@@ -95,8 +99,11 @@ export const useCardsStore = defineStore('cards', {
       console.log(this.cardsList)
     },
     async loadMoreCards(options: TFilterPaginationOptions) {
+      this.showLoading()
+
       const res = await getCards(options)
       const newListItems = res?.data.list
+      
       this.cardsList.push(...newListItems)
       this.page = res?.data.page
       this.offset = res?.data.offset
@@ -111,7 +118,7 @@ export const useCardsStore = defineStore('cards', {
             comment: newCard.comment
         }
         const res = await addCard(createdCard)
-        console.log(res?.data.card)
+
         this.cardsList.unshift(res?.data.card)
     },
     async toggleCard(uid: string, isSwitched: boolean) {
@@ -138,6 +145,12 @@ export const useCardsStore = defineStore('cards', {
         //     newItem[key] = value
         //     return newItem
         // })
+    },
+    showLoading() {
+        this.loading = true
+    },
+    hideLoading() {
+        this.loading = false
     }
   }
 })

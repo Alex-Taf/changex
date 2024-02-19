@@ -9,7 +9,7 @@ import ArrowDownLeft from '../../icons/ArrowDownLeft.vue'
 import Stars from '../../icons/Stars.vue'
 
 const financesStore = useFinancesStore()
-const { lastPage, itemsAll, itemsDeposit, itemsWithdrawal } = storeToRefs(financesStore)
+const { loading, lastPage, itemsAll, itemsDeposit, itemsWithdrawal } = storeToRefs(financesStore)
 
 const tab = ref(null)
 const headers = ref([
@@ -33,11 +33,11 @@ const headers = ref([
         sortable: true,
         key: 'amount'
     },
-    {
-        title: "Статус",
-        sortable: true,
-        key: 'status'
-    }
+    // {
+    //     title: "Статус",
+    //     sortable: true,
+    //     key: 'status'
+    // }
 ])
 
 const page = ref(1)
@@ -73,13 +73,15 @@ function loadMore() {
 }
 
 onMounted(() => {
-    financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 })
+    financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 }).then(() => {
+        financesStore.hideLoading()
+    })
 })
 </script>
 
 <template>
   <RenderOn :px="840">
-    <v-card v-if="itemsAll.length > 0" class="!tw-rounded-2xl tw-mb-6">
+    <v-card class="!tw-rounded-2xl tw-mb-6">
         <v-tabs v-model="tab" bg-color="white" align-tabs="center">
         <v-tab value="one" color="blue" width="33.3%" class="!tw-normal-case !tw-tracking-normal">Все</v-tab>
         <v-tab value="two" color="blue" width="33.3%" class="!tw-normal-case !tw-tracking-normal">Пополнения</v-tab>
@@ -89,7 +91,7 @@ onMounted(() => {
         <v-card-text>
         <v-window v-model="tab">
             <v-window-item value="one">
-            <v-data-table :headers="headers" :items="itemsAll" :footer='false'>
+            <v-data-table :headers="headers" :items="itemsAll" :footer='false' :loading="loading">
                 <template v-slot:item.direction="{ value }">
                     <ArrowUpRight v-if="value === 'deposit'" />
                     <ArrowDownLeft v-if="value === 'withdrawal'" />
@@ -125,7 +127,7 @@ onMounted(() => {
                 <template v-slot:item.amount="{ value }">
                     <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
                 </template>
-                <template v-slot:item.status="{ value }">
+                <!-- <template v-slot:item.status="{ value }">
                     <div
                         v-if="value === 'process'"
                         class="tw-bg-gray-200 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-400 tw-w-[94px] tw-px-2 tw-py-1 tw-text-center"
@@ -144,13 +146,16 @@ onMounted(() => {
                     >
                         <span class="tw-text-green-400 tw-text-xs">Выполнено</span>
                     </div>
+                </template> -->
+                <template v-slot:loading>
+                    <v-skeleton-loader type="table-row@4"></v-skeleton-loader>
                 </template>
                 <template v-slot:bottom></template>
             </v-data-table>
             </v-window-item>
 
             <v-window-item value="two">
-            <v-data-table :headers="headers" :items="itemsDeposit">
+            <v-data-table :headers="headers" :items="itemsDeposit" :loading="loading">
                 <template v-slot:item.direction="{ value }">
                     <ArrowUpRight v-if="value === 'deposit'" />
                     <ArrowDownLeft v-if="value === 'withdrawal'" />
@@ -185,7 +190,7 @@ onMounted(() => {
                 <template v-slot:item.amount="{ value }">
                     <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
                 </template>
-                <template v-slot:item.status="{ value }">
+                <!-- <template v-slot:item.status="{ value }">
                     <div
                         v-if="value === 'process'"
                         class="tw-bg-gray-200 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-400 tw-w-[94px] tw-px-2 tw-py-1 tw-text-center"
@@ -204,13 +209,16 @@ onMounted(() => {
                     >
                         <span class="tw-text-green-400 tw-text-xs">Выполнено</span>
                     </div>
+                </template> -->
+                <template v-slot:loading>
+                    <v-skeleton-loader type="table-row@4"></v-skeleton-loader>
                 </template>
                 <template v-slot:bottom></template>
             </v-data-table>
             </v-window-item>
 
             <v-window-item value="three">
-            <v-data-table :headers="headers" :items="itemsWithdrawal">
+            <v-data-table :headers="headers" :items="itemsWithdrawal" :loading="loading">
                 <template v-slot:item.direction="{ value }">
                     <ArrowUpRight v-if="value === 'deposit'" />
                     <ArrowDownLeft v-if="value === 'withdrawal'" />
@@ -245,7 +253,7 @@ onMounted(() => {
                 <template v-slot:item.amount="{ value }">
                     <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
                 </template>
-                <template v-slot:item.status="{ value }">
+                <!-- <template v-slot:item.status="{ value }">
                     <div
                         v-if="value === 'process'"
                         class="tw-bg-gray-200 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-400 tw-w-[94px] tw-px-2 tw-py-1 tw-text-center"
@@ -264,6 +272,9 @@ onMounted(() => {
                     >
                         <span class="tw-text-green-400 tw-text-xs">Выполнено</span>
                     </div>
+                </template> -->
+                <template v-slot:loading>
+                    <v-skeleton-loader type="table-row@4"></v-skeleton-loader>
                 </template>
                 <template v-slot:bottom></template>
             </v-data-table>
@@ -280,7 +291,7 @@ onMounted(() => {
         <v-tab value="three" color="blue" width="33.3%" class="!tw-normal-case !tw-tracking-normal">Списания</v-tab>
     </v-tabs>
 
-    <v-window v-if="itemsAll.length > 0" v-model="tab">
+    <v-window v-if="!loading" v-model="tab">
         <v-window-item value="one">
             <section class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-p-2 tw-h-[420px]">
                 <template v-for="item in itemsAll" :key="item">
@@ -294,7 +305,7 @@ onMounted(() => {
                                     <span><span class="tw-text-[15px]">{{ formatter.format(item.amount) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
                                 </div>
                             </div>
-                            <div
+                            <!-- <div
                                 v-if="item.status === 'process'"
                                 class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-bg-gray-200 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-400 tw-w-[79px] tw-h-[20px] tw-px-2 tw-text-center"
                             >
@@ -311,7 +322,7 @@ onMounted(() => {
                                 class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-rounded-xl tw-border-2 tw-border-solid tw-border-green-500 tw-w-[75px] tw-h-[20px] tw-px-2 tw-text-center"
                             >
                                 <span class="tw-text-green-400 tw-text-[10px]">Выполнено</span>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed">
                             <span class="tw-text-[13px] tw-min-w-[300px]">{{ item.comment }}</span>
@@ -333,7 +344,7 @@ onMounted(() => {
                                     <span><span class="tw-text-[15px]">{{ formatter.format(item.amount) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
                                 </div>
                             </div>
-                            <div
+                            <!-- <div
                                 v-if="item.status === 'process'"
                                 class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-bg-gray-200 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-400 tw-w-[79px] tw-h-[20px] tw-px-2 tw-text-center"
                             >
@@ -350,7 +361,7 @@ onMounted(() => {
                                 class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-rounded-xl tw-border-2 tw-border-solid tw-border-green-500 tw-w-[75px] tw-h-[20px] tw-px-2 tw-text-center"
                             >
                                 <span class="tw-text-green-400 tw-text-[10px]">Выполнено</span>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed">
                             <span class="tw-text-[13px] tw-min-w-[300px]">{{ item.comment }}</span>
@@ -372,7 +383,7 @@ onMounted(() => {
                                     <span><span class="tw-text-[15px]">{{ formatter.format(item.amount) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
                                 </div>
                             </div>
-                            <div
+                            <!-- <div
                                 v-if="item.status === 'process'"
                                 class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-bg-gray-200 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-400 tw-w-[79px] tw-h-[20px] tw-px-2 tw-text-center"
                             >
@@ -389,7 +400,7 @@ onMounted(() => {
                                 class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-rounded-xl tw-border-2 tw-border-solid tw-border-green-500 tw-w-[75px] tw-h-[20px] tw-px-2 tw-text-center"
                             >
                                 <span class="tw-text-green-400 tw-text-[10px]">Выполнено</span>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed">
                             <span class="tw-text-[13px] tw-min-w-[300px]">{{ item.comment }}</span>
@@ -399,6 +410,12 @@ onMounted(() => {
             </section>
         </v-window-item>
     </v-window>
+    <div v-if="loading" class="tw-flex tw-justify-center tw-items-center tw-w-full tw-h-[326px]">
+        <v-progress-circular
+            indeterminate
+            color="#04B6F5"
+        ></v-progress-circular>
+    </div>
     <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="loadMore">
         <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
     </v-btn>

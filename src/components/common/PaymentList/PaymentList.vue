@@ -11,7 +11,7 @@ import Stars from '@/components/icons/Stars.vue';
 import { datetimeToTimestamp } from '@/utils';
 
 const paymentsStore = usePaymentsStore()
-const { paymentsItemsAll, lastPage } = storeToRefs(paymentsStore)
+const { loading, paymentsItemsAll, lastPage } = storeToRefs(paymentsStore)
 
 const cardsStore = useCardsStore()
 const { itemsAll } = storeToRefs(cardsStore)
@@ -141,6 +141,8 @@ function fetchData() {
             cardUID: cards.selected?.uid,
             status: statuses.select
         }
+    }).then(() => {
+        paymentsStore.hideLoading()
     })
 }
 
@@ -243,6 +245,8 @@ function loadMore() {
                 cardUID: cards.selected?.uid,
                 status: statuses.select
             }
+        }).then(() => {
+            paymentsStore.hideLoading()
         })
     }
 }
@@ -331,8 +335,8 @@ onMounted(() => {
                 </section>
             </section>
         </v-card>
-        <v-card v-if="paymentsItemsAll.length > 0" class="!tw-rounded-2xl tw-mb-6">
-            <v-data-table :headers="headers" :items="paymentsItemsAll" :footer="false">
+        <v-card class="!tw-rounded-2xl tw-mb-6">
+            <v-data-table :headers="headers" :items="paymentsItemsAll" :footer="false" :loading="loading">
                 <template v-slot:headers="{ columns, toggleSort, isSorted }">
                     <tr>
                         <template v-for="column in columns" :key="column.key">
@@ -396,7 +400,7 @@ onMounted(() => {
                 <template v-slot:item.debit="{ value }">
                     <span
                         ><span class="tw-text-[15px]">{{ value.value }}</span>
-                        <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">{{ value.currency }}</span></span
+                        <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">USDT</span></span
                     >
                 </template>
                 <template v-slot:item.status="{ value }">
@@ -475,6 +479,9 @@ onMounted(() => {
                         </v-list>
                     </v-menu>
                 </template> -->
+                <template v-slot:loading>
+                    <v-skeleton-loader type="table-row@6"></v-skeleton-loader>
+                </template>
                 <template v-slot:bottom></template>
             </v-data-table>
         </v-card>
@@ -556,7 +563,7 @@ onMounted(() => {
                                 <span class="tw-text-[10px] tw-text-[#AEB7C1]">Списано</span>
                                 <span
                                     ><span class="tw-text-[15px]">{{ item.debit.value }}</span>
-                                    <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">{{ item.debit.currency }}</span></span
+                                    <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">USDT</span></span
                                 >
                             </div>
                         </div>
@@ -569,6 +576,14 @@ onMounted(() => {
                     </div>
                 </template>
             </section>
+
+            <div v-if="loading" class="tw-flex tw-justify-center tw-items-center tw-w-full tw-h-[326px]">
+                <v-progress-circular
+                    indeterminate
+                    color="#04B6F5"
+                ></v-progress-circular>
+            </div>
+
             <v-btn v-if="paymentsItemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="loadMore">
                 <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
             </v-btn>

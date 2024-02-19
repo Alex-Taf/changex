@@ -7,6 +7,7 @@ export const useFinancesStore = defineStore('finances', {
   state: () => ({
     financesList: [] as any,
     statuses: ['process', 'done', 'error'], // TEMPORARY
+    loading: true,
     page: 1,
     lastPage: 1,
     offset: 1,
@@ -19,7 +20,10 @@ export const useFinancesStore = defineStore('finances', {
   },
   actions: {
     async fetchFinancesStory(options: TFilterPaginationOptions) {
+      this.showLoading()
+
       const res = await getFinancesStory(options)
+
       this.financesList = res?.data.list.map((item) => {
         return {
           direction: item.direction,
@@ -35,7 +39,10 @@ export const useFinancesStore = defineStore('finances', {
       this.lastPage = res?.data.lastPage
     },
     async loadMoreFinances(options: TFilterPaginationOptions) {
+      this.showLoading()
+      
       const res = await getFinancesStory(options)
+
       const newListItems = res?.data.list.map((item) => {
         return {
           direction: item.direction,
@@ -50,6 +57,12 @@ export const useFinancesStore = defineStore('finances', {
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
+    },
+    showLoading() {
+      this.loading = true
+    },
+    hideLoading() {
+      this.loading = false
     }
   }
 })

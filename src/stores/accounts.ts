@@ -7,6 +7,8 @@ export const useAccountStore = defineStore('accounts', {
   state: () => ({
     accountsList: [] as any,
     code: '',
+    loading: true,
+    hasItems: true,
     page: 1,
     lastPage: 1,
     offset: 1,
@@ -30,22 +32,41 @@ export const useAccountStore = defineStore('accounts', {
       return res?.data.account
     },
     async fetchAccounts(options: TFilterPaginationOptions) {
+      this.showLoading()
+
       const res = await getAccounts(options)
+      
       this.accountsList = res?.data.list
       this.page = res?.data.page
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
+
+      if (this.accountsList.length === 0) {
+        this.hasItems = false
+      } else {
+        this.hasItems = true
+      }
+
       console.log(this.accountsList)
     },
     async loadMoreAccounts(options: TFilterPaginationOptions) {
+      this.showLoading()
+      
       const res = await getAccounts(options)
       const newListItems = res?.data.list
+      
       this.accountsList.push(...newListItems)
       this.page = res?.data.page
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
+
+      if (this.accountsList.length === 0) {
+        this.hasItems = false
+      } else {
+        this.hasItems = true
+      }
     },
     async getConnectCode() {
         if (this.code === '') {
@@ -66,5 +87,11 @@ export const useAccountStore = defineStore('accounts', {
       this.accountsList = this.accountsList.filter((account) => account.uid !== uid)
       await deleteAccount(uid)
     },
+    showLoading() {
+      this.loading = true
+    },
+    hideLoading() {
+      this.loading = false
+    }
   }
 })

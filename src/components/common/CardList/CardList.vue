@@ -12,7 +12,7 @@ import Filter from '@/components/icons/Filter.vue'
 
 const cardsStore = useCardsStore()
 const deviceStore = useDevicesStore()
-const { itemsAll, lastPage } = storeToRefs(cardsStore)
+const { loading, itemsAll, lastPage } = storeToRefs(cardsStore)
 const { deviceItemsAll } = storeToRefs(deviceStore)
 
 const newCardForm = ref<HTMLFormElement>(null)
@@ -178,15 +178,30 @@ const editCard = reactive({
 
 const page = ref(1)
 
+function fetchData() {
+    cardsStore.fetchCards({
+        search: searchQuery.value,
+        page: page.value,
+        countPerPage: 10,
+        sort: sort.value,
+        filter: {
+            bank: banks.select,
+            status: statuses.select
+        }
+    }).then(() => {
+        cardsStore.hideLoading()
+    })
+}
+
 function setSort(sortOption: Record<string, unknown>) {
     sort.value = sortOption.value
     sort.name = sortOption.name
-    cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, sort: sort.value, filter: { bank: banks.select, status: statuses.select } })
+    fetchData()
 }
 
 function searchValue(queryText: string) {
     searchQuery.value = queryText
-    cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, sort: sort.value, filter: { bank: banks.select, status: statuses.select } })
+    fetchData()
 }
 
 function changePage(newPage: string, isActive: boolean) {
@@ -195,27 +210,36 @@ function changePage(newPage: string, isActive: boolean) {
     }
 
     page.value = Number(newPage)
-    cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, sort: sort.value, filter: { bank: banks.select, status: statuses.select } })
+    fetchData()
 }
 
 function decPage() {
     if (page.value !== 1) {
         page.value--
-        cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, sort: sort.value, filter: { bank: banks.select, status: statuses.select } })
+        fetchData()
     }
 }
 
 function incPage() {
     if (page.value !== lastPage.value) {
         page.value++
-        cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10, sort: sort.value, filter: { bank: banks.select, status: statuses.select } })
+        fetchData()
     }
 }
 
 function loadMore() {
     if (page.value < lastPage.value) {
         page.value++
-        cardsStore.loadMoreCards({ page: page.value, countPerPage: 10 })
+        cardsStore.loadMoreCards({
+            search: searchQuery.value,
+            page: page.value,
+            countPerPage: 10,
+            sort: sort.value,
+            filter: {
+                bank: banks.select,
+                status: statuses.select
+            }
+        })
     }
 }
 
@@ -224,7 +248,7 @@ function reset() {
     searchQuery.value = ''
     banks.select = undefined
     statuses.select = undefined
-    cardsStore.fetchCards({ page: page.value, countPerPage: 10 })
+    fetchData()
 }
 
 async function confirmAction() {
@@ -302,7 +326,7 @@ onMounted(async () => {
         }
     })
 
-    await cardsStore.fetchCards({ search: searchQuery.value, page: page.value, countPerPage: 10 })
+    fetchData()
 })
 </script>
 
@@ -329,7 +353,7 @@ onMounted(async () => {
                             variant="outlined"
                             item-title="name"
                             item-value="value"
-                            @update:model-value="cardsStore.fetchCards({ search: searchQuery, page, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })"
+                            @update:model-value="fetchData"
                         ></v-select>
                     </v-responsive>
                     <v-responsive class="mx-auto" min-width="92" max-width="462">
@@ -340,7 +364,7 @@ onMounted(async () => {
                             variant="outlined"
                             item-title="name"
                             item-value="value"
-                            @update:model-value="cardsStore.fetchCards({ search: searchQuery, page, countPerPage: 10, filter: { bank: banks.select, status: statuses.select } })"
+                            @update:model-value="fetchData"
                         ></v-select>
                     </v-responsive>
                     <v-responsive class="mx-auto -tw-mt-5" min-width="92" max-width="262">
@@ -370,8 +394,8 @@ onMounted(async () => {
     </RenderOn>
 
     <RenderOn :px="840">
-        <v-card v-if="itemsAll.length > 0" class="!tw-rounded-2xl tw-mb-6">
-            <v-data-table :headers="headers" :items="itemsAll" :footer="false">
+        <v-card class="!tw-rounded-2xl tw-mb-6">
+            <v-data-table :headers="headers" :items="itemsAll" :footer="false" :loading="loading">
                 <template v-slot:headers="{ columns, toggleSort, isSorted }">
                     <tr>
                         <template v-for="column in columns" :key="column.key">
@@ -459,6 +483,9 @@ onMounted(async () => {
                             </v-list-item>
                         </v-list>
                     </v-menu>
+                </template>
+                <template v-slot:loading>
+                    <v-skeleton-loader type="table-row@7"></v-skeleton-loader>
                 </template>
                 <template v-slot:bottom></template>
             </v-data-table>
@@ -550,6 +577,12 @@ onMounted(async () => {
                     </div>
                 </template>
             </section>
+            <div v-if="loading" class="tw-flex tw-justify-center tw-items-center tw-w-full tw-h-[326px]">
+                <v-progress-circular
+                    indeterminate
+                    color="#04B6F5"
+                ></v-progress-circular>
+            </div>
             <v-btn v-if="itemsAll.length > 0" class="!tw-rounded-xl !tw-h-[50px] tw-mt-5" variant="outlined" color="#04B6F5" @click="loadMore">
                 <span class="tw-tracking-normal tw-normal-case">Показать ещё</span>
             </v-btn>

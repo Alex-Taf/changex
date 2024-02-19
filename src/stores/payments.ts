@@ -7,6 +7,7 @@ export const usePaymentsStore = defineStore('payments', {
   state: () => ({
     paymentsList: [] as any,
     disputsList: [] as any,
+    loading: true,
     page: 1,
     lastPage: 1,
     offset: 1,
@@ -58,7 +59,10 @@ export const usePaymentsStore = defineStore('payments', {
   },
   actions: {
     async fetchPayments(options: TFilterPaginationOptions) {
+      this.showLoading()
+      
       const res = await getPayments(options)
+      
       this.paymentsList = res?.data.list
       this.page = res?.data.page
       this.offset = res?.data.offset
@@ -67,8 +71,11 @@ export const usePaymentsStore = defineStore('payments', {
       console.log(this.paymentsList)
     },
     async loadMorePayments(options: TFilterPaginationOptions) {
+      this.showLoading()
+
       const res = await getPayments(options)
       const newListItems = res?.data.list
+      
       this.paymentsList.push(...newListItems)
       this.page = res?.data.page
       this.offset = res?.data.offset
@@ -76,7 +83,10 @@ export const usePaymentsStore = defineStore('payments', {
       this.lastPage = res?.data.lastPage
     },
     async fetchDisputs(options: TFilterPaginationOptions) {
+      this.showLoading()
+
       const res = await getDisputes(options)
+      
       this.disputsList = res?.data.list
       this.page = res?.data.page
       this.offset = res?.data.offset
@@ -85,13 +95,22 @@ export const usePaymentsStore = defineStore('payments', {
       console.log(this.disputsList)
     },
     async loadMoreDisputs(options: TFilterPaginationOptions) {
+      this.showLoading()
+
       const res = await getDisputes(options)
       const newListItems = res?.data.list
+      
       this.disputsList.push(...newListItems)
       this.page = res?.data.page
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
     },
+    showLoading() {
+      this.loading = true
+    },
+    hideLoading() {
+        this.loading = false
+    }
   }
 })
