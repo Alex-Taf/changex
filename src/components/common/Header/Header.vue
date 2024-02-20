@@ -1,9 +1,15 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import { storeToRefs } from 'pinia'
 import { logout } from '@/api'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import Rate from '@/components/info/Rate.vue'
 import Avatar from '../../user/Avatar/Avatar.vue'
+
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const $router = useRouter()
 
@@ -17,6 +23,10 @@ function exit() {
         $router.push('/')
     })
 }
+
+onMounted(() => {
+    userStore.fetchUserInfo()
+})
 </script>
 
 <template>
@@ -28,7 +38,8 @@ function exit() {
                     <Rate />
                     <div class="tw-flex tw-gap-x-2">
                         <div class="tw-flex tw-flex-col">
-                            <span class="tw-text-[15px]">89876543210</span>
+                            <span v-if="userInfo && userInfo?.maskedToken" class="tw-text-[15px]">{{ userInfo?.maskedToken }}</span>
+                            <span v-else>*********</span>
                             <span
                                 class="tw-self-end tw-text-[#04B6F5] tw-text-[10px] tw-cursor-pointer tw-select-none"
                                 @click="exit"

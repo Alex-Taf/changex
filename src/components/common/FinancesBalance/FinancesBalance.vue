@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
 import FinancesBalanceIcon from '../../icons/FinancesBalanceIcon.vue'
@@ -14,10 +14,6 @@ const dialogOpen = ref(false)
 function closeDialog(close: boolean) {
     dialogOpen.value = close
 }
-
-onMounted(() => {
-    userStore.fetchUserInfo()
-})
 </script>
 
 <template>

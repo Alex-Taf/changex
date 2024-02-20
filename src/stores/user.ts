@@ -8,7 +8,6 @@ export const useUserStore = defineStore('user', {
   actions: {
     async fetchUserInfo() {
       const res = await getUserInfo()
-      // console.log(res)
       this.userInfo = res?.data.user
     }
   }

@@ -34,17 +34,17 @@ const headers = ref([
         key: 'id'
     },
     {
-        title: 'Время',
+        title: 'Время по МСК',
         sortable: true,
         key: 'date'
     },
     {
-        title: 'Сумма',
+        title: 'Сумма заявки',
         sortable: true,
         key: 'sum'
     },
     {
-        title: 'Списано',
+        title: 'Сумма клиента',
         sortable: true,
         key: 'debit'
     },

@@ -14,49 +14,74 @@ const router = createRouter({
     {
       path: '/',
       name: 'login',
-      meta: { auth: false },
+      meta: {
+        auth: false,
+        title: 'Вход'
+      },
       component: Login
     },
     {
       path: '/finances',
       name: 'finances',
-      meta: { auth: true },
+      meta: {
+        auth: true,
+        title: 'Финансы'
+      },
       component: Finances
     },
     {
       path: '/cards',
       name: 'cards',
-      meta: { auth: true },
+      meta: {
+        auth: true,
+        title: 'Банковские карты'
+      },
       component: Cards
     },
     {
       path: '/payments',
       name: 'payments',
-      meta: { auth: true },
+      meta: {
+        auth: true,
+        title: 'Платежи'
+      },
       component: Payments
     },
     {
       path: '/disputs',
       name: 'disputs',
-      meta: { auth: true },
+      meta: {
+        auth: true,
+        title: 'Диспуты'
+      },
       component: Disputs
     },
     {
       path: '/devices',
       name: 'devices',
-      meta: { auth: true },
+      meta: {
+        auth: true,
+        title: 'Устройства'
+      },
       component: Devices
     },
     {
       path: '/notifications',
       name: 'notifications',
-      meta: { auth: true },
+      meta: {
+        auth: true,
+        title: 'Уведомления'
+      },
       component: Notifications
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
+  /** Web App Page Title **/
+  document.title = `Changex.io - ${to.meta?.title}` ?? 'Changex.io'
+
+  /** Check to auth **/
   const requireAuth = to.matched.some(record => record.meta.auth)
 
   const isLogin = getCookie('changexlogin')
