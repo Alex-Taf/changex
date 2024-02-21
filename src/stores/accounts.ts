@@ -76,12 +76,19 @@ export const useAccountStore = defineStore('accounts', {
     },
     async saveEditAccount(edited: Record<string, unknown>) {
       const uid = edited.uid as string
+
+      const idx = this.accountsList.findIndex((account) => account.uid === uid)
+
       const editedOptions = {
         username: edited.username,
         comment: edited.comment
       }
 
       await editAccount(uid, editedOptions)
+
+      const newAccount = await this.fetchAccountByUID(uid)
+
+      this.accountsList[idx] = newAccount
     },
     async removeAccount(uid: string) {
       this.accountsList = this.accountsList.filter((account) => account.uid !== uid)

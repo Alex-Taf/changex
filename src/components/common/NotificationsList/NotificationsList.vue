@@ -44,6 +44,7 @@ async function openEditDialog(accoundUID: string) {
 }
 
 function submitEditAccount() {
+    editDialog.value = false
     accountsStore.saveEditAccount(editAccount)
 }
 
@@ -350,7 +351,7 @@ onMounted(() => {
             <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl sm:!tw-p-[28px] md:!tw-p-[48px] min-lg:!tw-p-[48px]">
                 <span class="tw-text-2xl tw-mb-[14px]">Редактировать аккаунт</span>
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                        <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
+                        <span class="tw-text-[13px] tw-text-[#677483]">Имя аккаунта</span>
                         <v-text-field
                             v-model="editAccount.username"
                             class="tw-w-full"
