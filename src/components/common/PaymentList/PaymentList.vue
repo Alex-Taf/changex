@@ -64,6 +64,10 @@ const statuses = reactive({
     select: undefined,
     items: [
         {
+            value: 'awaiting',
+            name: 'В ожидании'
+        },
+        {
             value: 'cancelled',
             name: 'Отменённые'
         },
@@ -92,18 +96,18 @@ const cards = reactive({
     items: []
 })
 
-function fetchCardsToRef() {
-    if (cards.items.length === 0) {
-        cardsStore.fetchCards({}).then(() => {
-            cards.items = itemsAll.value.map((cardItem) => {
-                return {
-                    type: cardItem.card.type,
-                    num: cardItem.card.num
-                }
-            })
-        })
-    }
-}
+// function fetchCardsToRef() {
+//     if (cards.items.length === 0) {
+//         cardsStore.fetchCards({}).then(() => {
+//             cards.items = itemsAll.value.map((cardItem) => {
+//                 return {
+//                     type: cardItem.card.type,
+//                     num: cardItem.card.num
+//                 }
+//             })
+//         })
+//     }
+// }
 
 function searchCardValue(queryText: string) {
     console.log(cardSearchModel.value)
@@ -119,10 +123,10 @@ function searchCardValue(queryText: string) {
         })
 }
 
-function setSelectedCard(value) {
-    cards.selected = value
-    fetchData()
-}
+// function setSelectedCard(value) {
+//     cards.selected = value
+//     fetchData()
+// }
 
 function clearAutocomplete() {
     cards.selected = undefined
