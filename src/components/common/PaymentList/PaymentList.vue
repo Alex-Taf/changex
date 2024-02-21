@@ -387,7 +387,8 @@ onMounted(() => {
                     <span class="tw-text-[15px] tw-text-gray-500">{{ value }}</span>
                 </template>
                 <template v-slot:item.date="{ value }">
-                    <span class="tw-text-[15px]">{{ value }}</span>
+                    <span class="tw-text-[15px]">{{ value.value }}</span><br>
+                    <span class="tw-text-[10px]">{{ value.different }}</span>
                 </template>
                 <template v-slot:item.card="{ value }">
                     <div class="tw-flex tw-items-center tw-gap-x-4">
@@ -671,7 +672,7 @@ onMounted(() => {
             </v-card>
     </RenderOn>
 
-    <section v-if="paymentsItemsAll.length === 0" class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-h-[calc(100vh-400px)]">
+    <section v-if="paymentsItemsAll.length === 0 && !hasItems" class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-h-[calc(100vh-400px)]">
         <div class="tw-text-center">
             <Stars /><br>
             <span class="tw-text-lg tw-text-[#677483] tw-font-semibold">Платежи отсутствуют</span>

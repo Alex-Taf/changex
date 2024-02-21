@@ -78,6 +78,76 @@ export const datetimeToTimestamp = (datetime: string | Date): number => {
     }
 }
 
+export const getDifferentTimeStatus = (datetime: string | Date): string | undefined => {
+    const present = new Date().getTime()
+    
+    const date = new Date(datetime).getTime()
+    const different = present - date
+    let differentRes = 0
+
+    let hours = 0, minutes = 0, days = 0
+
+    if (different > 0) {
+        differentRes = different;
+        hours = Math.floor((differentRes % 86400000) / 3600000)
+        minutes = Math.round(((differentRes % 86400000) % 3600000) / 60000)
+        days = Math.floor(differentRes / (1000*60*60*24))
+    } else {
+        differentRes = Math.abs(different)
+        hours = Math.floor(24 - (differentRes % 86400000) / 3600000)
+        minutes = Math.round(60 - ((differentRes % 86400000) % 3600000) / 60000)
+        days = Math.floor(differentRes / (1000*60*60*24))
+    }
+    
+    if (hours < 1 && minutes < 1) {
+        return 'Несколько секунд назад'
+    }
+
+    if (hours < 1 && minutes <= 15 && days < 1) {
+        return 'Несколько минут назад'
+    }
+
+    if (hours < 1 && minutes > 15 && minutes <= 30 && days < 1) {
+        return 'Пол-часа назад'
+    }
+
+    if (hours < 1 && minutes > 30 && days < 1) {
+        return 'Более полу-часа назад'
+    }
+
+    if (hours > 1 && hours < 3 && days < 1) {
+        return 'Более часа назад'
+    }
+
+    if (hours > 3 && hours < 24 && days < 1) {
+        return 'Несколько часов назад'
+    }
+
+    if (days === 1) {
+        return 'Сутки назад'
+    }
+
+    if (days > 1 && days <= 4) {
+        return 'Несколько дней назад'
+    }
+
+    if (days === 7) {
+        return 'Неделю назад'
+    }
+
+    if (days >= 12 && days <= 14) {
+        return 'Две недели назад'
+    }
+
+    if (days >= 14 && days <= 30) {
+        return 'Более двух недель назад'
+    }
+
+    if (days > 30) {
+        return 'Более месяца назад'
+    }
+}
+
 export const copyToClipboard: ICopyToClipboard = (text) => {
     navigator.clipboard.writeText(text)
 }
