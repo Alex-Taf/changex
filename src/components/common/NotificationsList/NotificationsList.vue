@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { debounce } from 'vue-debounce'
 import { useAccountStore } from '@/stores/accounts'
 import { storeToRefs } from 'pinia'
 import CopyIcon from '@/components/icons/CopyIcon.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
-import { onMounted } from 'vue'
+import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
 
 const dialog = ref(false)
 const editDialog = ref(false)
+const dialogDelete = ref(false)
 
 const searchModel = ref('')
 const searchQuery = ref('')
@@ -27,6 +28,11 @@ const editAccount = reactive({
     comment: ''
 })
 
+const deleteAccount = reactive<{id: string | number, title: string}>({
+    id: '',
+    title: ''
+})
+
 async function openEditDialog(accoundUID: string) {
     editDialog.value = true
 
@@ -39,6 +45,16 @@ async function openEditDialog(accoundUID: string) {
 
 function submitEditAccount() {
     accountsStore.saveEditAccount(editAccount)
+}
+
+function onDeleteAccount(id: number | string, title: string) {
+    deleteAccount.id = id
+    deleteAccount.title = title
+    dialogDelete.value = true
+}
+
+function deleteAccountAction(id: number | string) {
+    accountsStore.removeAccount(id as string)
 }
 
 const headers = ref([
@@ -221,7 +237,7 @@ onMounted(() => {
                             <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="openEditDialog(item.id)">
                                 <v-list-item-title>Редактировать</v-list-item-title>
                             </v-list-item>
-                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="accountsStore.removeAccount(item.id)">
+                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="onDeleteAccount(item.id, `@${item.account}`)">
                                 <v-list-item-title>Удалить</v-list-item-title>
                             </v-list-item>
                         </v-list>
@@ -298,6 +314,14 @@ onMounted(() => {
             <span class="tw-text-lg tw-text-[#677483] tw-font-semibold">Нет подключенных аккаунтов</span>
         </div>
     </section>
+
+    <DeleteDialog
+        :open="dialogDelete"
+        title="Вы действительно хотите удалить аккаунт?"
+        :entity="deleteAccount"
+        @delete="(e) => deleteAccountAction(e.entityId)"
+        @close="dialogDelete = !dialogDelete"
+    />
 
     <v-dialog
       v-model="dialog"

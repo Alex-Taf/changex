@@ -9,6 +9,7 @@ import { vMaska } from 'maska'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import Stars from '@/components/icons/Stars.vue'
 import Filter from '@/components/icons/Filter.vue'
+import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
 
 const cardsStore = useCardsStore()
 const deviceStore = useDevicesStore()
@@ -56,6 +57,7 @@ const sortOptions = ref([
 const dialog = ref(false)
 const dialogConfirm = ref(false)
 const editDialog = ref(false)
+const dialogDelete = ref(false)
 
 const mobileFilter = ref(false)
 
@@ -176,6 +178,11 @@ const editCard = reactive({
     comment: ''
 })
 
+const deleteCard = reactive<{id: string | number, title: string}>({
+    id: '',
+    title: ''
+})
+
 const page = ref(1)
 
 function fetchData() {
@@ -271,6 +278,16 @@ async function submitEditCard() {
         cardsStore.saveEditCard(editCard)
         closeEditDialog()
     }
+}
+
+function onDeleteCard(id: number | string, title: string) {
+    deleteCard.id = id
+    deleteCard.title = title
+    dialogDelete.value = true
+}
+
+function deleteCardAction(id: number | string) {
+    cardsStore.removeCard(id as string)
 }
 
 const newCardValidationRules = reactive({
@@ -478,7 +495,7 @@ onMounted(async () => {
                             <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="openEditDialog(item.id)">
                                 <v-list-item-title><span class="tw-select-none">Редактировать</span></v-list-item-title>
                             </v-list-item>
-                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="cardsStore.removeCard(item.id)">
+                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="onDeleteCard(item.id, `**** **** **** ${item.card.num}`)">
                                 <v-list-item-title><span class="tw-select-none">Удалить</span></v-list-item-title>
                             </v-list-item>
                         </v-list>
@@ -551,10 +568,10 @@ onMounted(async () => {
                                     </template>
 
                                     <v-list>
-                                        <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200">
+                                        <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="openEditDialog(item.id)">
                                             <v-list-item-title><span class="tw-select-none">Редактировать</span></v-list-item-title>
                                         </v-list-item>
-                                        <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200">
+                                        <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="onDeleteCard(item.id, `**** **** **** ${item.card.num}`)">
                                             <v-list-item-title><span class="tw-select-none">Удалить</span></v-list-item-title>
                                         </v-list-item>
                                     </v-list>
@@ -603,6 +620,14 @@ onMounted(async () => {
             <span class="tw-text-lg tw-text-[#677483] tw-font-semibold">Вы еще не добавили ни одной карты</span>
         </div>
     </section>
+
+    <DeleteDialog
+        :open="dialogDelete"
+        title="Вы действительно хотите удалить карту?"
+        :entity="deleteCard"
+        @delete="(e) => deleteCardAction(e.entityId)"
+        @close="dialogDelete = !dialogDelete"
+    />
 
     <RenderOn :px="840">
         <v-dialog v-model="dialog" width="auto">

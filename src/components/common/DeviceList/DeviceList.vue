@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { debounce } from 'vue-debounce'
 import QrcodeVue from 'qrcode.vue'
 import type { Level, RenderAs } from 'qrcode.vue'
@@ -7,10 +7,11 @@ import { useDevicesStore } from '@/stores/devices'
 import { storeToRefs } from 'pinia'
 import Download from '../../icons/Download.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
-import { onMounted } from 'vue'
+import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
 
 const dialog = ref(false)
 const editDialog = ref(false)
+const dialogDelete = ref(false)
 
 // const qrValue = ref('https://example.com')
 const level = ref<Level>('H')
@@ -26,6 +27,11 @@ const editDevice = reactive({
     id: '',
     name: '',
     comment: ''
+})
+
+const deleteDevice = reactive<{id: string | number, title: string}>({
+    id: '',
+    title: ''
 })
 
 function fetchData() {
@@ -47,6 +53,16 @@ async function openEditDialog(deviceId: string) {
 function submitEditDevice() {
     devicesStore.saveEditDevice(editDevice)
     editDialog.value = false
+}
+
+function onDeleteDevice(id: number | string, title: string) {
+    deleteDevice.id = id
+    deleteDevice.title = title
+    dialogDelete.value = true
+}
+
+function deleteDeviceAction(id: number | string) {
+    devicesStore.removeDevice(id as string)
 }
 
 function openDialog() {
@@ -228,7 +244,7 @@ onMounted(() => {
                             <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="openEditDialog(item.id)">
                                 <v-list-item-title>Редактировать</v-list-item-title>
                             </v-list-item>
-                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="devicesStore.removeDevice(item.id)">
+                            <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="onDeleteDevice(item.id, item.title)">
                                 <v-list-item-title>Удалить</v-list-item-title>
                             </v-list-item>
                         </v-list>
@@ -306,6 +322,14 @@ onMounted(() => {
             <span class="tw-text-lg tw-text-[#677483] tw-font-semibold">Устройства отсутствуют</span>
         </div>
     </section>
+
+    <DeleteDialog
+        :open="dialogDelete"
+        title="Вы действительно хотите удалить устройство?"
+        :entity="deleteDevice"
+        @delete="(e) => deleteDeviceAction(e.entityId)"
+        @close="dialogDelete = !dialogDelete"
+    />
 
     <v-dialog
       v-model="dialog"
