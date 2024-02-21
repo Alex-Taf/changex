@@ -614,10 +614,10 @@ onMounted(async () => {
             </v-btn>
     </RenderOn>
     
-    <section v-if="itemsAll.length === 0" class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-h-[calc(100vh-400px)]">
+    <section v-if="itemsAll.length === 0 && !hasItems" class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-h-[calc(100vh-400px)]">
         <div class="tw-text-center">
             <Stars /><br>
-            <span class="tw-text-lg tw-text-[#677483] tw-font-semibold">Вы еще не добавили ни одной карты</span>
+            <span class="tw-text-lg tw-text-[#677483] tw-font-semibold">Карты отсутствуют</span>
         </div>
     </section>
 

@@ -48,27 +48,35 @@ function changePage(newPage: string, isActive: boolean) {
     }
 
     page.value = Number(newPage)
-    financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 })
+    financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 }).then(() => {
+            financesStore.hideLoading()
+        })
 }
 
 function decPage() {
     if (page.value !== 1) {
         page.value--
-        financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 })
+        financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 }).then(() => {
+            financesStore.hideLoading()
+        })
     }
 }
 
 function incPage() {
     if (page.value !== lastPage.value) {
         page.value++
-        financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 })
+        financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 }).then(() => {
+            financesStore.hideLoading()
+        })
     }
 }
 
 function loadMore() {
     if (page.value < lastPage.value) {
         page.value++
-        financesStore.loadMoreFinances({ page: page.value, countPerPage: 10 })
+        financesStore.loadMoreFinances({ page: page.value, countPerPage: 10 }).then(() => {
+            financesStore.hideLoading()
+        })
     }
 }
 
@@ -421,7 +429,7 @@ onMounted(() => {
     </v-btn>
   </RenderOn>
   
-  <section v-if="itemsAll.length === 0" class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-h-[calc(100vh-400px)]">
+  <section v-if="itemsAll.length === 0 && !hasItems" class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-h-[calc(100vh-400px)]">
     <div class="tw-text-center">
         <Stars /><br>
         <span class="tw-text-lg tw-text-[#677483] tw-font-semibold">Операции отстутствуют</span>
