@@ -74,11 +74,18 @@ function closeDialog() {
     dialog.value = false
 }
 
+function closeEditDialog() {
+    editDialog.value = false
+}
+
 function closeConfirmDialog() {
     dialogConfirm.value = false
 }
 
 async function openEditDialog(cardUid: string) {
+    editCard.uid = ''
+    editCard.cardNum = ''
+    editCard.comment = ''
     editDialog.value = true
 
     const card = await cardsStore.fetchCardByUID(cardUid)
@@ -86,10 +93,6 @@ async function openEditDialog(cardUid: string) {
     editCard.uid = cardUid
     editCard.cardNum = card.pan
     editCard.comment = card.comment
-}
-
-function closeEditDialog() {
-    editDialog.value = false
 }
 
 const headers = ref([
@@ -742,6 +745,7 @@ onMounted(async () => {
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Номер карты</span>
                         <v-text-field
+                            v-if="editCard.cardNum !== ''"
                             v-model="editCard.cardNum"
                             class="tw-w-full"
                             label="0000 0000 0000 0000"
@@ -749,16 +753,19 @@ onMounted(async () => {
                             v-maska:[maskOptions]
                             :rules="[editCardValidationRules.required, editCardValidationRules.isCardOccupied]"
                         ></v-text-field>
+                        <v-skeleton-loader v-else type="text" width="320"></v-skeleton-loader>
                     </div>
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
                         <v-textarea
+                            v-if="editCard.comment !== ''"
                             v-model="editCard.comment"
                             class="tw-w-full"
                             label="Комментарий к карте"
                             variant="outlined"
                             :rules="[editCardValidationRules.required]"
                         ></v-textarea>
+                        <v-skeleton-loader v-else type="image" width="320"></v-skeleton-loader>
                     </div>
                     <v-card-actions>
                         <section class="tw-flex tw-flex-col tw-gap-y-4">

@@ -41,6 +41,9 @@ function fetchData() {
 }
 
 async function openEditDialog(deviceId: string) {
+    editDevice.id = ''
+    editDevice.name = ''
+    editDevice.comment = ''
     editDialog.value = true
 
     const device = await devicesStore.fetchDeviceById(deviceId)
@@ -48,6 +51,10 @@ async function openEditDialog(deviceId: string) {
     editDevice.id = device.deviceId
     editDevice.name = device.name
     editDevice.comment = device.comment
+}
+
+function closeEditDialog() {
+    editDialog.value = false
 }
 
 function submitEditDevice() {
@@ -356,27 +363,31 @@ onMounted(() => {
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Название</span>
                         <v-text-field
+                            v-if="editDevice.name !== ''"
                             v-model="editDevice.name"
                             class="tw-w-full"
                             label="Название устройства"
                             variant="outlined"
                         ></v-text-field>
+                        <v-skeleton-loader v-else type="text" width="320"></v-skeleton-loader>
                     </div>
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
                         <v-textarea
+                            v-if="editDevice.comment"
                             v-model="editDevice.comment"
                             class="tw-w-full"
                             label="Комментарий к устройству"
                             variant="outlined"
                         ></v-textarea>
+                        <v-skeleton-loader v-else type="image" width="320"></v-skeleton-loader>
                     </div>
                 <v-card-actions>
                     <section class="tw-flex tw-flex-col tw-gap-y-4">
                         <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="submitEditDevice">
                             <span class="tw-text-white tw-text-[15px] !tw-normal-case">Сохранить</span>
                         </v-btn>
-                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="editDialog = !editDialog">
+                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="closeEditDialog">
                             Отмена
                         </v-btn>
                     </section>

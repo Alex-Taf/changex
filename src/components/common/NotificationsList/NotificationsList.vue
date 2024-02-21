@@ -33,10 +33,14 @@ const deleteAccount = reactive<{id: string | number, title: string}>({
     title: ''
 })
 
-async function openEditDialog(accoundUID: string) {
+async function openEditDialog(accountUID: string) {
+    editAccount.uid = ''
+    editAccount.username = ''
+    editAccount.comment = ''
+
     editDialog.value = true
 
-    const account = await accountsStore.fetchAccountByUID(accoundUID)
+    const account = await accountsStore.fetchAccountByUID(accountUID)
 
     editAccount.uid = account.uid
     editAccount.username = account.username
@@ -353,20 +357,24 @@ onMounted(() => {
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Имя аккаунта</span>
                         <v-text-field
+                            v-if="editAccount.username"
                             v-model="editAccount.username"
                             class="tw-w-full"
                             label="Имя аккаунта"
                             variant="outlined"
                         ></v-text-field>
+                        <v-skeleton-loader v-else type="text" width="320"></v-skeleton-loader>
                     </div>
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
                         <v-textarea
+                            v-if="editAccount.comment"
                             v-model="editAccount.comment"
                             class="tw-w-full"
                             label="Комментарий к подключению"
                             variant="outlined"
                         ></v-textarea>
+                        <v-skeleton-loader v-else type="image" width="320"></v-skeleton-loader>
                     </div>
                 <v-card-actions>
                     <section class="tw-flex tw-flex-col tw-gap-y-4">
