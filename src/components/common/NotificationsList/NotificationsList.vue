@@ -3,6 +3,7 @@ import { reactive, ref, onMounted } from 'vue'
 import { debounce } from 'vue-debounce'
 import { useAccountStore } from '@/stores/accounts'
 import { storeToRefs } from 'pinia'
+import { copyToClipboard } from '@/utils'
 import CopyIcon from '@/components/icons/CopyIcon.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
@@ -10,6 +11,12 @@ import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
 const dialog = ref(false)
 const editDialog = ref(false)
 const dialogDelete = ref(false)
+
+const copySnackbar = reactive({
+    show: false,
+    text: 'Скопировано в буфер обмена.',
+    timeout: 2000,
+})
 
 const searchModel = ref('')
 const searchQuery = ref('')
@@ -60,6 +67,11 @@ function onDeleteAccount(id: number | string, title: string) {
 
 function deleteAccountAction(id: number | string) {
     accountsStore.removeAccount(id as string)
+}
+
+function copyCode(code: string) {
+    copySnackbar.show = true
+    copyToClipboard(code)
 }
 
 const headers = ref([
@@ -339,7 +351,23 @@ onMounted(() => {
             <div class="tw-flex tw-items-center">
                 <span v-if="code !== ''" class="sm:tw-text-[10px] md:tw-text-lg min-lg:tw-text-lg tw-font-semibold">{{ code }}</span>
                 <v-skeleton-loader v-else type="text" width="450"></v-skeleton-loader>
-                <span class="tw-ml-2"><CopyIcon /></span>
+                <span class="tw-ml-2 tw-cursor-pointer tw-p-2" @click="copyCode(code)"><CopyIcon /></span>
+                <v-snackbar
+                    v-model="copySnackbar.show"
+                    :timeout="copySnackbar.timeout"
+                >
+                    {{ copySnackbar.text }}
+
+                    <template v-slot:actions>
+                        <v-btn
+                            color="blue"
+                            variant="text"
+                            @click="copySnackbar.show = false"
+                        >
+                            Скрыть
+                        </v-btn>
+                    </template>
+                </v-snackbar>
             </div>
         </div>
         <div class="tw-text-center">

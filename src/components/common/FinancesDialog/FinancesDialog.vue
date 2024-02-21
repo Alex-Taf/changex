@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, watch } from "vue"
+import { reactive, ref, watch } from "vue"
+import { copyToClipboard } from "@/utils"
 import CopyIcon from "../../icons/CopyIcon.vue"
 import Attention from "../../messages/Attention.vue"
 
@@ -8,19 +9,29 @@ const props = defineProps<{
 }>()
 
 const dialog = ref(false)
+const copySnackbar = reactive({
+    show: false,
+    text: 'Скопировано в буфер обмена.',
+    timeout: 2000,
+})
+
+function copyAddr(addr: string) {
+  copySnackbar.show = true
+  copyToClipboard(addr)
+}
 
 const emit = defineEmits<{
     (e: 'close', open: boolean): void
 }>()
 
-watch(props, async (nextValue: Record<any, boolean>, _prevValue: Record<any, boolean>) => {
-    dialog.value = nextValue.open
-})
-
 function close(closeFlag: boolean) {
   dialog.value = closeFlag;
   emit("close", closeFlag);
 }
+
+watch(props, async (nextValue: Record<any, boolean>, _prevValue: Record<any, boolean>) => {
+    dialog.value = nextValue.open
+})
 </script>
 
 <template>
@@ -33,9 +44,25 @@ function close(closeFlag: boolean) {
         <span class="tw-text-[#677483]">Адрес USDT</span>
         <div class="tw-flex tw-gap-x-4 tw-mb-[24px]">
           <span class="md:tw-text-lg min-lg:tw-text-lg sm:tw-text-xs tw-font-semibold">0000x34h3jk534jk5h45kh8cvb86bfdfs34h3jk</span>
-          <div class="tw-cursor-pointer">
+          <div class="tw-cursor-pointer tw-p-2" @click="copyAddr('0000x34h3jk534jk5h45kh8cvb86bfdfs34h3jk')">
             <CopyIcon />
           </div>
+          <v-snackbar
+            v-model="copySnackbar.show"
+            :timeout="copySnackbar.timeout"
+          >
+            {{ copySnackbar.text }}
+
+            <template v-slot:actions>
+              <v-btn
+                color="blue"
+                variant="text"
+                @click="copySnackbar.show = false"
+              >
+                Скрыть
+              </v-btn>
+              </template>
+          </v-snackbar>
         </div>
         <div class="tw-mb-[24px] tw-min-w-[300px] tw-max-w-[466px] tw-text-center">
           <span class="tw-break-words tw-overflow-ellipsis">

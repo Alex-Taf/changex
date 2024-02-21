@@ -1,4 +1,4 @@
-import type { IUseDeviceWidth, IGetNavItemStroke, ICookieOptions } from './index.interface'
+import type { IUseDeviceWidth, IGetNavItemStroke, ICookieOptions, ICopyToClipboard } from './index.interface'
 
 export const formatter = new Intl.NumberFormat('ru', {
     minimumFractionDigits: 2
@@ -76,4 +76,8 @@ export const datetimeToTimestamp = (datetime: string | Date): number => {
     } else {
         return datetime.getTime()
     }
+}
+
+export const copyToClipboard: ICopyToClipboard = (text) => {
+    navigator.clipboard.writeText(text)
 }

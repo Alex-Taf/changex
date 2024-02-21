@@ -23,3 +23,7 @@ export interface ICookieOptions {
     secure?: boolean
     httpOnly?: boolean
 }
+
+export interface ICopyToClipboard {
+    (text: string): void
+}
