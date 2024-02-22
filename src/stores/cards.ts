@@ -48,7 +48,11 @@ export const useCardsStore = defineStore('cards', {
                     slug: item.bank,
                     name: bankName
                 },
-                device: item.deviceName,
+                device: {
+                    name: item.deviceName,
+                    comment: item.deviceComment,
+                    isOnline: item.isDeviceOnline
+                },
                 comment: item.comment,
                 status: item.status,
                 switch: {

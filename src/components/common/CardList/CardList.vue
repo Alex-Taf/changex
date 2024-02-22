@@ -9,6 +9,7 @@ import { vMaska } from 'maska'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import Stars from '@/components/icons/Stars.vue'
 import Filter from '@/components/icons/Filter.vue'
+import IsOnline from '@/components/info/IsOnline.vue'
 import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
 
 const cardsStore = useCardsStore()
@@ -450,7 +451,13 @@ onMounted(async () => {
                     </div>
                 </template>
                 <template v-slot:item.device="{ value }">
-                    <span class="tw-text-[15px]">{{ value }}</span>
+                    <div class="tw-flex tw-flex-col">
+                        <div class="tw-flex tw-items-center tw-gap-x-2">
+                            <IsOnline :online="value.isOnline" />
+                            <span class="tw-text-[15px]">{{ value.name }}</span>
+                        </div>
+                        <span class="tw-text-[12px]">{{ value.comment }}</span>
+                    </div>
                 </template>
                 <template v-slot:item.comment="{ value }">
                     <span class="tw-text-[15px]">{{ value }}</span>
