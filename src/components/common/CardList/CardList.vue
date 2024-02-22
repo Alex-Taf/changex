@@ -457,7 +457,7 @@ onMounted(async () => {
                             <IsOnline :online="value.isOnline" />
                             <span class="tw-text-[15px]">{{ value.name }}</span>
                         </div>
-                        <span class="tw-text-[12px]">{{ value.comment }}</span>
+                        <span class="tw-text-[12px] tw-text-[#677483]">{{ value.comment }}</span>
                     </div>
                 </template>
                 <template v-slot:item.comment="{ value }">
