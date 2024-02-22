@@ -5,6 +5,7 @@ import QrcodeVue from 'qrcode.vue'
 import type { Level, RenderAs } from 'qrcode.vue'
 import { useDevicesStore } from '@/stores/devices'
 import { storeToRefs } from 'pinia'
+import IsOnline from '@/components/info/IsOnline.vue'
 import Download from '../../icons/Download.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
@@ -230,7 +231,10 @@ onMounted(() => {
                     <span class="tw-text-[15px] tw-text-gray-500">{{ value }}</span>
                 </template>
                 <template v-slot:item.title="{ value }">
-                    <span class="tw-text-[15px]">{{ value }}</span>
+                    <div class="tw-flex tw-items-center tw-gap-x-2">
+                        <IsOnline :online="value.isOnline" />
+                        <span class="tw-text-[15px]">{{ value.name }}</span>
+                    </div>
                 </template>
                 <template v-slot:item.device="{ value }">
                     <span class="tw-text-[15px]">{{ value }}</span>

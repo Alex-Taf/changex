@@ -18,7 +18,10 @@ export const useDevicesStore = defineStore('devices', {
       return state.deviceList.map((item: Record<string, unknown>) => {
         return {
             id: item.deviceId,
-            title: item.name,
+            title: {
+              name: item.name,
+              isOnline: item.isOnline
+            },
             device: item.model,
             status: item.status,
             comment: item.comment
