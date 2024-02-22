@@ -21,7 +21,8 @@ const { userInfo } = storeToRefs(userStore)
                     sm:tw-leading-[10px] md:tw-leading-[10px] lg:tw-items-start sm:tw-items-center md:tw-items-center"
         >
             <span class="tw-text-[10px] tw-text-gray-500">Курс Обмена</span>
-            <span class="tw-text-[13px]">USDT/RUB: {{ userInfo.exchangeRate }} RUB</span>
+            <span v-if="userInfo && userInfo.exchangeRate" class="tw-text-[13px]">USDT/RUB: {{ userInfo.exchangeRate }} RUB</span>
+            <span v-else class="tw-text-[13px]">USDT/RUB: --- RUB</span>
         </div>
     </div>
 </template>
