@@ -84,9 +84,7 @@ function closeConfirmDialog() {
 }
 
 async function openEditDialog(cardUid: string) {
-    editCard.uid = ''
-    editCard.cardNum = ''
-    editCard.comment = ''
+    editCard.isEditable = false
     editDialog.value = true
 
     const card = await cardsStore.fetchCardByUID(cardUid)
@@ -94,6 +92,8 @@ async function openEditDialog(cardUid: string) {
     editCard.uid = cardUid
     editCard.cardNum = card.pan
     editCard.comment = card.comment
+
+    if (card) editCard.isEditable = true
 }
 
 const headers = ref([
@@ -177,6 +177,7 @@ const newCard = reactive({
 })
 
 const editCard = reactive({
+    isEditable: false,
     uid: '',
     cardNum: '',
     comment: ''
@@ -752,7 +753,7 @@ onMounted(async () => {
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Номер карты</span>
                         <v-text-field
-                            v-if="editCard.cardNum !== ''"
+                            v-if="editCard.isEditable"
                             v-model="editCard.cardNum"
                             class="tw-w-full"
                             label="0000 0000 0000 0000"
@@ -765,7 +766,7 @@ onMounted(async () => {
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
                         <v-textarea
-                            v-if="editCard.comment !== ''"
+                            v-if="editCard.isEditable"
                             v-model="editCard.comment"
                             class="tw-w-full"
                             label="Комментарий к карте"

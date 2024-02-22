@@ -24,6 +24,7 @@ const devicesStore = useDevicesStore()
 const { loading, hasItems, deviceItemsAll, qr, lastPage } = storeToRefs(devicesStore)
 
 const editDevice = reactive({
+    isEditable: false,
     id: '',
     name: '',
     comment: ''
@@ -41,9 +42,7 @@ function fetchData() {
 }
 
 async function openEditDialog(deviceId: string) {
-    editDevice.id = ''
-    editDevice.name = ''
-    editDevice.comment = ''
+    editDevice.isEditable = false
     editDialog.value = true
 
     const device = await devicesStore.fetchDeviceById(deviceId)
@@ -51,6 +50,8 @@ async function openEditDialog(deviceId: string) {
     editDevice.id = device.deviceId
     editDevice.name = device.name
     editDevice.comment = device.comment
+    
+    if (device) editDevice.isEditable = true
 }
 
 function closeEditDialog() {
@@ -363,7 +364,7 @@ onMounted(() => {
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Название</span>
                         <v-text-field
-                            v-if="editDevice.name !== ''"
+                            v-if="editDevice.isEditable"
                             v-model="editDevice.name"
                             class="tw-w-full"
                             label="Название устройства"
@@ -374,7 +375,7 @@ onMounted(() => {
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
                         <v-textarea
-                            v-if="editDevice.comment"
+                            v-if="editDevice.isEditable"
                             v-model="editDevice.comment"
                             class="tw-w-full"
                             label="Комментарий к устройству"

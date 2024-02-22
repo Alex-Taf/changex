@@ -30,6 +30,7 @@ function openDialog() {
 }
 
 const editAccount = reactive({
+    isEditable: false,
     uid: '',
     username: '',
     comment: ''
@@ -41,10 +42,7 @@ const deleteAccount = reactive<{id: string | number, title: string}>({
 })
 
 async function openEditDialog(accountUID: string) {
-    editAccount.uid = ''
-    editAccount.username = ''
-    editAccount.comment = ''
-
+    editAccount.isEditable = false
     editDialog.value = true
 
     const account = await accountsStore.fetchAccountByUID(accountUID)
@@ -52,6 +50,8 @@ async function openEditDialog(accountUID: string) {
     editAccount.uid = account.uid
     editAccount.username = account.username
     editAccount.comment = account.comment
+
+    if (account) editAccount.isEditable = true
 }
 
 function submitEditAccount() {
@@ -385,7 +385,7 @@ onMounted(() => {
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Имя аккаунта</span>
                         <v-text-field
-                            v-if="editAccount.username"
+                            v-if="editAccount.isEditable"
                             v-model="editAccount.username"
                             class="tw-w-full"
                             label="Имя аккаунта"
@@ -396,7 +396,7 @@ onMounted(() => {
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
                         <v-textarea
-                            v-if="editAccount.comment"
+                            v-if="editAccount.isEditable"
                             v-model="editAccount.comment"
                             class="tw-w-full"
                             label="Комментарий к подключению"
