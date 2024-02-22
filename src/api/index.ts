@@ -279,6 +279,40 @@ export const getDisputes = async (options: TFilterPaginationOptions) => {
     }
 }
 
+export const approveDisput = async (id: string) => {
+    try {
+        return await $authHost.post(`disputes/${id}/approve`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`disputes/${id}/approve`, {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const cancelDisput = async (id: string) => {
+    try {
+        return await $authHost.post(`disputes/${id}/cancel`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`disputes/${id}/cancel`, {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
 export const getDeviceId = async (id: string) => {
     try {
         return await $authHost.post(`/devices/${id}/info`, {})

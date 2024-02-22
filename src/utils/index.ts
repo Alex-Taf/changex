@@ -78,6 +78,21 @@ export const datetimeToTimestamp = (datetime: string | Date): number => {
     }
 }
 
+export const getTimeFromTimestamp = (datetime: number) => {
+    const totalMinutes = Math.floor(datetime / 60000)
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    console.log(new Date(totalMinutes * 60 * 1000).toISOString().substr(11, 8))
+
+    // return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`
+    // return {
+    //     hours,
+    //     minutes
+    // }
+    return new Date(totalMinutes * 60 * 1000).toISOString().substr(11, 8)
+} 
+
 export const getDifferentTimeStatus = (datetime: string | Date): string | undefined => {
     const present = new Date().getTime()
     

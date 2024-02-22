@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getPayments, getDisputes } from '@/api'
+import { getPayments, getDisputes, approveDisput, cancelDisput } from '@/api'
 import type { TFilterPaginationOptions } from '@/types'
 import { formatter, getDifferentTimeStatus, timestampToDatetime } from '@/utils'
 
@@ -59,7 +59,11 @@ export const usePaymentsStore = defineStore('payments', {
                 type: item.cardType,
                 num: item.card.slice(1)
             },
-            status: item.status
+            status: {
+              id: item.paymentId,
+              value: item.disputeStatus,
+              timeout: item.disputeTimeoutAfter
+            },
         }
       })
     }
@@ -137,6 +141,19 @@ export const usePaymentsStore = defineStore('payments', {
       } else {
         this.hasItems = true
       }
+    },
+    async approveDisputByID(id: string) {
+      const res = await approveDisput(id)
+      
+      const idx = this.disputsList.findIndex((disput) => disput.paymentId === id)
+      console.log(res)
+      this.disputsList[idx] = res?.data.payment
+    },
+    async cancelDisputByID(id: string) {
+      const res = await cancelDisput(id)
+
+      const idx = this.disputsList.findIndex((disput) => disput.paymentId === id)
+      this.disputsList[idx] = res?.data.payment
     },
     showLoading() {
       this.loading = true

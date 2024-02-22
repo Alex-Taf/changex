@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watchEffect } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { debounce } from 'vue-debounce'
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
@@ -8,7 +8,8 @@ import { useCardsStore } from '@/stores/cards';
 import { storeToRefs } from 'pinia';
 import RenderOn from '@/components/utils/RenderOn.vue';
 import Stars from '@/components/icons/Stars.vue';
-import { datetimeToTimestamp } from '@/utils';
+import VueCountdown from '@chenfengyuan/vue-countdown'
+import { datetimeToTimestamp, getTimeFromTimestamp } from '@/utils';
 
 const paymentsStore = usePaymentsStore()
 const { loading, hasItems, disputsItemsAll, lastPage } = storeToRefs(paymentsStore)
@@ -383,7 +384,7 @@ onMounted(() => {
                     <span class="tw-text-[15px] tw-text-gray-500">{{ value }}</span>
                 </template>
                 <template v-slot:item.date="{ value }">
-                    <span class="tw-text-[15px]">{{ value }}</span>
+                    <span class="tw-text-[15px]">{{ value.value }}</span>
                 </template>
                 <template v-slot:item.card="{ value }">
                     <div class="tw-flex tw-items-center tw-gap-x-4">
@@ -404,11 +405,27 @@ onMounted(() => {
                     >
                 </template>
                 <template v-slot:item.status="{ value }">
-                    <div v-if="value === 'awaiting'" class="tw-flex tw-gap-x-2">
+                    <div v-if="value.value === 'awaiting'" class="tw-flex tw-gap-x-10">
                         <div
-                            class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-[#0085FF] tw-w-[158px] tw-px-2 tw-py-1 tw-text-center"
+                            class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-[#EF4B27] tw-w-[158px] tw-px-2 tw-py-1 tw-text-center"
                         >
-                            <span class="tw-text-[#0085FF] tw-text-xs">Ожидает</span>
+                            <span class="tw-text-[#EF4B27] tw-text-xs">
+                                Ожидает <vue-countdown :time="value.timeout" v-slot="{ hours, minutes, seconds }">
+                                {{ hours.toString().padStart(2, "0") }}:{{ minutes.toString().padStart(2, "0") }}:{{ seconds.toString().padStart(2, "0") }}</vue-countdown>
+                            </span>
+                        </div>
+                        <div class="tw-flex tw-gap-x-2">
+                            <v-btn class="!tw-rounded-3xl" variant="outlined" color="#04B6F5" @click="paymentsStore.cancelDisputByID(value.id)">
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9.375 2.625L2.625 9.375" stroke="#04B6F5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M9.375 9.375L2.625 2.625" stroke="#04B6F5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </v-btn>
+                            <v-btn class="!tw-rounded-3xl" variant="elevated" color="#04B6F5" @click="paymentsStore.approveDisputByID(value.id)">
+                                <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9.125 1.375L3.875 6.625L1.25 4" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </v-btn>
                         </div>
                         <!-- <div class="tw-flex tw-items-center tw-gap-x-2 tw-cursor-pointer">
                             <svg
@@ -432,10 +449,10 @@ onMounted(() => {
                         </div> -->
                     </div>
                     <div
-                        v-if="value === 'cancelled'"
-                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-red-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                        v-if="value.value === 'cancelled'"
+                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                     >
-                        <span class="tw-text-red-400 tw-text-xs">Отклонён</span>
+                        <span class="tw-text-gray-400 tw-text-xs">Отклонён</span>
                     </div>
                     <!-- <div
                         v-if="value === 'dispute'"
@@ -444,14 +461,14 @@ onMounted(() => {
                         <span class="tw-text-red-400 tw-text-xs">Диспут</span>
                     </div> -->
                     <div
-                        v-if="value === 'dispute_closed'"
+                        v-if="value.value === 'approved'"
                         class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-green-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                     >
                         <span class="tw-text-green-400 tw-text-xs">Одобрен</span>
                     </div>
                     <div
-                        v-if="value === 'timeout'"
-                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-yellow-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                        v-if="value.value === 'timeout'"
+                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-yellow-500 tw-w-[164px] tw-px-2 tw-py-1 tw-text-center"
                     >
                         <span class="tw-text-yellow-400 tw-text-xs">Истекло время</span>
                     </div>

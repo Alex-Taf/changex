@@ -13,6 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@chenfengyuan/vue-countdown": "2",
     "@mdi/font": "^7.4.47",
     "@vuepic/vue-datepicker": "^7.4.1",
     "axios": "^1.6.7",
