@@ -92,6 +92,23 @@ export const getUserInfo = async () => {
     }
 }
 
+export const getLatestAppApk = async () => {
+    try {
+        return await $host.get('/apk/getLatest.json')
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $host.get('/apk/getLatest.json')
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
 export const getFinancesStory = async (options: TFilterPaginationOptions) => {
     try {
         return await $authHost.post('/balance/history', { ...options })

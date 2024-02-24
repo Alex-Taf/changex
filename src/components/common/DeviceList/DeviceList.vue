@@ -4,6 +4,7 @@ import { debounce } from 'vue-debounce'
 import QrcodeVue from 'qrcode.vue'
 import type { Level, RenderAs } from 'qrcode.vue'
 import { useDevicesStore } from '@/stores/devices'
+import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import IsOnline from '@/components/info/IsOnline.vue'
 import Download from '../../icons/Download.vue'
@@ -23,6 +24,9 @@ const searchQuery = ref('')
 
 const devicesStore = useDevicesStore()
 const { loading, hasItems, deviceItemsAll, qr, lastPage } = storeToRefs(devicesStore)
+
+const userStore = useUserStore()
+const { apkUrl } = storeToRefs(userStore)
 
 const editDevice = reactive({
     isEditable: false,
@@ -148,6 +152,7 @@ function loadMore() {
 
 onMounted(() => {
     fetchData()
+    userStore.getAppLink()
 })
 </script>
 
@@ -356,9 +361,11 @@ onMounted(() => {
             <qrcode-vue :value="qr" :level="level" :size="184" :render-as="renderAs" />
             <span class="tw-text-[15px] tw-text-[#2B3A4C]">Отсканируйте в приложении<br> данный QR-Код</span>
         </div>
-        <div class="tw-flex tw-items-center tw-gap-x-2 tw-cursor-pointer">
-            <Download /> <span class="tw-text-[15px] tw-text-[#04B6F5] tw-select-none">Скачать APK приложение</span>
-        </div>
+        <a :href="apkUrl" target="_blank" class="tw-no-underline">
+            <div class="tw-flex tw-items-center tw-gap-x-2 tw-cursor-pointer">
+                <Download /> <span class="tw-text-[15px] tw-text-[#04B6F5] tw-select-none">Скачать APK приложение</span>
+            </div>
+        </a>
       </v-card>
     </v-dialog>
 
