@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { deleteDevice, editDeviceName, editDeviceComment, getDeviceId, getDevices, getTempToken } from '@/api'
+import { deleteDevice, editDeviceName, editDeviceComment, getDeviceId, getDevices, getTempToken, checkTempToken } from '@/api'
 import type { TFilterPaginationOptions } from '@/types'
 
 export const useDevicesStore = defineStore('devices', {
@@ -8,6 +8,7 @@ export const useDevicesStore = defineStore('devices', {
     qr: '',
     loading: true,
     hasItems: true,
+    isTempTokenGet: false,
     page: 1,
     lastPage: 1,
     offset: 1,
@@ -72,8 +73,16 @@ export const useDevicesStore = defineStore('devices', {
       }
     },
     async loadQR() {
-      const res = getTempToken()
-      this.qr = res?.qr
+      const res = await getTempToken()
+      this.qr = res?.data.qr
+      console.log(res)
+      console.log(this.qr)
+    },
+    async checkToken() {
+      const res = await checkTempToken()
+      if (res?.data.status === 'done') {
+        this.isTempTokenGet = true
+      }
     },
     async saveEditDevice(edited: Record<string, unknown>) {
       const id = edited.id as string

@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue'
 import { debounce } from 'vue-debounce'
-import QrcodeVue from 'qrcode.vue'
-import type { Level, RenderAs } from 'qrcode.vue'
 import { useDevicesStore } from '@/stores/devices'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
@@ -10,20 +8,26 @@ import IsOnline from '@/components/info/IsOnline.vue'
 import Download from '../../icons/Download.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
+import { watch } from 'vue'
 
 const dialog = ref(false)
 const editDialog = ref(false)
 const dialogDelete = ref(false)
 
-// const qrValue = ref('https://example.com')
-const level = ref<Level>('H')
-const renderAs = ref<RenderAs>('svg')
+const qrScanDoneSnackbar = reactive({
+    show: false,
+    text: 'Временный токен получен! Устройство успешно добавлено в список.',
+    timeout: 4000,
+})
+
+/** Used for long polling requests to check QR is scanned **/
+let interval: number | undefined
 
 const searchModel = ref('')
 const searchQuery = ref('')
 
 const devicesStore = useDevicesStore()
-const { loading, hasItems, deviceItemsAll, qr, lastPage } = storeToRefs(devicesStore)
+const { loading, hasItems, deviceItemsAll, qr, isTempTokenGet, lastPage } = storeToRefs(devicesStore)
 
 const userStore = useUserStore()
 const { apkUrl } = storeToRefs(userStore)
@@ -81,6 +85,12 @@ function deleteDeviceAction(id: number | string) {
 function openDialog() {
     dialog.value = true
     devicesStore.loadQR()
+    interval = setInterval(() => devicesStore.checkToken(), 3000)
+}
+
+function closeDialog() {
+    dialog.value = false
+    clearInterval(interval)
 }
 
 const headers = ref([
@@ -149,6 +159,14 @@ function loadMore() {
         })
     }
 }
+
+watch(isTempTokenGet, (newValue: boolean, _prevValue: boolean) => {
+    if (newValue) {
+        closeDialog()
+        fetchData()
+        qrScanDoneSnackbar.show = true
+    }
+})
 
 onMounted(() => {
     fetchData()
@@ -340,6 +358,24 @@ onMounted(() => {
         </div>
     </section>
 
+    <v-snackbar
+        v-model="qrScanDoneSnackbar.show"
+        :timeout="qrScanDoneSnackbar.timeout"
+        color="green"
+    >
+        {{ qrScanDoneSnackbar.text }}
+
+        <template v-slot:actions>
+            <v-btn
+                color="white"
+                variant="text"
+                @click="qrScanDoneSnackbar.show = false"
+            >
+                Скрыть
+            </v-btn>
+        </template>
+    </v-snackbar>
+
     <DeleteDialog
         :open="dialogDelete"
         title="Вы действительно хотите удалить устройство?"
@@ -350,6 +386,7 @@ onMounted(() => {
 
     <v-dialog
       v-model="dialog"
+      @update:model-value="closeDialog"
       width="auto"
     >
       <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl !tw-p-[48px]">
@@ -358,7 +395,8 @@ onMounted(() => {
                     tw-mb-[24px] tw-w-[352px] tw-h-[352px] tw-text-center tw-border tw-border-solid tw-border-[#AEB7C1]
                     tw-rounded-xl"
         >
-            <qrcode-vue :value="qr" :level="level" :size="184" :render-as="renderAs" />
+            <img v-if="qr" :src="qr" />
+            <v-skeleton-loader v-else type="image" width="213" height="213"></v-skeleton-loader>
             <span class="tw-text-[15px] tw-text-[#2B3A4C]">Отсканируйте в приложении<br> данный QR-Код</span>
         </div>
         <a :href="apkUrl" target="_blank" class="tw-no-underline">

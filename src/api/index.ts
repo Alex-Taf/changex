@@ -75,6 +75,23 @@ export const getTempToken = async () => {
     }
 }
 
+export const checkTempToken = async () => {
+    try {
+        return await $authHost.post('/auth/checkTempToken', {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post('/auth/checkTempToken', {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
 export const getUserInfo = async () => {
     try {
         return await $authHost.post('/me', {})
