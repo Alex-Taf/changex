@@ -35,6 +35,7 @@ const sort = reactive({
 const sortOptions = ref([
     {
         value: '',
+        sortParams: {},
         name: 'Не сортировать'
     },
     {
@@ -52,6 +53,10 @@ const sortOptions = ref([
     {
         value: 'comment',
         name: 'Комментариям'
+    },
+    {
+        value: 'status',
+        name: 'Статусу'
     }
 ])
 
@@ -100,36 +105,58 @@ const headers = ref([
     {
         title: 'Номер',
         sortable: true,
+        sortParams: {
+            value: 'pan',
+            name: 'Картам'
+        },
         key: 'card'
     },
     {
         title: 'Банк',
         sortable: true,
+        sortParams: {
+            value: 'bank',
+            name: 'Банкам'
+        },
         key: 'bank'
     },
     {
         title: 'Устройство',
         sortable: true,
+        sortParams: {
+            value: 'deviceName',
+            name: 'Устройствам'
+        },
         key: 'device'
     },
     {
         title: 'Комментарий',
         sortable: true,
+        sortParams: {
+            value: 'comment',
+            name: 'Комментариям'
+        },
         key: 'comment'
     },
     {
         title: 'Статус',
         sortable: true,
+        sortParams: {
+            value: 'status',
+            name: 'Статусу'
+        },
         key: 'status'
     },
     {
         title: 'Влючена',
         sortable: false,
+        sortParams: {},
         key: 'switch'
     },
     {
         title: '',
         sortable: false,
+        sortParams: {},
         key: 'actions'
     }
 ])
@@ -418,13 +445,14 @@ onMounted(async () => {
     <RenderOn :px="840">
         <v-card v-if="hasItems" class="!tw-rounded-2xl tw-mb-6">
             <v-data-table :headers="headers" :items="itemsAll" :footer="false" :loading="loading">
-                <template v-slot:headers="{ columns, toggleSort, isSorted }">
+                <template v-slot:headers="{ columns }">
                     <tr>
                         <template v-for="column in columns" :key="column.key">
-                            <td class="tw-cursor-pointer" @click="() => toggleSort(column)">
+                            <td class="tw-cursor-pointer" @click="() => setSort(column.sortParams)">
                                 <span class="tw-text-[13px] tw-text-[#677483] tw-mr-2">{{ column.title }}</span>
+                                {{  column.sort  }}
                                 <template v-if="column.sortable">
-                                    <template v-if="isSorted(column)">
+                                    <template v-if="column.sortParams.value === sort.value">
                                         <svg style="transform: rotate(180deg);" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M10.621 0.943362C10.5852 0.858049 10.5249 0.785259 10.4477 0.734166C10.3706 0.683073 10.28 0.655963 10.1875 0.656252H0.812455C0.719912 0.655963 0.629354 0.683073 0.552193 0.734166C0.475032 0.785259 0.414721 0.858049 0.378861 0.943362C0.345089 1.02994 0.336522 1.12432 0.35415 1.21557C0.371777 1.30682 0.41488 1.39121 0.47847 1.45899L5.16597 6.14649C5.25557 6.23312 5.37532 6.28155 5.49995 6.28155C5.62459 6.28155 5.74434 6.23312 5.83394 6.14649L10.5214 1.45899C10.585 1.39121 10.6281 1.30682 10.6458 1.21557C10.6634 1.12432 10.6548 1.02994 10.621 0.943362Z" fill="#677483"/>
                                         </svg>

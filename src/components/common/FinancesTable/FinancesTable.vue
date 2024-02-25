@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { formatter } from '../../../utils'
 import { useFinancesStore } from '@/stores/finances'
 import { storeToRefs } from 'pinia'
@@ -16,21 +16,34 @@ const headers = ref([
     {
         title: "",
         sortable: false,
+        sortParams: {},
         key: 'direction'
     },
     {
         title: "Дата и время",
         sortable: true,
-        key: 'date'
+        sortParams: {
+            value: 'timestamp_desc',
+            name: 'Дате и времени'
+        },
+        key: 'date',
     },
     {
         title: "Комментарий",
         sortable: true,
+        sortParams: {
+            value: 'comment',
+            name: 'Комментариям'
+        },
         key: 'comment'
     },
     {
         title: "Сумма",
         sortable: true,
+        sortParams: {
+            value: 'amount',
+            name: 'Сумма'
+        },
         key: 'amount'
     },
     // {
@@ -48,7 +61,7 @@ function changePage(newPage: string, isActive: boolean) {
     }
 
     page.value = Number(newPage)
-    financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 }).then(() => {
+    financesStore.fetchFinancesStory({ page: page.value, sort: sort.value, countPerPage: 10 }).then(() => {
             financesStore.hideLoading()
         })
 }
@@ -56,7 +69,7 @@ function changePage(newPage: string, isActive: boolean) {
 function decPage() {
     if (page.value !== 1) {
         page.value--
-        financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 }).then(() => {
+        financesStore.fetchFinancesStory({ page: page.value, sort: sort.value, countPerPage: 10 }).then(() => {
             financesStore.hideLoading()
         })
     }
@@ -65,7 +78,7 @@ function decPage() {
 function incPage() {
     if (page.value !== lastPage.value) {
         page.value++
-        financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 }).then(() => {
+        financesStore.fetchFinancesStory({ page: page.value, sort: sort.value, countPerPage: 10 }).then(() => {
             financesStore.hideLoading()
         })
     }
@@ -74,14 +87,46 @@ function incPage() {
 function loadMore() {
     if (page.value < lastPage.value) {
         page.value++
-        financesStore.loadMoreFinances({ page: page.value, countPerPage: 10 }).then(() => {
+        financesStore.loadMoreFinances({ page: page.value, sort: sort.value, countPerPage: 10 }).then(() => {
             financesStore.hideLoading()
         })
     }
 }
 
+const sort = reactive({
+    value: '',
+    name: 'Не сортировать'
+})
+
+const sortOptions = ref([
+    {
+        value: '',
+        name: 'Не сортировать'
+    },
+    {
+        value: 'timestamp_desc',
+        name: 'Дате и времени'
+    },
+    {
+        value: 'comment',
+        name: 'Комментариям'
+    },
+    {
+        value: 'amount',
+        name: 'Сумма'
+    }
+])
+
+function setSort(sortOption: Record<string, unknown>) {
+    sort.value = sortOption.value
+    sort.name = sortOption.name
+    financesStore.fetchFinancesStory({ page: page.value, sort: sort.value, countPerPage: 10 }).then(() => {
+        financesStore.hideLoading()
+    })
+}
+
 onMounted(() => {
-    financesStore.fetchFinancesStory({ page: page.value, countPerPage: 10 }).then(() => {
+    financesStore.fetchFinancesStory({ page: page.value, sort: sort.value, countPerPage: 10 }).then(() => {
         financesStore.hideLoading()
     })
 })
@@ -104,14 +149,14 @@ onMounted(() => {
                     <ArrowUpRight v-if="value === 'deposit'" />
                     <ArrowDownLeft v-if="value === 'withdrawal'" />
                 </template>
-                <template v-slot:headers="{ columns, toggleSort, isSorted }">
+                <template v-slot:headers="{ columns }">
                     <tr>
                         <template v-for="column in columns" :key="column.key">
-                            <td class="tw-cursor-pointer" @click="() => toggleSort(column)">
+                            <td class="tw-cursor-pointer" @click="() => setSort(column.sortParams)">
                                 <span class="tw-text-[13px] tw-text-[#677483] tw-mr-2">{{ column.title }}</span>
                                 {{  column.sort  }}
                                 <template v-if="column.sortable">
-                                    <template v-if="isSorted(column)">
+                                    <template v-if="column.sortParams.value === sort.value">
                                         <svg style="transform: rotate(180deg);" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M10.621 0.943362C10.5852 0.858049 10.5249 0.785259 10.4477 0.734166C10.3706 0.683073 10.28 0.655963 10.1875 0.656252H0.812455C0.719912 0.655963 0.629354 0.683073 0.552193 0.734166C0.475032 0.785259 0.414721 0.858049 0.378861 0.943362C0.345089 1.02994 0.336522 1.12432 0.35415 1.21557C0.371777 1.30682 0.41488 1.39121 0.47847 1.45899L5.16597 6.14649C5.25557 6.23312 5.37532 6.28155 5.49995 6.28155C5.62459 6.28155 5.74434 6.23312 5.83394 6.14649L10.5214 1.45899C10.585 1.39121 10.6281 1.30682 10.6458 1.21557C10.6634 1.12432 10.6548 1.02994 10.621 0.943362Z" fill="#677483"/>
                                         </svg>
@@ -168,13 +213,14 @@ onMounted(() => {
                     <ArrowUpRight v-if="value === 'deposit'" />
                     <ArrowDownLeft v-if="value === 'withdrawal'" />
                 </template>
-                <template v-slot:headers="{ columns, toggleSort, isSorted }">
+                <template v-slot:headers="{ columns }">
                     <tr>
                         <template v-for="column in columns" :key="column.key">
-                            <td class="tw-cursor-pointer" @click="() => toggleSort(column)">
+                            <td class="tw-cursor-pointer" @click="() => setSort(column.sortParams)">
                                 <span class="tw-text-[13px] tw-text-[#677483] tw-mr-2">{{ column.title }}</span>
+                                {{  column.sort  }}
                                 <template v-if="column.sortable">
-                                    <template v-if="isSorted(column)">
+                                    <template v-if="column.sortParams.value === sort.value">
                                         <svg style="transform: rotate(180deg);" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M10.621 0.943362C10.5852 0.858049 10.5249 0.785259 10.4477 0.734166C10.3706 0.683073 10.28 0.655963 10.1875 0.656252H0.812455C0.719912 0.655963 0.629354 0.683073 0.552193 0.734166C0.475032 0.785259 0.414721 0.858049 0.378861 0.943362C0.345089 1.02994 0.336522 1.12432 0.35415 1.21557C0.371777 1.30682 0.41488 1.39121 0.47847 1.45899L5.16597 6.14649C5.25557 6.23312 5.37532 6.28155 5.49995 6.28155C5.62459 6.28155 5.74434 6.23312 5.83394 6.14649L10.5214 1.45899C10.585 1.39121 10.6281 1.30682 10.6458 1.21557C10.6634 1.12432 10.6548 1.02994 10.621 0.943362Z" fill="#677483"/>
                                         </svg>
@@ -231,13 +277,14 @@ onMounted(() => {
                     <ArrowUpRight v-if="value === 'deposit'" />
                     <ArrowDownLeft v-if="value === 'withdrawal'" />
                 </template>
-                <template v-slot:headers="{ columns, toggleSort, isSorted }">
+                <template v-slot:headers="{ columns }">
                     <tr>
                         <template v-for="column in columns" :key="column.key">
-                            <td class="tw-cursor-pointer" @click="() => toggleSort(column)">
+                            <td class="tw-cursor-pointer" @click="() => setSort(column.sortParams)">
                                 <span class="tw-text-[13px] tw-text-[#677483] tw-mr-2">{{ column.title }}</span>
+                                {{  column.sort  }}
                                 <template v-if="column.sortable">
-                                    <template v-if="isSorted(column)">
+                                    <template v-if="column.sortParams.value === sort.value">
                                         <svg style="transform: rotate(180deg);" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M10.621 0.943362C10.5852 0.858049 10.5249 0.785259 10.4477 0.734166C10.3706 0.683073 10.28 0.655963 10.1875 0.656252H0.812455C0.719912 0.655963 0.629354 0.683073 0.552193 0.734166C0.475032 0.785259 0.414721 0.858049 0.378861 0.943362C0.345089 1.02994 0.336522 1.12432 0.35415 1.21557C0.371777 1.30682 0.41488 1.39121 0.47847 1.45899L5.16597 6.14649C5.25557 6.23312 5.37532 6.28155 5.49995 6.28155C5.62459 6.28155 5.74434 6.23312 5.83394 6.14649L10.5214 1.45899C10.585 1.39121 10.6281 1.30682 10.6458 1.21557C10.6634 1.12432 10.6548 1.02994 10.621 0.943362Z" fill="#677483"/>
                                         </svg>
@@ -301,6 +348,25 @@ onMounted(() => {
 
     <v-window v-if="!loading" v-model="tab">
         <v-window-item value="one">
+            <section class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-2 tw-mt-2">
+                <div>
+                    <span class="tw-text-[13px] tw-select-none">
+                        Сортировать по <v-menu>
+                            <template v-slot:activator="{ props }">
+                                <span class="tw-text-[#04B6F5]" v-bind="props">{{ sort.name }}</span>
+                            </template>
+
+                            <v-list>
+                                <template v-for="option in sortOptions" :key="option">
+                                    <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="setSort(option)">
+                                        <v-list-item-title><span class="tw-select-none">{{ option.name }}</span></v-list-item-title>
+                                    </v-list-item>
+                                </template>
+                            </v-list>
+                        </v-menu>
+                    </span>
+                </div>
+            </section>
             <section class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-p-2 tw-h-[420px]">
                 <template v-for="item in itemsAll" :key="item">
                     <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-p-4 tw-rounded-2xl">
@@ -340,6 +406,25 @@ onMounted(() => {
             </section>
         </v-window-item>
         <v-window-item value="two">
+            <section class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-2 tw-mt-2">
+                <div>
+                    <span class="tw-text-[13px] tw-select-none">
+                        Сортировать по <v-menu>
+                            <template v-slot:activator="{ props }">
+                                <span class="tw-text-[#04B6F5]" v-bind="props">{{ sort.name }}</span>
+                            </template>
+
+                            <v-list>
+                                <template v-for="option in sortOptions" :key="option">
+                                    <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="setSort(option)">
+                                        <v-list-item-title><span class="tw-select-none">{{ option.name }}</span></v-list-item-title>
+                                    </v-list-item>
+                                </template>
+                            </v-list>
+                        </v-menu>
+                    </span>
+                </div>
+            </section>
             <section class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-p-2 tw-h-[420px]">
                 <template v-for="item in itemsDeposit" :key="item">
                     <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-p-4 tw-rounded-2xl">
@@ -379,6 +464,25 @@ onMounted(() => {
             </section>
         </v-window-item>
         <v-window-item value="three">
+            <section class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-2 tw-mt-2">
+                <div>
+                    <span class="tw-text-[13px] tw-select-none">
+                        Сортировать по <v-menu>
+                            <template v-slot:activator="{ props }">
+                                <span class="tw-text-[#04B6F5]" v-bind="props">{{ sort.name }}</span>
+                            </template>
+
+                            <v-list>
+                                <template v-for="option in sortOptions" :key="option">
+                                    <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="setSort(option)">
+                                        <v-list-item-title><span class="tw-select-none">{{ option.name }}</span></v-list-item-title>
+                                    </v-list-item>
+                                </template>
+                            </v-list>
+                        </v-menu>
+                    </span>
+                </div>
+            </section>
             <section class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-p-2 tw-h-[420px]">
                 <template v-for="item in itemsWithdrawal" :key="item">
                     <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-p-4 tw-rounded-2xl">

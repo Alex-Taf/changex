@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, watch } from 'vue'
 import { debounce } from 'vue-debounce'
 import { useDevicesStore } from '@/stores/devices'
 import { useUserStore } from '@/stores/user'
@@ -8,7 +8,6 @@ import IsOnline from '@/components/info/IsOnline.vue'
 import Download from '../../icons/Download.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
-import { watch } from 'vue'
 
 const dialog = ref(false)
 const editDialog = ref(false)
@@ -45,7 +44,7 @@ const deleteDevice = reactive<{id: string | number, title: string}>({
 })
 
 function fetchData() {
-    devicesStore.fetchDevices({ search: searchQuery.value, page: page.value, countPerPage: 10 }).then(() => {
+    devicesStore.fetchDevices({ search: searchQuery.value, sort: sort.value, page: page.value, countPerPage: 10 }).then(() => {
         devicesStore.hideLoading()
     })
 }
@@ -93,25 +92,75 @@ function closeDialog() {
     clearInterval(interval)
 }
 
+const sort = reactive({
+    value: '',
+    name: 'Не сортировать'
+})
+
+const sortOptions = ref([
+    {
+        value: '',
+        name: 'Не сортировать'
+    },
+    {
+        value: 'deviceId',
+        name: 'ID'
+    },
+    {
+        value: 'name',
+        name: 'По названию'
+    },
+    {
+        value: 'model',
+        name: 'По модели'
+    },
+    {
+        value: 'comment',
+        name: 'По комментарию'
+    }
+])
+
+function setSort(sortOption: Record<string, unknown>) {
+    sort.value = sortOption.value
+    sort.name = sortOption.name
+    fetchData()
+}
+
 const headers = ref([
     {
         title: 'ID',
         sortable: true,
+        sortParams: {
+            value: 'deviceId',
+            name: 'ID'
+        },
         key: 'id'
     },
     {
         title: 'Название',
         sortable: true,
+        sortParams: {
+            value: 'name',
+            name: 'По названию'
+        },
         key: 'title'
     },
     {
         title: 'Модель телефона',
         sortable: true,
+        sortParams: {
+            value: 'model',
+            name: 'По модели'
+        },
         key: 'device'
     },
     {
         title: 'Комментарий',
         sortable: true,
+        sortParams: {
+            value: 'comment',
+            name: 'По комментарию'
+        },
         key: 'comment'
     },
     {
@@ -154,7 +203,7 @@ function incPage() {
 function loadMore() {
     if (page.value < lastPage.value) {
         page.value++
-        devicesStore.loadMoreDevices({ search: searchQuery.value, page: page.value, countPerPage: 10 }).then(() => {
+        devicesStore.loadMoreDevices({ search: searchQuery.value, sort: sort.value, page: page.value, countPerPage: 10 }).then(() => {
             devicesStore.hideLoading()
         })
     }
@@ -208,41 +257,21 @@ onMounted(() => {
         </v-card>
         <v-card v-if="hasItems" class="!tw-rounded-2xl tw-mb-6">
             <v-data-table :headers="headers" :items="deviceItemsAll" :footer="false" :loading="loading">
-                <template v-slot:headers="{ columns, toggleSort, isSorted }">
+                <template v-slot:headers="{ columns }">
                     <tr>
                         <template v-for="column in columns" :key="column.key">
-                            <td class="tw-cursor-pointer" @click="() => toggleSort(column)">
-                                <span class="tw-text-[13px] tw-text-[#677483] tw-mr-2">{{
-                                    column.title
-                                }}</span>
+                            <td class="tw-cursor-pointer" @click="() => setSort(column.sortParams)">
+                                <span class="tw-text-[13px] tw-text-[#677483] tw-mr-2">{{ column.title }}</span>
+                                {{  column.sort  }}
                                 <template v-if="column.sortable">
-                                    <template v-if="isSorted(column)">
-                                        <svg
-                                            style="transform: rotate(180deg)"
-                                            width="11"
-                                            height="7"
-                                            viewBox="0 0 11 7"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                d="M10.621 0.943362C10.5852 0.858049 10.5249 0.785259 10.4477 0.734166C10.3706 0.683073 10.28 0.655963 10.1875 0.656252H0.812455C0.719912 0.655963 0.629354 0.683073 0.552193 0.734166C0.475032 0.785259 0.414721 0.858049 0.378861 0.943362C0.345089 1.02994 0.336522 1.12432 0.35415 1.21557C0.371777 1.30682 0.41488 1.39121 0.47847 1.45899L5.16597 6.14649C5.25557 6.23312 5.37532 6.28155 5.49995 6.28155C5.62459 6.28155 5.74434 6.23312 5.83394 6.14649L10.5214 1.45899C10.585 1.39121 10.6281 1.30682 10.6458 1.21557C10.6634 1.12432 10.6548 1.02994 10.621 0.943362Z"
-                                                fill="#677483"
-                                            />
+                                    <template v-if="column.sortParams.value === sort.value">
+                                        <svg style="transform: rotate(180deg);" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M10.621 0.943362C10.5852 0.858049 10.5249 0.785259 10.4477 0.734166C10.3706 0.683073 10.28 0.655963 10.1875 0.656252H0.812455C0.719912 0.655963 0.629354 0.683073 0.552193 0.734166C0.475032 0.785259 0.414721 0.858049 0.378861 0.943362C0.345089 1.02994 0.336522 1.12432 0.35415 1.21557C0.371777 1.30682 0.41488 1.39121 0.47847 1.45899L5.16597 6.14649C5.25557 6.23312 5.37532 6.28155 5.49995 6.28155C5.62459 6.28155 5.74434 6.23312 5.83394 6.14649L10.5214 1.45899C10.585 1.39121 10.6281 1.30682 10.6458 1.21557C10.6634 1.12432 10.6548 1.02994 10.621 0.943362Z" fill="#677483"/>
                                         </svg>
                                     </template>
                                     <template v-else>
-                                        <svg
-                                            width="11"
-                                            height="7"
-                                            viewBox="0 0 11 7"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                d="M10.621 0.943362C10.5852 0.858049 10.5249 0.785259 10.4477 0.734166C10.3706 0.683073 10.28 0.655963 10.1875 0.656252H0.812455C0.719912 0.655963 0.629354 0.683073 0.552193 0.734166C0.475032 0.785259 0.414721 0.858049 0.378861 0.943362C0.345089 1.02994 0.336522 1.12432 0.35415 1.21557C0.371777 1.30682 0.41488 1.39121 0.47847 1.45899L5.16597 6.14649C5.25557 6.23312 5.37532 6.28155 5.49995 6.28155C5.62459 6.28155 5.74434 6.23312 5.83394 6.14649L10.5214 1.45899C10.585 1.39121 10.6281 1.30682 10.6458 1.21557C10.6634 1.12432 10.6548 1.02994 10.621 0.943362Z"
-                                                fill="#677483"
-                                            />
+                                        <svg width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M10.621 0.943362C10.5852 0.858049 10.5249 0.785259 10.4477 0.734166C10.3706 0.683073 10.28 0.655963 10.1875 0.656252H0.812455C0.719912 0.655963 0.629354 0.683073 0.552193 0.734166C0.475032 0.785259 0.414721 0.858049 0.378861 0.943362C0.345089 1.02994 0.336522 1.12432 0.35415 1.21557C0.371777 1.30682 0.41488 1.39121 0.47847 1.45899L5.16597 6.14649C5.25557 6.23312 5.37532 6.28155 5.49995 6.28155C5.62459 6.28155 5.74434 6.23312 5.83394 6.14649L10.5214 1.45899C10.585 1.39121 10.6281 1.30682 10.6458 1.21557C10.6634 1.12432 10.6548 1.02994 10.621 0.943362Z" fill="#677483"/>
                                         </svg>
                                     </template>
                                 </template>
@@ -295,6 +324,23 @@ onMounted(() => {
 
     <RenderOn :px-min="320" :px-max="839">
         <section v-if="deviceItemsAll.length > 0" class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-p-2 tw-h-[420px]">
+            <div>
+                <span class="tw-text-[13px] tw-select-none">
+                    Сортировать по <v-menu>
+                        <template v-slot:activator="{ props }">
+                            <span class="tw-text-[#04B6F5]" v-bind="props">{{ sort.name }}</span>
+                        </template>
+
+                        <v-list>
+                            <template v-for="option in sortOptions" :key="option">
+                                <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="setSort(option)">
+                                    <v-list-item-title><span class="tw-select-none">{{ option.name }}</span></v-list-item-title>
+                                </v-list-item>
+                            </template>
+                        </v-list>
+                    </v-menu>
+                </span>
+            </div>
                 <template v-for="item in deviceItemsAll" :key="item">
                     <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-p-4 tw-rounded-2xl">
                         <div class="tw-flex tw-justify-between tw-mb-2">
