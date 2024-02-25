@@ -148,7 +148,7 @@ const headers = ref([
         key: 'status'
     },
     {
-        title: 'Влючена',
+        title: 'Включена',
         sortable: false,
         sortParams: {},
         key: 'switch'
