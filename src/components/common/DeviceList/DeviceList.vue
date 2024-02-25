@@ -71,9 +71,11 @@ function submitEditDevice() {
     editDialog.value = false
 }
 
-function onDeleteDevice(id: number | string, title: string) {
+function onDeleteDevice(id: number | string, title: Record<string, unknown>) {
+
+    console.log(title)
     deleteDevice.id = id
-    deleteDevice.title = title
+    deleteDevice.title = title.name as string
     dialogDelete.value = true
 }
 
