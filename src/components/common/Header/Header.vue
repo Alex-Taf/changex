@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
@@ -7,6 +7,9 @@ import { logout } from '@/api'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import Rate from '@/components/info/Rate.vue'
 import Avatar from '../../user/Avatar/Avatar.vue'
+
+/** Used for long polling requests to update user data **/
+let interval: number | undefined
 
 const userStore = useUserStore()
 const { userInfo } = storeToRefs(userStore)
@@ -25,7 +28,12 @@ function exit() {
 }
 
 onMounted(() => {
-    userStore.fetchUserInfo()
+    userStore.fetchUserInfo() // First request
+    interval = setInterval(() => userStore.fetchUserInfo(), 300000)
+})
+
+onUnmounted(() => {
+    clearInterval(interval)
 })
 </script>
 
