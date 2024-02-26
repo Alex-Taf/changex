@@ -56,7 +56,7 @@ export const usePaymentsStore = defineStore('payments', {
                 currency: item.currency
             },
             debit: {
-                value: formatter.format(item.withdrawalAmount),
+                value: formatter.format(item.disputePaidAmount),
                 currency: item.currency
             },
             card: {

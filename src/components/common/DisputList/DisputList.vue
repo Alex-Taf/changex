@@ -37,25 +37,25 @@ const cancelDisputDialog = ref(false)
 const headers = ref([
     {
         title: 'ID',
-        sortable: true,
+        sortable: false,
         sortParams: {
             value: 'paymentId',
             name: 'ID'
         },
         key: 'id'
     },
-    {
-        title: 'Время начала',
-        sortable: true,
-        sortParams: {
-            value: 'disputeStartTimestamp_desc',
-            name: 'Времени начала'
-        },
-        key: 'date'
-    },
+    // {
+    //     title: 'Время начала',
+    //     sortable: true,
+    //     sortParams: {
+    //         value: 'disputeStartTimestamp_desc',
+    //         name: 'Времени начала'
+    //     },
+    //     key: 'disputeStart'
+    // },
     {
         title: 'Время по МСК',
-        sortable: true,
+        sortable: false,
         sortParams: {
             value: 'timestamp_desc',
             name: 'Времени по МСК'
@@ -64,7 +64,7 @@ const headers = ref([
     },
     {
         title: 'Сумма заявки',
-        sortable: true,
+        sortable: false,
         sortParams: {
             value: 'amount',
             name: 'Сумме заявки'
@@ -73,7 +73,7 @@ const headers = ref([
     },
     {
         title: 'Сумма клиента',
-        sortable: true,
+        sortable: false,
         sortParams: {
             value: 'withdrawalAmount',
             name: 'Сумме клиента'
@@ -82,7 +82,7 @@ const headers = ref([
     },
     {
         title: 'Карта',
-        sortable: true,
+        sortable: false,
         sortParams: {
             value: 'card',
             name: 'Карте'
@@ -91,7 +91,7 @@ const headers = ref([
     },
     {
         title: 'Статус',
-        sortable: true,
+        sortable: false,
         sortParams: {
             value: 'status',
             name: 'Статусу'
@@ -259,34 +259,34 @@ const sortOptions = ref([
         value: '',
         name: 'Не сортировать'
     },
-    {
-        value: 'paymentId',
-        name: 'ID'
-    },
+    // {
+    //     value: 'paymentId',
+    //     name: 'ID'
+    // },
     {
         value: 'disputeStartTimestamp_desc',
         name: 'Времени начала'
     },
-    {
-        value: 'timestamp_desc',
-        name: 'Времени по МСК'
-    },
-    {
-        value: 'amount',
-        name: 'Сумме заявки'
-    },
-    {
-        value: 'withdrawalAmount',
-        name: 'Сумме клиента'
-    },
-    {
-        value: 'card',
-        name: 'Карте'
-    },
-    {
-        value: 'status',
-        name: 'Статусу'
-    }
+    // {
+    //     value: 'timestamp_desc',
+    //     name: 'Времени по МСК'
+    // },
+    // {
+    //     value: 'amount',
+    //     name: 'Сумме заявки'
+    // },
+    // {
+    //     value: 'withdrawalAmount',
+    //     name: 'Сумме клиента'
+    // },
+    // {
+    //     value: 'card',
+    //     name: 'Карте'
+    // },
+    // {
+    //     value: 'status',
+    //     name: 'Статусу'
+    // }
 ])
 
 function setSort(sortOption: Record<string, unknown>) {
@@ -477,10 +477,10 @@ onMounted(() => {
                 <template v-slot:item.id="{ value }">
                     <span class="tw-text-[15px] tw-text-gray-500">{{ value }}</span>
                 </template>
-                <template v-slot:item.disputeStart="{ value }">
-                    <span class="tw-text-[15px]">{{ value.value }}</span>
+                <!-- <template v-slot:item.disputeStart="{ value }">
+                    <span class="tw-text-[15px]">{{ value.value }}</span><br>
                     <span class="tw-text-[10px]">{{ value.different }}</span>
-                </template>
+                </template> -->
                 <template v-slot:item.date="{ value }">
                     <span class="tw-text-[15px]">{{ value.value }}</span>
                 </template>
@@ -499,7 +499,7 @@ onMounted(() => {
                 <template v-slot:item.debit="{ value }">
                     <span
                         ><span class="tw-text-[15px]">{{ value.value }}</span>
-                        <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">USD</span></span
+                        <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">RUR</span></span
                     >
                 </template>
                 <template v-slot:item.status="{ value, index }">
@@ -645,7 +645,7 @@ onMounted(() => {
                                 <span class="tw-text-[10px] tw-text-[#AEB7C1]">Сумма клиента</span>
                                 <span
                                     ><span class="tw-text-[15px]">{{ item.debit.value }}</span>
-                                    <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">USD</span></span
+                                    <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">RUR</span></span
                                 >
                             </div>
                         </div>
@@ -794,7 +794,7 @@ onMounted(() => {
                 </div>
                 <div class="tw-flex tw-justify-between tw-text-[15px]">
                     <div class="tw-w-[140px] tw-text-ellipsis tw-text-balance">Оплаченная сумма клиентом</div>
-                    <span>{{ disputOnCancel.withdrawalAmount }} <span class="tw-text-gray-400">USD</span></span>
+                    <span>{{ disputOnCancel.withdrawalAmount }} <span class="tw-text-gray-400">RUR</span></span>
                 </div>
                 <div class="tw-flex tw-justify-between">
                     <span>Карта</span>
@@ -847,7 +847,7 @@ onMounted(() => {
                 </div>
                 <div class="tw-flex tw-justify-between tw-text-[15px]">
                     <div class="tw-w-[140px] tw-text-ellipsis tw-text-balance">Оплаченная сумма клиентом</div>
-                    <span class="tw-text-nowrap">{{ disputOnConfirm.withdrawalAmount }} <span class="tw-text-gray-400">USD</span></span>
+                    <span class="tw-text-nowrap">{{ disputOnConfirm.withdrawalAmount }} <span class="tw-text-gray-400">RUR</span></span>
                 </div>
                 <div class="tw-flex tw-justify-between">
                     <span>Карта</span>

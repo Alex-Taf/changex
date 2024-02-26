@@ -140,6 +140,23 @@ export const getUserInfo = async () => {
     }
 }
 
+export const getUserWallet = async () => {
+    try {
+        return await $authHost.post('/me/getWallet', {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post('/me/getWallet', {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
 export const getLatestAppApk = async () => {
     try {
         return await $host.get('/apk/getLatest.json')
