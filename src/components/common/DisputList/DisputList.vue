@@ -422,7 +422,7 @@ onMounted(() => {
                 <template v-slot:item.debit="{ value }">
                     <span
                         ><span class="tw-text-[15px]">{{ value.value }}</span>
-                        <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">{{ value.currency }}</span></span
+                        <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">USD</span></span
                     >
                 </template>
                 <template v-slot:item.status="{ value }">
