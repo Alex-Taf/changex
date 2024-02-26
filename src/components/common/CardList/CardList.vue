@@ -230,6 +230,8 @@ function fetchData() {
     }).then(() => {
         cardsStore.hideLoading()
     })
+
+    console.log('произошёл фетч')
 }
 
 function setSort(sortOption: Record<string, unknown>) {
@@ -772,18 +774,19 @@ onMounted(async () => {
                 </v-card-actions>
         </v-card>
         </v-dialog>
+    </RenderOn>
 
-        <!-- EDIT -->
-        <v-dialog v-model="editDialog" width="auto">
-            <v-card class="tw-flex tw-flex-col tw-items-center tw-h-fit !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px]">
-                <span class="tw-text-2xl tw-mb-[14px]">Редактирование карты</span>
+    <!-- EDIT -->
+    <v-dialog v-model="editDialog" width="auto">
+            <v-card class="tw-flex tw-flex-col tw-items-center tw-h-fit !tw-rounded-2xl sm:!tw-p-[28px] md:!tw-p-[48px] min-lg:!tw-p-[48px]">
+                <span class="sm:tw-text-xl md:tw-text-2xl min-lg:tw-text-2xl tw-mb-[14px]">Редактирование карты</span>
                 <v-form ref="editCardForm">
-                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <div class="tw-flex tw-flex-col sm:tw-items-center tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Номер карты</span>
                         <v-text-field
                             v-if="editCard.isEditable"
                             v-model="editCard.cardNum"
-                            class="tw-w-full"
+                            class="tw-w-full sm:tw-w-[300px]"
                             label="0000 0000 0000 0000"
                             variant="outlined"
                             v-maska:[maskOptions]
@@ -791,12 +794,12 @@ onMounted(async () => {
                         ></v-text-field>
                         <v-skeleton-loader v-else type="text" width="320"></v-skeleton-loader>
                     </div>
-                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                    <div class="tw-flex tw-flex-col sm:tw-items-center tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
                         <v-textarea
                             v-if="editCard.isEditable"
                             v-model="editCard.comment"
-                            class="tw-w-full"
+                            class="tw-w-full sm:tw-w-[300px]"
                             label="Комментарий к карте"
                             variant="outlined"
                             :rules="[editCardValidationRules.required]"
@@ -806,7 +809,7 @@ onMounted(async () => {
                     <v-card-actions>
                         <section class="tw-flex tw-flex-col tw-gap-y-4">
                             <v-btn
-                                class="tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case"
+                                class="sm:!tw-w-[300px] md:tw-w-[426px] min-lg:tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case"
                                 color="#04B6F5"
                                 variant="elevated"
                                 block
@@ -815,7 +818,7 @@ onMounted(async () => {
                                 <span class="tw-text-white tw-text-[15px] !tw-normal-case">Сохранить</span>
                             </v-btn>
                             <v-btn
-                                class="tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto"
+                                class="sm:!tw-w-[300px] md:tw-w-[426px] min-lg:tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto"
                                 color="#04B6F5"
                                 variant="outlined"
                                 @click="closeEditDialog"
@@ -827,7 +830,6 @@ onMounted(async () => {
                 </v-form>
             </v-card>
         </v-dialog>
-    </RenderOn>
 
     <!-- MOBILE DIALOGS -->
     <RenderOn :px-min="320" :px-max="839">

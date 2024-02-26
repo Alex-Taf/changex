@@ -39,11 +39,20 @@ const headers = ref([
         key: 'id'
     },
     {
-        title: 'Время по МСК',
+        title: 'Время начала',
         sortable: true,
         sortParams: {
             value: 'disputeStartTimestamp_desc',
-            name: 'Времени'
+            name: 'Времени начала'
+        },
+        key: 'date'
+    },
+    {
+        title: 'Время по МСК',
+        sortable: true,
+        sortParams: {
+            value: 'timestamp_desc',
+            name: 'Времени по МСК'
         },
         key: 'date'
     },
@@ -187,7 +196,11 @@ const sortOptions = ref([
     },
     {
         value: 'disputeStartTimestamp_desc',
-        name: 'Времени'
+        name: 'Времени начала'
+    },
+    {
+        value: 'timestamp_desc',
+        name: 'Времени по МСК'
     },
     {
         value: 'amount',
@@ -387,6 +400,10 @@ onMounted(() => {
                 <template v-slot:item.id="{ value }">
                     <span class="tw-text-[15px] tw-text-gray-500">{{ value }}</span>
                 </template>
+                <template v-slot:item.disputeStart="{ value }">
+                    <span class="tw-text-[15px]">{{ value.value }}</span>
+                    <span class="tw-text-[10px]">{{ value.different }}</span>
+                </template>
                 <template v-slot:item.date="{ value }">
                     <span class="tw-text-[15px]">{{ value.value }}</span>
                 </template>
@@ -431,26 +448,6 @@ onMounted(() => {
                                 </svg>
                             </v-btn>
                         </div>
-                        <!-- <div class="tw-flex tw-items-center tw-gap-x-2 tw-cursor-pointer">
-                            <svg
-                                width="26"
-                                height="26"
-                                viewBox="0 0 16 16"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M12.8562 4.71875L6.2937 11.2812L3.01245 8"
-                                    stroke="#04B6F5"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                />
-                            </svg>
-                            <span class="tw-text-[15px] tw-text-[#04B6F5] tw-leading-4 tw-select-none"
-                                >Подтвердить<br />
-                                вручную</span
-                            >
-                        </div> -->
                     </div>
                     <div
                         v-if="value.value === 'cancelled'"
@@ -477,29 +474,6 @@ onMounted(() => {
                         <span class="tw-text-yellow-400 tw-text-xs">Истекло время</span>
                     </div>
                 </template>
-                <!-- <template v-slot:item.switch="{ value }">
-                    <v-switch :model-value="value" color="#04B6F5"></v-switch>
-                </template>
-                <template v-slot:item.actions="{ item }">
-                    <v-menu>
-                        <template v-slot:activator="{ props }">
-                            <v-btn
-                                class="!tw-border-none !tw-bg-none !tw-shadow-none"
-                                icon="mdi-dots-vertical"
-                                v-bind="props"
-                            ></v-btn>
-                        </template>
-
-                        <v-list>
-                            <v-list-item>
-                                <v-list-item-title>Редактировать</v-list-item-title>
-                            </v-list-item>
-                            <v-list-item>
-                                <v-list-item-title>Удалить</v-list-item-title>
-                            </v-list-item>
-                        </v-list>
-                    </v-menu>
-                </template> -->
                 <template v-slot:loading>
                     <v-skeleton-loader type="table-row@6"></v-skeleton-loader>
                 </template>
@@ -538,16 +512,34 @@ onMounted(() => {
                         <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-2">
                             <div class="tw-flex tw-flex-col">
                                 <span class="tw-text-[10px] tw-text-[#AEB7C1]">{{ item.id }}</span>
-                                <span class="tw-text-[13px] tw-font-semibold">{{ item.date }}</span>
+                                <span class="tw-text-[13px] tw-font-semibold">{{ item.disputeStart.value }}</span>
+                                <span class="tw-text-[10px] tw-font-semibold tw-text-[#AEB7C1]">{{ item.disputeStart.different }}</span>
+                            </div>
+                            <div v-if="item.status.value === 'awaiting'" class="tw-flex tw-gap-x-10">
+                                <div
+                                    class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-[#EF4B27] tw-w-[158px] tw-px-2 tw-py-1 tw-text-center"
+                                >
+                                    <span class="tw-text-[#EF4B27] tw-text-xs">
+                                        Ожидает <vue-countdown :time="item.status.timeout" v-slot="{ hours, minutes, seconds }">
+                                        {{ hours.toString().padStart(2, "0") }}:{{ minutes.toString().padStart(2, "0") }}:{{ seconds.toString().padStart(2, "0") }}</vue-countdown>
+                                    </span>
+                                </div>
+                                <div class="tw-flex tw-gap-x-2">
+                                    <v-btn class="!tw-rounded-3xl" variant="outlined" color="#04B6F5" @click="paymentsStore.cancelDisputByID(value.id)">
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9.375 2.625L2.625 9.375" stroke="#04B6F5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M9.375 9.375L2.625 2.625" stroke="#04B6F5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </v-btn>
+                                    <v-btn class="!tw-rounded-3xl" variant="elevated" color="#04B6F5" @click="paymentsStore.approveDisputByID(value.id)">
+                                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9.125 1.375L3.875 6.625L1.25 4" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </v-btn>
+                                </div>
                             </div>
                             <div
-                                v-if="item.status === 'awaiting'"
-                                class="tw-flex tw-flex-col tw-justify-start tw-rounded-xl tw-border-2 tw-border-solid tw-border-[#0085FF] tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
-                            >
-                                <span class="tw-text-[#0085FF] tw-text-xs">Ожидает</span>
-                            </div>
-                            <div
-                                v-if="item.status === 'cancelled'"
+                                v-if="item.status.value === 'cancelled'"
                                 class="tw-flex tw-flex-col tw-justify-start tw-border-red-500 tw-rounded-xl tw-border-2 tw-border-solid tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                             >
                                 <span class="tw-text-red-400 tw-text-xs">Отклонён</span>
@@ -559,29 +551,34 @@ onMounted(() => {
                                 <span class="tw-text-red-400 tw-text-xs">Диспут</span>
                             </div> -->
                             <div
-                                v-if="item.status === 'dispute_closed'"
+                                v-if="item.status.value === 'approved'"
                                 class="tw-flex tw-flex-col tw-justify-start tw-rounded-xl tw-border-2 tw-border-solid tw-border-green-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                             >
                                 <span class="tw-text-green-400 tw-text-xs">Одобрен</span>
                             </div>
                             <div
-                                v-if="item.status === 'timeout'"
+                                v-if="item.status.value === 'timeout'"
                                 class="tw-flex tw-flex-col tw-justify-start tw-rounded-xl tw-border-2 tw-border-solid tw-border-yellow-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                             >
                                 <span class="tw-text-yellow-400 tw-text-xs">Истекло время</span>
                             </div>
                         </div>
-                        
                         <div class="tw-flex tw-gap-x-20 tw-items-center tw-w-full tw-mb-2">
                             <div class="tw-flex tw-flex-col">
-                                <span class="tw-text-[10px] tw-text-[#AEB7C1]">Сумма</span>
+                                <span class="tw-text-[10px] tw-text-[#AEB7C1]">Время по МСК</span>
+                                <span class="tw-text-[13px] tw-font-semibold">{{ item.date.value }}</span>
+                            </div>
+                        </div>
+                        <div class="tw-flex tw-gap-x-20 tw-items-center tw-w-full tw-mb-2">
+                            <div class="tw-flex tw-flex-col">
+                                <span class="tw-text-[10px] tw-text-[#AEB7C1]">Сумма заявки</span>
                                 <span
                                     ><span class="tw-text-[15px]">{{ item.sum.value }}</span>
                                     <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">{{ item.sum.currency }}</span></span
                                 >
                             </div>
                             <div class="tw-flex tw-flex-col">
-                                <span class="tw-text-[10px] tw-text-[#AEB7C1]">Списано</span>
+                                <span class="tw-text-[10px] tw-text-[#AEB7C1]">Сумма клиента</span>
                                 <span
                                     ><span class="tw-text-[15px]">{{ item.debit.value }}</span>
                                     <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">{{ item.debit.currency }}</span></span

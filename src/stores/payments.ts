@@ -43,8 +43,12 @@ export const usePaymentsStore = defineStore('payments', {
       return state.disputsList.map((item: Record<string, unknown>) => {
         return {
             id: item.paymentId,
+            disputeStart: {
+              value: item.disputeStartTimestamp ? timestampToDatetime(item.disputeStartTimestamp) : '',
+              different: getDifferentTimeStatus(item.timestamp as string)
+            },
             date: {
-              value: timestampToDatetime(item.timestamp),
+              value: item.disputePaidTime ? item.disputePaidTime : '',
               different: getDifferentTimeStatus(item.timestamp as string)
             },
             sum: {

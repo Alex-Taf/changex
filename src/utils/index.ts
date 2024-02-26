@@ -55,6 +55,7 @@ export const getCookie = (name: string) => {
 
 export const timestampToDatetime = (timestamp: number): string => {
     const dateFormat = new Date(timestamp)
+
     //const formattedDate = `${dateFormat.getDay()}.${dateFormat.getMonth() + 1}.${dateFormat.getFullYear()} ${dateFormat.getHours()}:${dateFormat.getMinutes()}`
     const formatter = new Intl.DateTimeFormat('ru', {
         day: '2-digit',

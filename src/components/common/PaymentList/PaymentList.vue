@@ -22,7 +22,7 @@ const searchQuery = ref('')
 const cardSearchModel = ref('')
 const cardSearchQuery = ref('')
 
-const date = ref()
+const date = ref(['', ''])
 const page = ref(1)
 
 const mobileFilter = ref(false)
@@ -110,6 +110,25 @@ const statuses = reactive({
     ]
 })
 
+function fetchData() {
+    paymentsStore.fetchPayments({
+        search: searchQuery.value,
+        page: page.value,
+        countPerPage: 10,
+        sort: sort.value,
+        filter: {
+            fromTimestamp: datetimeToTimestamp(date?.value[0]),
+            toTimestamp: datetimeToTimestamp(date?.value[1]),
+            cardUID: cards.selected?.uid,
+            status: statuses.select
+        }
+    }).then(() => {
+        paymentsStore.hideLoading()
+    })
+
+    console.log('произошёл фетч')
+}
+
 function clearStatuses() {
     statuses.select = undefined
     fetchData()
@@ -155,23 +174,6 @@ function searchCardValue(queryText: string) {
 function clearAutocomplete() {
     cards.selected = undefined
     fetchData()
-}
-
-function fetchData() {
-    paymentsStore.fetchPayments({
-        search: searchQuery.value,
-        page: page.value,
-        countPerPage: 10,
-        sort: sort.value,
-        filter: {
-            fromTimestamp: datetimeToTimestamp(date?.value[0]),
-            toTimestamp: datetimeToTimestamp(date?.value[1]),
-            cardUID: cards.selected?.uid,
-            status: statuses.select
-        }
-    }).then(() => {
-        paymentsStore.hideLoading()
-    })
 }
 
 const sort = reactive({
@@ -280,7 +282,6 @@ function loadMore() {
 }
 
 onMounted(() => {
-    date.value = ['', ''] // Datepicker init
     fetchData()
 })
 </script>
@@ -526,7 +527,8 @@ onMounted(() => {
                         <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-2">
                             <div class="tw-flex tw-flex-col">
                                 <span class="tw-text-[10px] tw-text-[#AEB7C1]">{{ item.id }}</span>
-                                <span class="tw-text-[13px] tw-font-semibold">{{ item.date }}</span>
+                                <span class="tw-text-[13px] tw-font-semibold">{{ item.date.value }}</span>
+                                <span class="tw-text-[10px] tw-font-semibold tw-text-[#AEB7C1]">{{ item.date.different }}</span>
                             </div>
                             <div
                                 v-if="item.status === 'awaiting'"

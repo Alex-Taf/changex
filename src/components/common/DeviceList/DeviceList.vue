@@ -50,6 +50,7 @@ function fetchData() {
 }
 
 async function openEditDialog(deviceId: string) {
+    console.log(deviceId)
     editDevice.isEditable = false
     editDialog.value = true
 
@@ -348,10 +349,13 @@ onMounted(() => {
                         <div class="tw-flex tw-justify-between tw-mb-2">
                             <div class="tw-flex tw-flex-col tw-gap-x-2">
                                 <div class="tw-leading-4">
-                                    <span class="tw-text-[10px] tw-text-[#AEB7C1]">{{ item.id }},</span>
-                                    <span class="tw-text-[10px] tw-text-[#AEB7C1] tw-ml-1">{{ item.device }}</span>
+                                    <span class="tw-text-[10px] tw-text-[#AEB7C1]">{{ item.id }}, {{ item.device }}</span>
+                                    <div class="tw-flex tw-items-center tw-gap-x-2">
+                                        <IsOnline :online="item.title.isOnline" />
+                                        <span class="tw-text-[15px]">{{ item.title.name }}</span>
+                                    </div>
                                 </div>
-                                <span class="tw-text-[15px]">{{ item.title }}</span>
+                                <!-- <span class="tw-text-[15px]">{{ item.title }}</span> -->
                             </div>
                             <v-menu>
                                     <template v-slot:activator="{ props }">
@@ -363,10 +367,10 @@ onMounted(() => {
                                     </template>
 
                                     <v-list>
-                                        <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200">
+                                        <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="openEditDialog(item.id)">
                                             <v-list-item-title><span class="tw-select-none">Редактировать</span></v-list-item-title>
                                         </v-list-item>
-                                        <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200">
+                                        <v-list-item class="tw-cursor-pointer hover:tw-bg-gray-200" @click="onDeleteDevice(item.id, item.title)">
                                             <v-list-item-title><span class="tw-select-none">Удалить</span></v-list-item-title>
                                         </v-list-item>
                                     </v-list>
@@ -457,7 +461,7 @@ onMounted(() => {
 
     <v-dialog v-model="editDialog" width="auto">
             <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl sm:!tw-p-[28px] md:!tw-p-[48px] min-lg:!tw-p-[48px]">
-                <span class="tw-text-2xl tw-mb-[14px]">Редактировать устройство</span>
+                <span class="sm:tw-text-xl md:tw-text-2xl min-lg:tw-text-2xl tw-mb-[14px]">Редактировать устройство</span>
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                         <span class="tw-text-[13px] tw-text-[#677483]">Название</span>
                         <v-text-field
@@ -482,10 +486,10 @@ onMounted(() => {
                     </div>
                 <v-card-actions>
                     <section class="tw-flex tw-flex-col tw-gap-y-4">
-                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="submitEditDevice">
+                        <v-btn class="sm:!tw-w-[280px] md:tw-w-[426px] min-lg:tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="submitEditDevice">
                             <span class="tw-text-white tw-text-[15px] !tw-normal-case">Сохранить</span>
                         </v-btn>
-                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="closeEditDialog">
+                        <v-btn class="sm:!tw-w-[280px] md:tw-w-[426px] min-lg:tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="closeEditDialog">
                             Отмена
                         </v-btn>
                     </section>

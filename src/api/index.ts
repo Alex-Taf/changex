@@ -37,6 +37,18 @@ const _refreshToken = async () => {
     const res = await $authHost.post('/auth/refresh', {})
     _writeLocalUserInfo(res.data)
 
+    try {
+        const res = await $authHost.post('/auth/refresh', {})
+        _writeLocalUserInfo(res.data)
+        return res
+    } catch (error) {
+        if (error.response.data.code === 'not_authorized_request') {
+            const res = await $authHost.post('/auth/refresh', {})
+            _writeLocalUserInfo(res.data)
+            return res
+        }
+    }
+
     return res
 }
 
@@ -50,12 +62,31 @@ export const login = async (token: string) => {
 }
 
 export const logout = async () => {
-    const res = await $authHost.post('/auth/logout', {})
-
-    if (res.status === 200) {
+    try {
+        await $authHost.post('/auth/logout', {})
         _purgeLocalUserInfo()
         deleteCookie('changexlogin')
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    await $authHost.post('/auth/logout', {})
+                    _purgeLocalUserInfo()
+                    deleteCookie('changexlogin')
+                }
+            } else {
+                return
+            }
+        }
     }
+
+    // const res = await $authHost.post('/auth/logout', {})
+
+    // if (res.status === 200) {
+    //     _purgeLocalUserInfo()
+    //     deleteCookie('changexlogin')
+    // }
 }
 
 export const getTempToken = async () => {
