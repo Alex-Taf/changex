@@ -5,12 +5,15 @@ import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import { usePaymentsStore } from '@/stores/payments';
 import { useCardsStore } from '@/stores/cards';
+import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia';
 import RenderOn from '@/components/utils/RenderOn.vue';
 import Stars from '@/components/icons/Stars.vue';
 import WarningCircle from '@/components/icons/WarningCircle.vue';
 import VueCountdown from '@chenfengyuan/vue-countdown'
 import { datetimeToTimestamp, getTimeFromTimestamp } from '@/utils';
+
+const route = useRoute()
 
 const paymentsStore = usePaymentsStore()
 const { loading, hasItems, disputsItemsAll, lastPage } = storeToRefs(paymentsStore)
@@ -24,7 +27,7 @@ const searchQuery = ref('')
 const cardSearchModel = ref('')
 const cardSearchQuery = ref('')
 
-const date = ref()
+const date = ref(['', ''])
 const page = ref(1)
 
 const mobileFilter = ref(false)
@@ -356,7 +359,15 @@ function loadMore() {
 }
 
 onMounted(() => {
-    date.value = ['', ''] // Datepicker init
+    const params = route.query
+
+    console.log(params)
+
+    if (params && params.id) {
+        searchModel.value = params.id
+        searchQuery.value = params.id
+    }
+
     fetchData()
 })
 </script>

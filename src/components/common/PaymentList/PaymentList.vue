@@ -8,6 +8,7 @@ import { useCardsStore } from '@/stores/cards';
 import { storeToRefs } from 'pinia';
 import RenderOn from '@/components/utils/RenderOn.vue';
 import Stars from '@/components/icons/Stars.vue';
+import CaretRight from '@/components/icons/CaretRight.vue';
 import { datetimeToTimestamp } from '@/utils';
 
 const paymentsStore = usePaymentsStore()
@@ -413,7 +414,7 @@ onMounted(() => {
                         <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">USDT</span></span
                     >
                 </template>
-                <template v-slot:item.status="{ value }">
+                <template v-slot:item.status="{ value, index }">
                     <div v-if="value === 'awaiting'" class="tw-flex tw-gap-x-2">
                         <div
                             class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-[#0085FF] tw-w-[158px] tw-px-2 tw-py-1 tw-text-center"
@@ -449,9 +450,18 @@ onMounted(() => {
                     </div>
                     <div
                         v-if="value === 'dispute'"
-                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-red-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                        class="tw-flex tw-gap-x-1"
                     >
-                        <span class="tw-text-red-400 tw-text-xs">Диспут</span>
+                        <div class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-red-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center">
+                            <span class="tw-text-red-400 tw-text-xs">Диспут</span>
+                        </div>
+                        <div class="tw-flex tw-flex-col tw-items-center tw-justify-center
+                                    tw-border-solid tw-border-[2px] tw-border-[#AEB7C1] tw-rounded-xl tw-w-[35px]
+                                    tw-cursor-pointer hover:tw-bg-gray-100"
+                            @click="$router.push(`/disputs?id=${paymentsItemsAll[index].id}`)"
+                        >
+                            <CaretRight />
+                        </div>
                     </div>
                     <div
                         v-if="value === 'done'"
@@ -466,29 +476,6 @@ onMounted(() => {
                         <span class="tw-text-yellow-400 tw-text-xs">Завершён</span>
                     </div>
                 </template>
-                <!-- <template v-slot:item.switch="{ value }">
-                    <v-switch :model-value="value" color="#04B6F5"></v-switch>
-                </template>
-                <template v-slot:item.actions="{ item }">
-                    <v-menu>
-                        <template v-slot:activator="{ props }">
-                            <v-btn
-                                class="!tw-border-none !tw-bg-none !tw-shadow-none"
-                                icon="mdi-dots-vertical"
-                                v-bind="props"
-                            ></v-btn>
-                        </template>
-
-                        <v-list>
-                            <v-list-item>
-                                <v-list-item-title>Редактировать</v-list-item-title>
-                            </v-list-item>
-                            <v-list-item>
-                                <v-list-item-title>Удалить</v-list-item-title>
-                            </v-list-item>
-                        </v-list>
-                    </v-menu>
-                </template> -->
                 <template v-slot:loading>
                     <v-skeleton-loader type="table-row@6"></v-skeleton-loader>
                 </template>
@@ -522,7 +509,7 @@ onMounted(() => {
             </div>
         </section>
         <section v-if="paymentsItemsAll.length > 0" class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-h-[520px]">
-                <template v-for="item in paymentsItemsAll" :key="item">
+                <template v-for="(item, index) in paymentsItemsAll" :key="item">
                     <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-px-4 tw-py-2 tw-rounded-2xl">
                         <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-2">
                             <div class="tw-flex tw-flex-col">
@@ -544,9 +531,18 @@ onMounted(() => {
                             </div>
                             <div
                                 v-if="item.status === 'dispute'"
-                                class="tw-flex tw-flex-col tw-justify-start tw-border-red-500 tw-rounded-xl tw-border-2 tw-border-solid tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                                class="tw-flex tw-gap-x-1"
                             >
-                                <span class="tw-text-red-400 tw-text-xs">Диспут</span>
+                                <div class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-red-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center">
+                                    <span class="tw-text-red-400 tw-text-xs">Диспут</span>
+                                </div>
+                                <div class="tw-flex tw-flex-col tw-items-center tw-justify-center
+                                        tw-border-solid tw-border-[2px] tw-border-[#AEB7C1] tw-rounded-xl tw-w-[35px]
+                                        tw-cursor-pointer hover:tw-bg-gray-100"
+                                @click="$router.push(`/disputs?id=${paymentsItemsAll[index].id}`)"
+                            >
+                                <CaretRight />
+                            </div>
                             </div>
                             <div
                                 v-if="item.status === 'done'"
