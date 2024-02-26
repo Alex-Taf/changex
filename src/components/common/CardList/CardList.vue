@@ -11,6 +11,7 @@ import Stars from '@/components/icons/Stars.vue'
 import Filter from '@/components/icons/Filter.vue'
 import IsOnline from '@/components/info/IsOnline.vue'
 import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
+import { watchEffect } from 'vue'
 
 const cardsStore = useCardsStore()
 const deviceStore = useDevicesStore()
@@ -918,7 +919,7 @@ onMounted(async () => {
                     </v-card-actions>
         </v-card>
 
-        <v-card v-if="mobileFilter" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[2000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-between !tw-items-center !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px] sm:!tw-p-[20px]">
+        <v-card v-if="mobileFilter" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[2000] !tw-h-[100dvh] !tw-w-screen !tw-flex !tw-flex-col !tw-justify-between !tw-items-center !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px] sm:!tw-p-[20px]">
                 <section class="tw-w-full">
                     <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-4">
                         <span class="tw-text-2xl">Фильтр</span>
