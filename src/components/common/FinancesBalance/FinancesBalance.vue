@@ -6,15 +6,20 @@ import FinancesBalanceIcon from '../../icons/FinancesBalanceIcon.vue'
 import FinancesDialog from '../FinancesDialog/FinancesDialog.vue'
 import ArrowsClockwise from '@/components/icons/ArrowsClockwise.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
+import { onMounted } from 'vue'
 
 const userStore = useUserStore()
-const { userInfo, wallet } = storeToRefs(userStore)
+const { userInfo, walletAddress } = storeToRefs(userStore)
 
 const dialogOpen = ref(false)
 
 function closeDialog(close: boolean) {
     dialogOpen.value = close
 }
+
+onMounted(() => {
+    userStore.getWallet()
+})
 </script>
 
 <template>
@@ -26,7 +31,7 @@ function closeDialog(close: boolean) {
                     <span class="tw-text-[13px] tw-text-[#AEB7C1]">Баланс</span>
                     <span>
                         <span v-if="userInfo && userInfo.balance" class="tw-text-[30px] tw-text-[#2B3A4C] tw-font-bold">{{ userInfo.balance.toFixed(4) }}</span>
-                        <v-skeleton-loader v-else type="text" width="100">{{ wallet }}</v-skeleton-loader>
+                        <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                         <span class="tw-text-[16px] tw-text-[#AEB7C1]"> USDT</span>
                     </span>
                     <span class="tw-text-[13px] tw-text-[#677483]">~{{ userInfo.balanceRUR }} RUB</span>
@@ -38,7 +43,7 @@ function closeDialog(close: boolean) {
                             hover:!tw-shadow-[0px_10px_18px_2px_rgba(4,182,245,0.2)]"
                         color="#04B6F5"
                         variant="elevated"
-                        @click="dialogOpen = true"
+                        @click="dialogOpen = !dialogOpen"
                 >
                     <template v-slot:prepend>
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

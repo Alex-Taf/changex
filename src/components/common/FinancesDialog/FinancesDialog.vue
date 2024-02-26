@@ -3,10 +3,15 @@ import { reactive, ref, watch } from "vue"
 import { copyToClipboard } from "@/utils"
 import CopyIcon from "../../icons/CopyIcon.vue"
 import Attention from "../../messages/Attention.vue"
+import { useUserStore } from "@/stores/user";
+import { storeToRefs } from "pinia";
 
 const props = defineProps<{
     open: boolean
 }>()
+
+const userStore = useUserStore()
+const { walletAddress } = storeToRefs(userStore)
 
 const dialog = ref(false)
 const copySnackbar = reactive({
@@ -43,8 +48,8 @@ watch(props, async (nextValue: Record<any, boolean>, _prevValue: Record<any, boo
         <span class="md:tw-text-2xl min-lg:tw-text-2xl sm:tw-text-xl tw-mb-[34px]">Пополнение баланса</span>
         <span class="tw-text-[#677483]">Адрес USDT</span>
         <div class="tw-flex tw-gap-x-4 tw-mb-[24px]">
-          <span class="md:tw-text-lg min-lg:tw-text-lg sm:tw-text-xs tw-font-semibold">0000x34h3jk534jk5h45kh8cvb86bfdfs34h3jk</span>
-          <div class="tw-cursor-pointer tw-p-2" @click="copyAddr('0000x34h3jk534jk5h45kh8cvb86bfdfs34h3jk')">
+          <span class="md:tw-text-lg min-lg:tw-text-lg sm:tw-text-xs tw-font-semibold">{{ walletAddress }}</span>
+          <div class="tw-cursor-pointer tw-p-2" @click="copyAddr(walletAddress)">
             <CopyIcon />
           </div>
           <v-snackbar
