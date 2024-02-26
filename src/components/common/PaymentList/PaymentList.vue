@@ -178,8 +178,8 @@ function clearAutocomplete() {
 }
 
 const sort = reactive({
-    value: '',
-    name: 'Не сортировать'
+    value: 'timestamp_desc',
+    name: 'Времени'
 })
 
 const sortOptions = ref([

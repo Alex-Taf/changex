@@ -94,8 +94,8 @@ function loadMore() {
 }
 
 const sort = reactive({
-    value: '',
-    name: 'Не сортировать'
+    value: 'timestamp_desc',
+    name: 'Дате и времени'
 })
 
 const sortOptions = ref([

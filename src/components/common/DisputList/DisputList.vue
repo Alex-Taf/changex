@@ -250,8 +250,8 @@ function disputCancel(id: string) {
 }
 
 const sort = reactive({
-    value: '',
-    name: 'Не сортировать'
+    value: 'disputeStartTimestamp_desc',
+    name: 'Времени начала'
 })
 
 const sortOptions = ref([
