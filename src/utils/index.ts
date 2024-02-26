@@ -131,11 +131,11 @@ export const getDifferentTimeStatus = (datetime: string | Date): string | undefi
         return 'Более полу-часа назад'
     }
 
-    if (hours > 1 && hours < 3 && days < 1) {
+    if (hours >= 1 && hours < 3 && days < 1) {
         return 'Более часа назад'
     }
 
-    if (hours > 3 && hours < 24 && days < 1) {
+    if (hours >= 3 && hours < 24 && days < 1) {
         return 'Несколько часов назад'
     }
 
