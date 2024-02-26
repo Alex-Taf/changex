@@ -8,6 +8,7 @@ import { useCardsStore } from '@/stores/cards';
 import { storeToRefs } from 'pinia';
 import RenderOn from '@/components/utils/RenderOn.vue';
 import Stars from '@/components/icons/Stars.vue';
+import WarningCircle from '@/components/icons/WarningCircle.vue';
 import VueCountdown from '@chenfengyuan/vue-countdown'
 import { datetimeToTimestamp, getTimeFromTimestamp } from '@/utils';
 
@@ -27,6 +28,8 @@ const date = ref()
 const page = ref(1)
 
 const mobileFilter = ref(false)
+const confirmDisputDialog = ref(false)
+const cancelDisputDialog = ref(false)
 
 const headers = ref([
     {
@@ -126,18 +129,18 @@ const cards = reactive({
     items: []
 })
 
-function fetchCardsToRef() {
-    if (cards.items.length === 0) {
-        cardsStore.fetchCards({}).then(() => {
-            cards.items = itemsAll.value.map((cardItem) => {
-                return {
-                    type: cardItem.card.type,
-                    num: cardItem.card.num
-                }
-            })
-        })
-    }
-}
+// function fetchCardsToRef() {
+//     if (cards.items.length === 0) {
+//         cardsStore.fetchCards({}).then(() => {
+//             cards.items = itemsAll.value.map((cardItem) => {
+//                 return {
+//                     type: cardItem.card.type,
+//                     num: cardItem.card.num
+//                 }
+//             })
+//         })
+//     }
+// }
 
 function searchCardValue(queryText: string) {
     console.log(cardSearchModel.value)
@@ -151,11 +154,6 @@ function searchCardValue(queryText: string) {
                 }
             })
         })
-}
-
-function setSelectedCard(value) {
-    cards.selected = value
-    fetchData()
 }
 
 function clearAutocomplete() {
@@ -178,6 +176,74 @@ function fetchData() {
     }).then(() => {
         paymentsStore.hideLoading()
     })
+}
+
+const disputOnConfirm = reactive({
+    isEditable: false,
+    id: '',
+    disputeStart: '',
+    amount: '',
+    withdrawalAmount: '',
+    card: {
+        type: '',
+        num: ''
+    }
+})
+
+const disputOnCancel = reactive({
+    isEditable: false,
+    id: '',
+    disputeStart: '',
+    amount: '',
+    withdrawalAmount: '',
+    card: {
+        type: '',
+        num: ''
+    }
+})
+
+function openOnConfirm(dispute: Record<string, unknown>) {
+    disputOnConfirm.isEditable = false
+
+    disputOnConfirm.id = dispute.id as string
+    disputOnConfirm.disputeStart = dispute.disputeStart.value as string
+    disputOnConfirm.amount = dispute.sum.value as string
+    disputOnConfirm.withdrawalAmount = dispute.debit.value as string
+    disputOnConfirm.card = dispute.card as Record<string, string>
+    
+    confirmDisputDialog.value = true
+    disputOnConfirm.isEditable = true
+}
+
+function openOnCancel(dispute: Record<string, unknown>) {
+    disputOnCancel.isEditable = false
+
+    disputOnCancel.id = dispute.id as string
+    disputOnCancel.disputeStart = dispute.disputeStart.value as string
+    disputOnCancel.amount = dispute.sum.value as string
+    disputOnCancel.withdrawalAmount = dispute.debit.value as string
+    disputOnCancel.card = dispute.card as Record<string, string>
+    
+    cancelDisputDialog.value = true
+    disputOnCancel.isEditable = true
+}
+
+function closeConfirmDisputDialog() {
+    confirmDisputDialog.value = false
+}
+
+function closeCancelDisputDialog() {
+    cancelDisputDialog.value = false
+}
+
+function disputApprove(id: string) {
+    paymentsStore.approveDisputByID(id)
+    confirmDisputDialog.value = false
+}
+
+function disputCancel(id: string) {
+    paymentsStore.cancelDisputByID(id)
+    cancelDisputDialog.value = false
 }
 
 const sort = reactive({
@@ -425,7 +491,7 @@ onMounted(() => {
                         <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">USD</span></span
                     >
                 </template>
-                <template v-slot:item.status="{ value }">
+                <template v-slot:item.status="{ value, index }">
                     <div v-if="value.value === 'awaiting'" class="tw-flex tw-gap-x-10">
                         <div
                             class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-[#EF4B27] tw-w-[158px] tw-px-2 tw-py-1 tw-text-center"
@@ -436,13 +502,13 @@ onMounted(() => {
                             </span>
                         </div>
                         <div class="tw-flex tw-gap-x-2">
-                            <v-btn class="!tw-rounded-3xl" variant="outlined" color="#04B6F5" @click="paymentsStore.cancelDisputByID(value.id)">
+                            <v-btn class="!tw-rounded-3xl" variant="outlined" color="#04B6F5" @click="openOnCancel(disputsItemsAll[index])">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M9.375 2.625L2.625 9.375" stroke="#04B6F5" stroke-linecap="round" stroke-linejoin="round"/>
                                     <path d="M9.375 9.375L2.625 2.625" stroke="#04B6F5" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </v-btn>
-                            <v-btn class="!tw-rounded-3xl" variant="elevated" color="#04B6F5" @click="paymentsStore.approveDisputByID(value.id)">
+                            <v-btn class="!tw-rounded-3xl" variant="elevated" color="#04B6F5" @click="openOnConfirm(disputsItemsAll[index])">
                                 <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M9.125 1.375L3.875 6.625L1.25 4" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
@@ -507,7 +573,7 @@ onMounted(() => {
             </div>
         </section>
         <section v-if="disputsItemsAll.length > 0" class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-h-[520px]">
-                <template v-for="item in disputsItemsAll" :key="item">
+                <template v-for="(item, index) in disputsItemsAll" :key="item">
                     <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-px-4 tw-py-2 tw-rounded-2xl">
                         <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-2">
                             <div class="tw-flex tw-flex-col">
@@ -523,19 +589,6 @@ onMounted(() => {
                                         Ожидает <vue-countdown :time="item.status.timeout" v-slot="{ hours, minutes, seconds }">
                                         {{ hours.toString().padStart(2, "0") }}:{{ minutes.toString().padStart(2, "0") }}:{{ seconds.toString().padStart(2, "0") }}</vue-countdown>
                                     </span>
-                                </div>
-                                <div class="tw-flex tw-gap-x-2">
-                                    <v-btn class="!tw-rounded-3xl" variant="outlined" color="#04B6F5" @click="paymentsStore.cancelDisputByID(value.id)">
-                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M9.375 2.625L2.625 9.375" stroke="#04B6F5" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M9.375 9.375L2.625 2.625" stroke="#04B6F5" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                    </v-btn>
-                                    <v-btn class="!tw-rounded-3xl" variant="elevated" color="#04B6F5" @click="paymentsStore.approveDisputByID(value.id)">
-                                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M9.125 1.375L3.875 6.625L1.25 4" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                    </v-btn>
                                 </div>
                             </div>
                             <div
@@ -581,14 +634,27 @@ onMounted(() => {
                                 <span class="tw-text-[10px] tw-text-[#AEB7C1]">Сумма клиента</span>
                                 <span
                                     ><span class="tw-text-[15px]">{{ item.debit.value }}</span>
-                                    <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">{{ item.debit.currency }}</span></span
+                                    <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">USD</span></span
                                 >
                             </div>
                         </div>
-                        <div class="tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed">
+                        <div class="tw-flex tw-justify-between tw-items-center tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed tw-pt-2">
                             <div class="tw-flex tw-items-center tw-gap-x-4">
                                 <img :src="`/payment/${item.card.type}.png`" :alt="item.card.type" />
                                 <span class="tw-text-[15px]">**** {{ item.card.num }}</span>
+                            </div>
+                            <div v-if="item.status.value === 'awaiting'" class="tw-flex tw-gap-x-1">
+                                <v-btn class="!tw-rounded-3xl" variant="outlined" size="small" color="#04B6F5" @click="openOnCancel(disputsItemsAll[index])">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9.375 2.625L2.625 9.375" stroke="#04B6F5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M9.375 9.375L2.625 2.625" stroke="#04B6F5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </v-btn>
+                                <v-btn class="!tw-rounded-3xl" variant="elevated" size="small" color="#04B6F5" @click="openOnConfirm(disputsItemsAll[index])">
+                                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9.125 1.375L3.875 6.625L1.25 4" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </v-btn>
                             </div>
                         </div>
                     </div>
@@ -691,6 +757,112 @@ onMounted(() => {
             <span class="tw-text-lg tw-text-[#677483] tw-font-semibold">Диспуты отсутствуют</span>
         </div>
     </section>
+
+    <v-dialog v-model="cancelDisputDialog" width="auto">
+        <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl sm:!tw-p-[28px] md:!tw-p-[48px] min-lg:!tw-p-[48px]">
+            <div class="tw-mb-5"><WarningCircle stroke="#EF4B27" /></div>
+            <div class="tw-mb-5 tw-max-w-[380px] tw-text-center">
+                <span class="tw-text-2xl">
+                    Вы действительно хотите отклонить данный диспут?
+                </span>
+            </div>
+            <div v-if="disputOnCancel.isEditable" class="tw-flex tw-flex-col tw-gap-y-4 tw-bg-[#F8FCFE]
+                    tw-border-solid tw-border-[1px] tw-border-[#E0E4E8]
+                    tw-rounded-xl tw-p-4 tw-w-full tw-mb-5">
+                <div class="tw-flex tw-justify-between tw-text-[15px]">
+                    <span>ID</span>
+                    <span>{{ disputOnCancel.id }}</span>
+                </div>
+                <div class="tw-flex tw-justify-between tw-text-[15px]">
+                    <span>Время</span>
+                    <span>{{ disputOnCancel.disputeStart }}</span>
+                </div>
+                <div class="tw-flex tw-justify-between tw-text-[15px]">
+                    <span>Сумма</span>
+                    <span>{{ disputOnCancel.amount }} <span class="tw-text-gray-400">RUR</span></span>
+                </div>
+                <div class="tw-flex tw-justify-between tw-text-[15px]">
+                    <div class="tw-w-[140px] tw-text-ellipsis tw-text-balance">Оплаченная сумма клиентом</div>
+                    <span>{{ disputOnCancel.withdrawalAmount }} <span class="tw-text-gray-400">USD</span></span>
+                </div>
+                <div class="tw-flex tw-justify-between">
+                    <span>Карта</span>
+                    <div class="tw-flex tw-items-center tw-gap-x-2">
+                        <img :src="`/payment/${disputOnCancel.card.type}.png`" :alt="disputOnCancel.card.type" />
+                        <span>**** {{ disputOnCancel.card.num }}</span>
+                    </div>
+                </div>
+            </div>
+            <div v-else class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-y-4 tw-bg-[#F8FCFE]
+                    tw-border-solid tw-border-[1px] tw-border-[#E0E4E8]
+                    tw-rounded-xl tw-w-full tw-h-[300px] tw-mb-5"
+            >
+                <v-progress-circular
+                    indeterminate
+                    color="#04B6F5"
+                ></v-progress-circular>
+            </div>
+            <v-btn class="!tw-rounded-xl !tw-h-[50px] tw-w-full tw-mt-5" variant="elevated" color="#EF4B27" @click="disputCancel(disputOnCancel.id)">
+                <span class="tw-tracking-normal tw-normal-case tw-text-white">Отклонить</span>
+            </v-btn>
+            <v-btn class="!tw-rounded-xl !tw-h-[50px] tw-w-full tw-mt-5" variant="outlined" color="#04B6F5" @click="closeCancelDisputDialog">
+                <span class="tw-tracking-normal tw-normal-case">Отмена</span>
+            </v-btn>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="confirmDisputDialog" width="auto">
+        <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl sm:!tw-p-[28px] md:!tw-p-[48px] min-lg:!tw-p-[48px]">
+            <div class="tw-mb-5"><WarningCircle stroke="#EF4B27" /></div>
+            <div class="tw-mb-5 tw-max-w-[380px] tw-text-center">
+                <span class="tw-text-2xl">
+                    Вы действительно хотите подтвердить данный диспут?
+                </span>
+            </div>
+            <div v-if="disputOnConfirm.isEditable" class="tw-flex tw-flex-col tw-gap-y-4 tw-bg-[#F8FCFE]
+                    tw-border-solid tw-border-[1px] tw-border-[#E0E4E8]
+                    tw-rounded-xl tw-p-4 tw-w-full tw-mb-5">
+                <div class="tw-flex tw-justify-between tw-text-[15px]">
+                    <span>ID</span>
+                    <span>{{ disputOnConfirm.id }}</span>
+                </div>
+                <div class="tw-flex tw-justify-between tw-text-[15px]">
+                    <span>Время</span>
+                    <span>{{ disputOnConfirm.disputeStart }}</span>
+                </div>
+                <div class="tw-flex tw-justify-between tw-text-[15px]">
+                    <span>Сумма</span>
+                    <span>{{ disputOnConfirm.amount }} <span class="tw-text-gray-400">RUR</span></span>
+                </div>
+                <div class="tw-flex tw-justify-between tw-text-[15px]">
+                    <div class="tw-w-[140px] tw-text-ellipsis tw-text-balance">Оплаченная сумма клиентом</div>
+                    <span class="tw-text-nowrap">{{ disputOnConfirm.withdrawalAmount }} <span class="tw-text-gray-400">USD</span></span>
+                </div>
+                <div class="tw-flex tw-justify-between">
+                    <span>Карта</span>
+                    <div class="tw-flex tw-items-center tw-gap-x-2">
+                        <img :src="`/payment/${disputOnConfirm.card.type}.png`" :alt="disputOnConfirm.card.type" />
+                        <span>**** {{ disputOnConfirm.card.num }}</span>
+                    </div>
+                </div>
+            </div>
+            <div v-else class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-y-4 tw-bg-[#F8FCFE]
+                    tw-border-solid tw-border-[1px] tw-border-[#E0E4E8]
+                    tw-rounded-xl tw-w-full tw-h-[300px] tw-mb-5"
+            >
+                <v-progress-circular
+                    indeterminate
+                    color="#04B6F5"
+                ></v-progress-circular>
+            </div>
+            <v-btn class="!tw-rounded-xl !tw-h-[50px] tw-w-full tw-mt-5" variant="elevated" color="#04B6F5" @click="disputApprove(disputOnConfirm.id)">
+                <span class="tw-tracking-normal tw-normal-case tw-text-white">Подтвердить</span>
+            </v-btn>
+            <v-btn class="!tw-rounded-xl !tw-h-[50px] tw-w-full tw-mt-5" variant="outlined" color="#04B6F5" @click="closeConfirmDisputDialog">
+                <span class="tw-tracking-normal tw-normal-case">Отмена</span>
+            </v-btn>
+        </v-card>
+    </v-dialog>
 
     <RenderOn :px="840">
         <v-pagination
