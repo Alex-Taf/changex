@@ -165,5 +165,7 @@ export const getDifferentTimeStatus = (datetime: string | Date): string | undefi
 }
 
 export const copyToClipboard: ICopyToClipboard = (text) => {
-    navigator.clipboard.writeText(text)
+    navigator.clipboard.writeText(text).then(() => {
+        console.log(text)
+    })
 }

@@ -30,8 +30,8 @@ const accountsStore = useAccountStore()
 const { loading, hasItems, itemsAll, code, lastPage } = storeToRefs(accountsStore)
 
 function openDialog() {
-    dialog.value = true
     accountsStore.getConnectCode()
+    dialog.value = true
 }
 
 const editAccount = reactive({
@@ -75,8 +75,8 @@ function deleteAccountAction(id: number | string) {
 }
 
 function copyCode(code: string) {
-    copySnackbar.show = true
     copyToClipboard(code)
+    copySnackbar.show = true
 }
 
 const headers = ref([

@@ -69,10 +69,8 @@ export const useAccountStore = defineStore('accounts', {
       }
     },
     async getConnectCode() {
-        if (this.code === '') {
-            const res = await getAccountCode()
-            this.code = res?.data.code
-        }
+      const res = await getAccountCode()
+      this.code = res?.data.code
     },
     async saveEditAccount(edited: Record<string, unknown>) {
       const uid = edited.uid as string
