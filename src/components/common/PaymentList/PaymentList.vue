@@ -145,21 +145,7 @@ const cards = reactive({
     items: []
 })
 
-// function fetchCardsToRef() {
-//     if (cards.items.length === 0) {
-//         cardsStore.fetchCards({}).then(() => {
-//             cards.items = itemsAll.value.map((cardItem) => {
-//                 return {
-//                     type: cardItem.card.type,
-//                     num: cardItem.card.num
-//                 }
-//             })
-//         })
-//     }
-// }
-
 function searchCardValue(queryText: string) {
-    console.log(cardSearchModel.value)
     cardSearchQuery.value = queryText
         cardsStore.fetchCards({ search: cardSearchQuery.value }).then(() => {
             cards.items = itemsAll.value.map((cardItem) => {
@@ -232,9 +218,12 @@ function searchValue(queryText: string) {
 function reset() {
     searchModel.value = ''
     searchQuery.value = ''
-    searchCardValue.value = ''
+    cardSearchQuery.value = ''
+    date.value = ['', '']
     cards.selected = undefined
     statuses.select = undefined
+
+    fetchData()
 }
 
 function applyMobileFilter() {

@@ -110,7 +110,7 @@ const statuses = reactive({
     items: [
         {
             value: 'cancelled',
-            name: 'Отменённые'
+            name: 'Отклонён'
         },
         {
             value: 'awaiting',
@@ -118,11 +118,11 @@ const statuses = reactive({
         },
         {
             value: 'timeout',
-            name: 'Завершённые'
+            name: 'Истекло время'
         },
         {
-            value: 'dispute_closed',
-            name: 'Завершённые диспуты'
+            value: 'approved',
+            name: 'Одобрен'
         }
     ]
 })
@@ -136,19 +136,6 @@ const cards = reactive({
     selected: undefined,
     items: []
 })
-
-// function fetchCardsToRef() {
-//     if (cards.items.length === 0) {
-//         cardsStore.fetchCards({}).then(() => {
-//             cards.items = itemsAll.value.map((cardItem) => {
-//                 return {
-//                     type: cardItem.card.type,
-//                     num: cardItem.card.num
-//                 }
-//             })
-//         })
-//     }
-// }
 
 function searchCardValue(queryText: string) {
     console.log(cardSearchModel.value)
@@ -179,7 +166,7 @@ function fetchData() {
             fromTimestamp: datetimeToTimestamp(date?.value[0]),
             toTimestamp: datetimeToTimestamp(date?.value[1]),
             cardUID: cards.selected?.uid,
-            status: statuses.select
+            disputeStatus: statuses.select
         }
     }).then(() => {
         paymentsStore.hideLoading()
@@ -308,9 +295,12 @@ function searchValue(queryText: string) {
 function reset() {
     searchModel.value = ''
     searchQuery.value = ''
-    searchCardValue.value = ''
+    cardSearchQuery.value = ''
+    date.value = ['', '']
     cards.selected = undefined
     statuses.select = undefined
+
+    fetchData()
 }
 
 function applyMobileFilter() {
