@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getCards, getCardByUID, addCard, setShutdownCard, setTurnOnCard, getBanks, deleteCard } from '@/api'
+import { getCards, getCardByUID, addCard, setShutdownCard, editCard, setTurnOnCard, getBanks, deleteCard } from '@/api'
 import type { TFilterPaginationOptions } from '@/types'
 
 export const useCardsStore = defineStore('cards', {
@@ -77,15 +77,20 @@ export const useCardsStore = defineStore('cards', {
         const res = await getCardByUID(uid)
         return res?.data.card
     },
-    async saveEditCard(editedCard: Record<string, unknown>) {
-        const uid = editedCard.uid
+    async saveEditCard(editedCard: Record<string, unknown>) {        
+        const uid = editedCard.uid as string
+        const pan = editedCard.cardNum as string
 
         const onSaveCard = {
-            pan: editedCard.cardNum,
+            pan,
             comment: editedCard.comment
         }
 
-        await editCard(uid, onSaveCard)
+        const idx = this.cardsList.findIndex((card) => card.uid === uid)
+
+        const res = await editCard(uid, onSaveCard)
+
+        this.cardsList[idx] = res?.data.card
     },
     async removeCard(uid: string) {
         this.cardsList = this.cardsList.filter((card) => card.uid !== uid)
