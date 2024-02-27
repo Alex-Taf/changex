@@ -7,7 +7,12 @@ import { storeToRefs } from 'pinia'
 import IsOnline from '@/components/info/IsOnline.vue'
 import Download from '../../icons/Download.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
+import ReloadBtn from '@/components/common/ReloadBtn/ReloadBtn.vue'
 import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
+
+const props = defineProps<{
+    reload: boolean
+}>()
 
 const dialog = ref(false)
 const editDialog = ref(false)
@@ -220,6 +225,12 @@ watch(isTempTokenGet, (newValue: boolean, _prevValue: boolean) => {
     }
 })
 
+watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, boolean>) => {
+    if (newValue.reload) {
+        fetchData()
+    }
+})
+
 onMounted(() => {
     fetchData()
     userStore.getAppLink()
@@ -255,6 +266,9 @@ onMounted(() => {
                             </template>
                             <span class="tw-text-white tw-text-[16px] tw-normal-case tw-tracking-normal tw-leading-4">Добавить устройство</span>
                         </v-btn>
+                        <div class="!-tw-mt-5 ">
+                            <ReloadBtn @click="fetchData" />
+                        </div>
                 </section>
             </section>
         </v-card>

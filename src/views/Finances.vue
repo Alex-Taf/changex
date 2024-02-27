@@ -1,13 +1,19 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import Header from '../components/common/Header/Header.vue'
-import FinancesBalance from '../components/common/FinancesBalance/FinancesBalance.vue'
 import FinancesTable from '../components/common/FinancesTable/FinancesTable.vue'
+
+const onDataReload = ref(false)
+
+function setReload(flag: boolean) {
+    onDataReload.value = false
+    setTimeout(() => {onDataReload.value = flag}, 500)
+}
 </script>
 
 <template>
-    <Header title="Финансы" />
+    <Header title="Финансы" @reload="setReload" />
     <section class="tw-flex tw-flex-col">
-        <FinancesBalance />
-        <FinancesTable />
+        <FinancesTable :reload="onDataReload" />
     </section>
 </template>

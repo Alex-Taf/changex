@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { formatter } from '@/utils'
 import { debounce } from 'vue-debounce'
 import { useCardsStore } from '@/stores/cards'
@@ -11,7 +11,11 @@ import Stars from '@/components/icons/Stars.vue'
 import Filter from '@/components/icons/Filter.vue'
 import IsOnline from '@/components/info/IsOnline.vue'
 import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
-import { watchEffect } from 'vue'
+import ReloadBtn from '@/components/common/ReloadBtn/ReloadBtn.vue'
+
+const props = defineProps<{
+    reload: boolean
+}>()
 
 const cardsStore = useCardsStore()
 const deviceStore = useDevicesStore()
@@ -231,8 +235,6 @@ function fetchData() {
     }).then(() => {
         cardsStore.hideLoading()
     })
-
-    console.log('произошёл фетч')
 }
 
 function setSort(sortOption: Record<string, unknown>) {
@@ -380,6 +382,12 @@ onMounted(async () => {
 
     fetchData()
 })
+
+watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, boolean>) => {
+    if (newValue.reload) {
+        fetchData()
+    }
+})
 </script>
 
 <template>
@@ -420,16 +428,19 @@ onMounted(async () => {
                         ></v-select>
                     </v-responsive>
                     <v-responsive class="mx-auto -tw-mt-5" min-width="92" max-width="262">
-                        <v-btn
-                            class="!tw-rounded-2xl !tw-normal-case"
-                            variant="outlined"
-                            color="#04B6F5"
-                            size="x-large"
-                            @click="reset"
+                        <div class="tw-flex tw-items-center tw-gap-x-2">
+                            <v-btn
+                                class="!tw-rounded-2xl !tw-normal-case"
+                                variant="outlined"
+                                color="#04B6F5"
+                                size="x-large"
+                                @click="reset"
+                                >
+                                    <span class="tw-text-[#04B6F5] tw-text-[15px] tw-tracking-normal">Сбросить фильтр</span>
+                                </v-btn
                             >
-                                <span class="tw-text-[#04B6F5] tw-text-[15px] tw-tracking-normal">Сбросить фильтр</span>
-                            </v-btn
-                        >
+                            <ReloadBtn @click="fetchData" />
+                        </div>
                     </v-responsive>
                 </section>
                 <v-btn class="!-tw-mt-5 !tw-rounded-xl !tw-w-[205px] !tw-h-[52px] hover:!tw-shadow-[0px_10px_18px_2px_rgba(4,182,245,0.2)]" color="#04B6F5" variant="elevated" @click="dialog = !dialog">

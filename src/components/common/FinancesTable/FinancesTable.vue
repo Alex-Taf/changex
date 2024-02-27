@@ -7,6 +7,12 @@ import RenderOn from '@/components/utils/RenderOn.vue'
 import ArrowUpRight from '../../icons/ArrowUpRight.vue'
 import ArrowDownLeft from '../../icons/ArrowDownLeft.vue'
 import Stars from '../../icons/Stars.vue'
+import FinancesBalance from '@/components/common/FinancesBalance/FinancesBalance.vue'
+import { watch } from 'vue'
+
+const props = defineProps<{
+    reload: boolean
+}>()
 
 const financesStore = useFinancesStore()
 const { loading, lastPage, hasItems, itemsAll, itemsDeposit, itemsWithdrawal } = storeToRefs(financesStore)
@@ -52,6 +58,12 @@ const headers = ref([
     //     key: 'status'
     // }
 ])
+
+function fetchData() {
+    financesStore.fetchFinancesStory({ page: page.value, sort: sort.value, countPerPage: 10 }).then(() => {
+        financesStore.hideLoading()
+    })
+}
 
 const page = ref(1)
 
@@ -130,9 +142,16 @@ onMounted(() => {
         financesStore.hideLoading()
     })
 })
+
+watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, boolean>) => {
+    if (newValue.reload) {
+        fetchData()
+    }
+})
 </script>
 
 <template>
+  <FinancesBalance @reload="fetchData()"/>
   <RenderOn :px="840">
     <v-card v-if="hasItems" class="!tw-rounded-2xl tw-mb-6">
         <v-tabs v-model="tab" bg-color="white" align-tabs="center">

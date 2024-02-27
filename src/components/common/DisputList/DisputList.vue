@@ -1,17 +1,22 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { debounce } from 'vue-debounce'
-import Datepicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
-import { usePaymentsStore } from '@/stores/payments';
-import { useCardsStore } from '@/stores/cards';
+import Datepicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
+import { usePaymentsStore } from '@/stores/payments'
+import { useCardsStore } from '@/stores/cards'
 import { useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia';
-import RenderOn from '@/components/utils/RenderOn.vue';
-import Stars from '@/components/icons/Stars.vue';
-import WarningCircle from '@/components/icons/WarningCircle.vue';
+import { storeToRefs } from 'pinia'
+import RenderOn from '@/components/utils/RenderOn.vue'
+import Stars from '@/components/icons/Stars.vue'
+import WarningCircle from '@/components/icons/WarningCircle.vue'
 import VueCountdown from '@chenfengyuan/vue-countdown'
-import { datetimeToTimestamp, getTimeFromTimestamp } from '@/utils';
+import ReloadBtn from '@/components/common/ReloadBtn/ReloadBtn.vue'
+import { datetimeToTimestamp, getTimeFromTimestamp } from '@/utils'
+
+const props = defineProps<{
+    reload: boolean
+}>()
 
 const route = useRoute()
 
@@ -370,6 +375,12 @@ onMounted(() => {
 
     fetchData()
 })
+
+watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, boolean>) => {
+    if (newValue.reload) {
+        fetchData()
+    }
+})
 </script>
 
 <template>
@@ -435,17 +446,20 @@ onMounted(() => {
                         ></v-select>
                     </v-responsive>
                     <v-responsive class="mx-auto -tw-mt-5" min-width="92" max-width="462">
-                        <v-btn
-                            class="!tw-rounded-2xl !tw-normal-case !tw-w-full"
-                            variant="outlined"
-                            color="#04B6F5"
-                            size="x-large"
-                            @click="reset"
-                        >
-                            <span class="tw-text-[#04B6F5] tw-text-[15px] tw-tracking-normal"
-                                >Сбросить фильтр</span
+                        <div class="tw-flex tw-items-center tw-gap-x-2">
+                            <v-btn
+                                class="!tw-rounded-2xl !tw-normal-case !tw-w-[80%]"
+                                variant="outlined"
+                                color="#04B6F5"
+                                size="x-large"
+                                @click="reset"
                             >
-                        </v-btn>
+                                <span class="tw-text-[#04B6F5] tw-text-[15px] tw-tracking-normal"
+                                    >Сбросить фильтр</span
+                                >
+                            </v-btn>
+                            <ReloadBtn @click="fetchData" />
+                        </div>
                     </v-responsive>
                 </section>
             </section>

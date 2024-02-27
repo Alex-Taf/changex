@@ -7,6 +7,7 @@ import { logout } from '@/api'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import Rate from '@/components/info/Rate.vue'
 import Avatar from '../../user/Avatar/Avatar.vue'
+import ReloadBtn from '../ReloadBtn/ReloadBtn.vue'
 
 /** Used for long polling requests to update user data **/
 let interval: number | undefined
@@ -27,6 +28,14 @@ function exit() {
     })
 }
 
+const emit = defineEmits<{
+    (e: 'reload', reload: boolean): void
+}>()
+
+function reload() {
+    emit('reload', true)
+}
+
 onMounted(() => {
     userStore.fetchUserInfo() // First request
     interval = setInterval(() => userStore.fetchUserInfo(), 300000)
@@ -38,7 +47,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <header class="tw-flex tw-justify-between tw-w-full tw-mb-6">
+    <header class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-6">
         <span class="tw-text-2xl">{{ props.title }}</span>
         <RenderOn :px="1280">
             <section class="tw-flex tw-items-center">
@@ -59,6 +68,11 @@ onUnmounted(() => {
                     </div>
                 </div>
             </section>
+        </RenderOn>
+        <RenderOn :px-min="320" :px-max="1279">
+            <div @click="reload">
+                <ReloadBtn />
+            </div>
         </RenderOn>
     </header>
 </template>

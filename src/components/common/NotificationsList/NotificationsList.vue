@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, watch } from 'vue'
 import { debounce } from 'vue-debounce'
 import { useAccountStore } from '@/stores/accounts'
 import { storeToRefs } from 'pinia'
 import { copyToClipboard } from '@/utils'
 import CopyIcon from '@/components/icons/CopyIcon.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
+import ReloadBtn from '@/components/common/ReloadBtn/ReloadBtn.vue'
 import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
+
+const props = defineProps<{
+    reload: boolean
+}>()
 
 const dialog = ref(false)
 const editDialog = ref(false)
@@ -200,6 +205,12 @@ function loadMore() {
 onMounted(() => {
     fetchData()
 })
+
+watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, boolean>) => {
+    if (newValue.reload) {
+        fetchData()
+    }
+})
 </script>
 
 <template>
@@ -231,6 +242,9 @@ onMounted(() => {
                             </template>
                             <span class="tw-text-white tw-text-[16px] tw-normal-case tw-tracking-normal tw-leading-4">Подключить</span>
                         </v-btn>
+                        <div class="!-tw-mt-5 ">
+                            <ReloadBtn @click="fetchData" />
+                        </div>
                 </section>
             </section>
         </v-card>
@@ -418,7 +432,7 @@ onMounted(() => {
             </div>
         </div>
         <div class="tw-text-center">
-            <span class="tw-text-[15px]">Отправьте данный код в бота </span><span class="tw-text-[15px] tw-text-[#04B6F5]">@testbot</span>
+            <span class="tw-text-[15px]">Отправьте данный код в бота </span><span class="tw-text-[15px] tw-text-[#04B6F5]">@bot_changeex_bot</span>
         </div>
         <v-btn class="!tw-rounded-xl !tw-h-[50px] tw-w-full tw-mt-5" variant="outlined" color="#04B6F5" @click="dialog = !dialog">
             <span class="tw-tracking-normal tw-normal-case">Отмена</span>

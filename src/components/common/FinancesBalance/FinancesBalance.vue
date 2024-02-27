@@ -1,20 +1,27 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
 import FinancesBalanceIcon from '../../icons/FinancesBalanceIcon.vue'
 import FinancesDialog from '../FinancesDialog/FinancesDialog.vue'
-import ArrowsClockwise from '@/components/icons/ArrowsClockwise.vue'
+import ReloadBtn from '@/components/common/ReloadBtn/ReloadBtn.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
-import { onMounted } from 'vue'
 
 const userStore = useUserStore()
-const { userInfo, walletAddress } = storeToRefs(userStore)
+const { userInfo } = storeToRefs(userStore)
 
 const dialogOpen = ref(false)
 
 function closeDialog(close: boolean) {
     dialogOpen.value = close
+}
+
+const emit = defineEmits<{
+    (e: 'reload', reload: boolean): void
+}>()
+
+function reload() {
+    emit('reload', true)
 }
 
 onMounted(() => {
@@ -53,12 +60,7 @@ onMounted(() => {
                     </template>
                     <span class="sm:tw-hidden md:tw-hidden min-lg:tw-inline tw-text-white tw-text-[16px] tw-normal-case tw-tracking-normal tw-leading-4">Пополнить</span>
                 </v-btn>
-                <div class="tw-flex tw-flex-col tw-items-center tw-justify-center
-                                        tw-border-solid tw-border-[2px] tw-border-[#04B6F5] tw-rounded-xl tw-h-[50px] tw-w-[50px]
-                                        tw-cursor-pointer hover:tw-bg-cyan-100"
-                >
-                    <ArrowsClockwise />
-                </div>
+                <div class="sm:tw-hidden min-lg:tw-block" @click="reload"><ReloadBtn /></div>
             </section>
         </section>
     </v-card>
