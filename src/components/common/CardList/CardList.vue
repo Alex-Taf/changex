@@ -369,15 +369,15 @@ function closeMobileFilter() {
     mobileFilter.value = !mobileFilter.value
 }
 
-onMounted(async () => {
-    await cardsStore.fetchBanks()
-    await deviceStore.fetchDevices({ page: page.value, countPerPage: 10 })
-    
-    newCard.device.items = deviceItemsAll.value.map((device) => {
-        return {
-            value: device.id,
-            name: device.title
-        }
+onMounted(() => {
+    cardsStore.fetchBanks()
+    deviceStore.fetchDevices({ page: page.value, countPerPage: 10 }).then(() => {
+        newCard.device.items = deviceItemsAll.value.map((device) => {
+            return {
+                value: device.id,
+                name: device.title.name
+            }
+        })
     })
 
     fetchData()
