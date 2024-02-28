@@ -71,7 +71,14 @@ export const useCardsStore = defineStore('cards', {
     },
     async checkCardNotCurrent(search: string, currentUid: string) {
         const res = await getCards({ search })
-        return res?.data.list[0].uid !== currentUid ? true : false
+
+        if (res?.data && res.data.list.length > 0) {
+            return res?.data.list[0].uid !== currentUid ? true : false
+        } else {
+            return false
+        }
+        
+        // return res?.data.list && res?.data.list[0].uid !== currentUid ? true : false
     },
     async fetchCardByUID(uid: string) {
         const res = await getCardByUID(uid)
@@ -137,7 +144,7 @@ export const useCardsStore = defineStore('cards', {
     },
     async createCard(newCard: Record<string, unknown>) {
         this.showLoading()
-        
+
         const createdCard = {
             bank: newCard.bank.select,
             pan: newCard.cardNum.replace(/\s/g, ''),
