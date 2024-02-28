@@ -98,8 +98,10 @@ export const useCardsStore = defineStore('cards', {
         const idx = this.cardsList.findIndex((card) => card.uid === uid)
 
         const res = await editCard(uid, onSaveCard)
+        
+        if (res?.data.card) this.cardsList[idx] = res?.data.card
 
-        this.cardsList[idx] = res?.data.card
+        return res
     },
     async removeCard(uid: string) {
         this.cardsList = this.cardsList.filter((card) => card.uid !== uid)

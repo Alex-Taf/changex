@@ -289,6 +289,8 @@ export const editCard = async (uid: string, onSaveCard: Record<string, unknown>)
             } else {
                 return
             }
+        } else {
+            return error
         }
     }
 }

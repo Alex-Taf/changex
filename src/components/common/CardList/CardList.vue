@@ -17,6 +17,12 @@ const props = defineProps<{
     reload: boolean
 }>()
 
+const cardErrorSnackbar = reactive({
+    show: false,
+    text: 'Некорректный номер карты',
+    timeout: 2000,
+})
+
 const cardsStore = useCardsStore()
 const deviceStore = useDevicesStore()
 const { loading, hasItems, itemsAll, lastPage } = storeToRefs(cardsStore)
@@ -317,7 +323,12 @@ async function submitEditCard() {
     const { valid } = await editCardForm.value.validate()
 
     if (valid) {
-        cardsStore.saveEditCard(editCard).then(() => {
+        cardsStore.saveEditCard(editCard).then((res) => {
+            if (res && res.response && res.response.data && res?.response.data.code === 'incorrect_pan') {
+                cardErrorSnackbar.show = true
+                cardsStore.hideLoading()
+                return
+            }
             cardsStore.hideLoading()
             closeEditDialog()
         })
@@ -1009,6 +1020,24 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                 </v-card-actions>
             </v-card>
     </RenderOn>
+
+    <v-snackbar
+        v-model="cardErrorSnackbar.show"
+        :timeout="cardErrorSnackbar.timeout"
+        color="red"
+    >
+        {{ cardErrorSnackbar.text }}
+
+        <template v-slot:actions>
+            <v-btn
+                color="white"
+                variant="text"
+                @click="cardErrorSnackbar.show = false"
+            >
+                Скрыть
+            </v-btn>
+        </template>
+    </v-snackbar>
 
     <RenderOn :px="840">
         <v-pagination
