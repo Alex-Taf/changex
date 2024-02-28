@@ -73,8 +73,10 @@ function closeEditDialog() {
 }
 
 function submitEditDevice() {
-    devicesStore.saveEditDevice(editDevice)
-    editDialog.value = false
+    devicesStore.saveEditDevice(editDevice).then(() => {
+        devicesStore.hideLoading()
+        editDialog.value = false
+    })
 }
 
 function onDeleteDevice(id: number | string, title: Record<string, unknown>) {
@@ -477,7 +479,7 @@ onMounted(() => {
             <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl sm:!tw-p-[28px] md:!tw-p-[48px] min-lg:!tw-p-[48px]">
                 <span class="sm:tw-text-xl md:tw-text-2xl min-lg:tw-text-2xl tw-mb-[14px]">Редактировать устройство</span>
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                        <span class="tw-text-[13px] tw-text-[#677483]">Название</span>
+                        <span class="tw-text-[13px] tw-text-[#677483] tw-mb-2">Название</span>
                         <v-text-field
                             v-if="editDevice.isEditable"
                             v-model="editDevice.name"
@@ -485,10 +487,10 @@ onMounted(() => {
                             label="Название устройства"
                             variant="outlined"
                         ></v-text-field>
-                        <v-skeleton-loader v-else type="text" width="320"></v-skeleton-loader>
+                        <v-skeleton-loader v-else type="text" width="100%"></v-skeleton-loader>
                     </div>
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                        <span class="tw-text-[13px] tw-text-[#677483]">Комментарий</span>
+                        <span class="tw-text-[13px] tw-text-[#677483] tw-mb-2">Комментарий</span>
                         <v-textarea
                             v-if="editDevice.isEditable"
                             v-model="editDevice.comment"
@@ -496,11 +498,17 @@ onMounted(() => {
                             label="Комментарий к устройству"
                             variant="outlined"
                         ></v-textarea>
-                        <v-skeleton-loader v-else type="image" width="320"></v-skeleton-loader>
+                        <v-skeleton-loader v-else type="image" width="100%"></v-skeleton-loader>
                     </div>
                 <v-card-actions>
                     <section class="tw-flex tw-flex-col tw-gap-y-4">
                         <v-btn class="sm:!tw-w-[280px] md:tw-w-[426px] min-lg:tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="submitEditDevice">
+                            <v-progress-circular
+                                v-if="loading"
+                                class="tw-mr-3"
+                                indeterminate
+                                color="white"
+                            ></v-progress-circular>
                             <span class="tw-text-white tw-text-[15px] !tw-normal-case">Сохранить</span>
                         </v-btn>
                         <v-btn class="sm:!tw-w-[280px] md:tw-w-[426px] min-lg:tw-w-[426px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="closeEditDialog">

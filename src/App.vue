@@ -97,7 +97,7 @@ const navItems = ref([
                         <div>
                             <div class="tw-flex tw-items-center">
                                 <div class="tw-w-[56px] tw-h-[61px]">
-                                    <v-img :width="56" :height="61" src="/logo.png"></v-img>
+                                    <v-img :width="44" :height="47" src="/logo.png"></v-img>
                                 </div>
                                 <span
                                     v-show="!navOptions.rail"

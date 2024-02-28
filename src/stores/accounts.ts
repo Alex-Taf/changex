@@ -73,6 +73,8 @@ export const useAccountStore = defineStore('accounts', {
       this.code = res?.data.code
     },
     async saveEditAccount(edited: Record<string, unknown>) {
+      this.showLoading()
+      
       const uid = edited.uid as string
 
       const idx = this.accountsList.findIndex((account) => account.uid === uid)

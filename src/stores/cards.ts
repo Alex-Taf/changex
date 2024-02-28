@@ -77,7 +77,9 @@ export const useCardsStore = defineStore('cards', {
         const res = await getCardByUID(uid)
         return res?.data.card
     },
-    async saveEditCard(editedCard: Record<string, unknown>) {        
+    async saveEditCard(editedCard: Record<string, unknown>) {
+        this.showLoading()
+
         const uid = editedCard.uid as string
         const pan = editedCard.cardNum as string
 
@@ -134,6 +136,8 @@ export const useCardsStore = defineStore('cards', {
       }
     },
     async createCard(newCard: Record<string, unknown>) {
+        this.showLoading()
+        
         const createdCard = {
             bank: newCard.bank.select,
             pan: newCard.cardNum.replace(/\s/g, ''),

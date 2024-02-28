@@ -85,6 +85,8 @@ export const useDevicesStore = defineStore('devices', {
       }
     },
     async saveEditDevice(edited: Record<string, unknown>) {
+      this.showLoading()
+      
       const id = edited.id as string
 
       const idx = this.deviceList.findIndex((device) => device.deviceId === id)
