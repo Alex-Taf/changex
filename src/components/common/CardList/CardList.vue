@@ -365,6 +365,8 @@ const editCardValidationRules = reactive({
         const num = value.replace(/\s/g, '')
         if (num.length === 16) {
             const isOccupied = await cardsStore.checkCardNotCurrent(value, editCard.uid)
+
+            console.log(isOccupied)
             
             if (isOccupied) {
                 return 'Такая карта уже добавлена'

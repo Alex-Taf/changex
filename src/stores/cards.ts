@@ -72,6 +72,8 @@ export const useCardsStore = defineStore('cards', {
     async checkCardNotCurrent(search: string, currentUid: string) {
         const res = await getCards({ search })
 
+        console.log(res)
+
         if (res?.data && res.data.list.length > 0) {
             return res?.data.list[0].uid !== currentUid ? true : false
         } else {
@@ -99,7 +101,7 @@ export const useCardsStore = defineStore('cards', {
 
         const res = await editCard(uid, onSaveCard)
         
-        if (res?.data.card) this.cardsList[idx] = res?.data.card
+        if (res && res.data !== undefined && res?.data.card) this.cardsList[idx] = res?.data.card
 
         return res
     },
