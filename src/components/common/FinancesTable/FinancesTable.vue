@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { formatter } from '../../../utils'
 import { useFinancesStore } from '@/stores/finances'
 import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import ArrowUpRight from '../../icons/ArrowUpRight.vue'
 import ArrowDownLeft from '../../icons/ArrowDownLeft.vue'
 import Stars from '../../icons/Stars.vue'
 import FinancesBalance from '@/components/common/FinancesBalance/FinancesBalance.vue'
-import { watch } from 'vue'
 
 const props = defineProps<{
     reload: boolean
@@ -16,6 +16,8 @@ const props = defineProps<{
 
 const financesStore = useFinancesStore()
 const { loading, lastPage, hasItems, itemsAll, itemsDeposit, itemsWithdrawal } = storeToRefs(financesStore)
+
+const userStore = useUserStore()
 
 const tab = ref(null)
 const headers = ref([
@@ -137,6 +139,11 @@ function setSort(sortOption: Record<string, unknown>) {
     })
 }
 
+function updateData() {
+    userStore.fetchUserInfo()
+    fetchData()
+}
+
 onMounted(() => {
     financesStore.fetchFinancesStory({ page: page.value, sort: sort.value, countPerPage: 10 }).then(() => {
         financesStore.hideLoading()
@@ -145,13 +152,13 @@ onMounted(() => {
 
 watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, boolean>) => {
     if (newValue.reload) {
-        fetchData()
+        updateData()
     }
 })
 </script>
 
 <template>
-  <FinancesBalance @reload="fetchData()"/>
+  <FinancesBalance @reload="updateData()"/>
   <RenderOn :px="840">
     <v-card v-if="hasItems" class="!tw-rounded-2xl tw-mb-6">
         <v-tabs v-model="tab" bg-color="white" align-tabs="center">
