@@ -356,12 +356,20 @@ function loadMore() {
 onMounted(() => {
     const params = route.query
 
-    console.log(params)
-
     if (params && params.id) {
         searchModel.value = params.id
         searchQuery.value = params.id
     }
+
+    cardsStore.fetchCards({page: 1}).then(() => {
+        cards.items = itemsAll.value.map((cardItem) => {
+                return {
+                    uid: cardItem.id,
+                    type: cardItem.card.type,
+                    num: cardItem.card.num
+                }
+            })
+    })
 
     fetchData()
 })

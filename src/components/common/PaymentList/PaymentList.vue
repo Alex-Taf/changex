@@ -131,8 +131,6 @@ function fetchData() {
     }).then(() => {
         paymentsStore.hideLoading()
     })
-
-    console.log('произошёл фетч')
 }
 
 function clearStatuses() {
@@ -277,6 +275,15 @@ function loadMore() {
 }
 
 onMounted(() => {
+    cardsStore.fetchCards({page: 1}).then(() => {
+        cards.items = itemsAll.value.map((cardItem) => {
+                return {
+                    uid: cardItem.id,
+                    type: cardItem.card.type,
+                    num: cardItem.card.num
+                }
+            })
+    })
     fetchData()
 })
 
