@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted, watch } from 'vue'
+import { reactive, ref, onMounted, watch, onUnmounted } from 'vue'
 import { debounce } from 'vue-debounce'
 import { useDevicesStore } from '@/stores/devices'
 import { useUserStore } from '@/stores/user'
@@ -236,6 +236,10 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
 onMounted(() => {
     fetchData()
     userStore.getAppLink()
+})
+
+onUnmounted(() => {
+    clearInterval(interval)
 })
 </script>
 

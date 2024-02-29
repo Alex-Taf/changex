@@ -346,6 +346,23 @@ export const getPayments = async (options: TFilterPaginationOptions) => {
     }
 }
 
+export const getAwaitingDisputesCount = async () => {
+    try {
+        return await $authHost.post('/awaitingDisputes/count', {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post('/awaitingDisputes/count', {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
 export const getDisputes = async (options: TFilterPaginationOptions) => {
     try {
         return await $authHost.post('/disputes/list', { ...options })

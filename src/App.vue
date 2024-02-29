@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { RouterView, useRouter, type RouteLocationRaw } from 'vue-router'
 import { getNavItemStroke } from '@/utils'
 import type { TMenuToggleOptions } from './types'
+import { usePaymentsStore } from '@/stores/payments'
+import { storeToRefs } from 'pinia'
 import RenderOn from './components/utils/RenderOn.vue'
 import ArrowLeft from './components/icons/ArrowLeft.vue'
 import ArrowRight from './components/icons/ArrowRight.vue'
@@ -16,6 +18,7 @@ import Menu from './components/icons/Menu.vue'
 import Close from './components/icons/Close.vue'
 import Avatar from './components/user/Avatar/Avatar.vue'
 import Rate from './components/info/Rate.vue'
+import { onUnmounted } from 'vue'
 
 const $router = useRouter()
 
@@ -41,6 +44,7 @@ const navItems = ref([
         title: 'Финансы',
         path: '/finances',
         name: 'finances',
+        badge: false,
         icon: Squares
     },
     {
@@ -48,6 +52,7 @@ const navItems = ref([
         title: 'Банковские карты',
         path: '/cards',
         name: 'cards',
+        badge: false,
         icon: CreditCard
     },
     {
@@ -55,6 +60,7 @@ const navItems = ref([
         title: 'Платежи',
         path: '/payments',
         name: 'payments',
+        badge: false,
         icon: ArrowsLeftRight
     },
     {
@@ -62,6 +68,7 @@ const navItems = ref([
         title: 'Диспуты',
         path: '/disputs',
         name: 'disputs',
+        badge: true,
         icon: Warning
     },
     {
@@ -69,6 +76,7 @@ const navItems = ref([
         title: 'Устройства',
         path: '/devices',
         name: 'devices',
+        badge: false,
         icon: Mobile
     },
     {
@@ -76,9 +84,25 @@ const navItems = ref([
         title: 'Уведомления',
         path: '/notifications',
         name: 'notifications',
+        badge: false,
         icon: NotificationsIcon
     }
 ])
+
+/** Used for long polling requests to update badges data **/
+let interval: number | undefined
+
+const paymentsStore = usePaymentsStore()
+const { awaitingItems } = storeToRefs(paymentsStore)
+
+onMounted(() => {
+    paymentsStore.fetchAwaitingDisputesCount() // First request
+    interval = setInterval(() => paymentsStore.fetchAwaitingDisputesCount(), 200000)
+})
+
+onUnmounted(() => {
+    clearInterval(interval)
+})
 </script>
 
 <template>
@@ -114,7 +138,33 @@ const navItems = ref([
                                         @click="$router.push(navItem.path)"
                                     >
                                         <template v-slot:prepend>
+                                            <v-badge
+                                                v-if="
+                                                    navItem.badge &&
+                                                    navItem.name === 'disputs' &&
+                                                    awaitingItems > 0
+                                                "
+                                                color="#EF4B27"
+                                                :content="
+                                                    awaitingItems >= 10 ? '9+' : awaitingItems
+                                                "
+                                            >
+                                                <component
+                                                    :is="navItem.icon"
+                                                    v-bind="{
+                                                        stroke: getNavItemStroke(
+                                                            navItem.name,
+                                                            $route.name as string,
+                                                            {
+                                                                active: '#04B6F5',
+                                                                default: '#2B3A4C'
+                                                            }
+                                                        )
+                                                    }"
+                                                ></component>
+                                            </v-badge>
                                             <component
+                                                v-else
                                                 :is="navItem.icon"
                                                 v-bind="{
                                                     stroke: getNavItemStroke(
@@ -163,18 +213,15 @@ const navItems = ref([
                                 <div class="tw-w-[36px] tw-h-[41px]">
                                     <v-img :width="36" :height="41" src="/logo.png"></v-img>
                                 </div>
-                                <span
-                                    class="tw-font-bold tw-text-xl tw-ml-3"
-                                    >Changeex</span
-                                >
+                                <span class="tw-font-bold tw-text-xl tw-ml-3">Changeex</span>
                             </div>
                             <div class="tw-cursor-pointer" @click.stop="toggleMenu()">
-                              <Menu v-if="navOptions.drawer" />
-                              <Close v-else />
+                                <Menu v-if="navOptions.drawer" />
+                                <Close v-else />
                             </div>
                         </div>
                         <div class="tw-mt-1">
-                          <Rate />
+                            <Rate />
                         </div>
                     </div>
                 </v-app-bar>
@@ -188,10 +235,33 @@ const navItems = ref([
                                 class="tw-h-[68px]"
                                 :value="navItem.name"
                                 active-color="#F8FCFE"
-                                @click.stop="toggleMenu({ mobileItem: true, routerLink: navItem.path })"
+                                @click.stop="
+                                    toggleMenu({ mobileItem: true, routerLink: navItem.path })
+                                "
                             >
                                 <template v-slot:prepend>
+                                    <v-badge
+                                        v-if="
+                                            navItem.badge &&
+                                            navItem.name === 'disputs' &&
+                                            awaitingItems > 0
+                                        "
+                                        color="#EF4B27"
+                                        :content="awaitingItems >= 10 ? '9+' : awaitingItems"
+                                    >
+                                        <component
+                                            :is="navItem.icon"
+                                            v-bind="{
+                                                stroke: getNavItemStroke(
+                                                    navItem.name,
+                                                    $route.name as string,
+                                                    { active: '#04B6F5', default: '#2B3A4C' }
+                                                )
+                                            }"
+                                        ></component>
+                                    </v-badge>
                                     <component
+                                        v-else
                                         :is="navItem.icon"
                                         v-bind="{
                                             stroke: getNavItemStroke(
@@ -211,11 +281,14 @@ const navItems = ref([
                         </template>
                     </v-list>
                     <div class="tw-flex tw-w-full tw-justify-between tw-items-center">
-                      <div class="tw-flex tw-items-center tw-gap-x-2">
-                        <Avatar />
-                        <span class="tw-text-[15px]">89876543210</span>
-                      </div>
-                      <span class="tw-text-[#04B6F5] tw-text-[15px] tw-cursor-pointer tw-select-none">Выйти</span>
+                        <div class="tw-flex tw-items-center tw-gap-x-2">
+                            <Avatar />
+                            <span class="tw-text-[15px]">89876543210</span>
+                        </div>
+                        <span
+                            class="tw-text-[#04B6F5] tw-text-[15px] tw-cursor-pointer tw-select-none"
+                            >Выйти</span
+                        >
                     </div>
                 </div>
             </RenderOn>
