@@ -179,9 +179,14 @@ const disputOnConfirm = reactive({
     disputeStart: '',
     amount: '',
     withdrawalAmount: '',
+    device: {
+        name: '',
+        comment: ''
+    },
     card: {
         type: '',
-        num: ''
+        num: '',
+        comment: ''
     }
 })
 
@@ -191,33 +196,48 @@ const disputOnCancel = reactive({
     disputeStart: '',
     amount: '',
     withdrawalAmount: '',
+    device: {
+        name: '',
+        comment: ''
+    },
     card: {
         type: '',
-        num: ''
+        num: '',
+        comment: ''
     }
 })
 
-function openOnConfirm(dispute: Record<string, unknown>) {
+async function openOnConfirm(dispute: Record<string, unknown>) {
     disputOnConfirm.isEditable = false
+
+    const fetchedDispute = await paymentsStore.fetchDisputeById(dispute.id as string);
 
     disputOnConfirm.id = dispute.id as string
     disputOnConfirm.disputeStart = dispute.disputeStart.value as string
     disputOnConfirm.amount = dispute.sum.value as string
     disputOnConfirm.withdrawalAmount = dispute.debit.value as string
+    disputOnConfirm.device.name = fetchedDispute.deviceName as string
+    disputOnConfirm.device.comment = fetchedDispute.deviceComment as string
     disputOnConfirm.card = dispute.card as Record<string, string>
+    disputOnConfirm.card.comment = fetchedDispute.cardComment as string
     
     confirmDisputDialog.value = true
     disputOnConfirm.isEditable = true
 }
 
-function openOnCancel(dispute: Record<string, unknown>) {
+async function openOnCancel(dispute: Record<string, unknown>) {
     disputOnCancel.isEditable = false
+
+    const fetchedDispute = await paymentsStore.fetchDisputeById(dispute.id as string);
 
     disputOnCancel.id = dispute.id as string
     disputOnCancel.disputeStart = dispute.disputeStart.value as string
     disputOnCancel.amount = dispute.sum.value as string
     disputOnCancel.withdrawalAmount = dispute.debit.value as string
+    disputOnCancel.device.name = fetchedDispute.deviceName as string
+    disputOnCancel.device.comment = fetchedDispute.deviceComment as string
     disputOnCancel.card = dispute.card as Record<string, string>
+    disputOnCancel.card.comment = fetchedDispute.cardComment as string
     
     cancelDisputDialog.value = true
     disputOnCancel.isEditable = true
@@ -520,8 +540,8 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                             class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-[#EF4B27] tw-w-[158px] tw-px-2 tw-py-1 tw-text-center"
                         >
                             <span class="tw-text-[#EF4B27] tw-text-xs">
-                                Ожидает <vue-countdown :time="value.timeout" v-slot="{ hours, minutes, seconds }">
-                                {{ hours.toString().padStart(2, "0") }}:{{ minutes.toString().padStart(2, "0") }}:{{ seconds.toString().padStart(2, "0") }}</vue-countdown>
+                                Ожидает <vue-countdown :time="value.timeout" v-slot="{ minutes, seconds }">
+                                {{ minutes.toString().padStart(2, "0") }}:{{ seconds.toString().padStart(2, "0") }}</vue-countdown>
                             </span>
                         </div>
                         <div class="tw-flex tw-gap-x-2">
@@ -609,8 +629,8 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                     class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-[#EF4B27] tw-w-[158px] tw-px-2 tw-py-1 tw-text-center"
                                 >
                                     <span class="tw-text-[#EF4B27] tw-text-xs">
-                                        Ожидает <vue-countdown :time="item.status.timeout" v-slot="{ hours, minutes, seconds }">
-                                        {{ hours.toString().padStart(2, "0") }}:{{ minutes.toString().padStart(2, "0") }}:{{ seconds.toString().padStart(2, "0") }}</vue-countdown>
+                                        Ожидает <vue-countdown :time="item.status.timeout" v-slot="{ minutes, seconds }">
+                                        {{ minutes.toString().padStart(2, "0") }}:{{ seconds.toString().padStart(2, "0") }}</vue-countdown>
                                     </span>
                                 </div>
                             </div>
@@ -808,6 +828,11 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                     <div class="tw-w-[140px] tw-text-ellipsis tw-text-balance">Оплаченная сумма клиентом</div>
                     <span>{{ disputOnCancel.withdrawalAmount }} <span class="tw-text-gray-400">RUR</span></span>
                 </div>
+                <div class="tw-flex tw-justify-between tw-text-[15px]">
+                    <span>Устройство</span>
+                    <span>{{ disputOnCancel.device.name }}</span>
+                </div>
+                <span class="tw-text-[#AEB7C1] tw-text-[10px] -tw-mt-3">{{ disputOnCancel.device.comment }}</span>
                 <div class="tw-flex tw-justify-between">
                     <span>Карта</span>
                     <div class="tw-flex tw-items-center tw-gap-x-2">
@@ -815,6 +840,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                         <span>**** {{ disputOnCancel.card.num }}</span>
                     </div>
                 </div>
+                <span class="tw-text-[#AEB7C1] tw-text-[10px] -tw-mt-3">{{ disputOnCancel.card.comment }}</span>
             </div>
             <div v-else class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-y-4 tw-bg-[#F8FCFE]
                     tw-border-solid tw-border-[1px] tw-border-[#E0E4E8]
@@ -861,6 +887,11 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                     <div class="tw-w-[140px] tw-text-ellipsis tw-text-balance">Оплаченная сумма клиентом</div>
                     <span class="tw-text-nowrap">{{ disputOnConfirm.withdrawalAmount }} <span class="tw-text-gray-400">RUR</span></span>
                 </div>
+                <div class="tw-flex tw-justify-between tw-text-[15px]">
+                    <span>Устройство</span>
+                    <span>{{ disputOnConfirm.device.name }}</span>
+                </div>
+                <span class="tw-text-[#AEB7C1] tw-text-[10px] -tw-mt-3">{{ disputOnConfirm.device.comment }}</span>
                 <div class="tw-flex tw-justify-between">
                     <span>Карта</span>
                     <div class="tw-flex tw-items-center tw-gap-x-2">
@@ -868,6 +899,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                         <span>**** {{ disputOnConfirm.card.num }}</span>
                     </div>
                 </div>
+                <span class="tw-text-[#AEB7C1] tw-text-[10px] -tw-mt-3">{{ disputOnConfirm.card.comment }}</span>
             </div>
             <div v-else class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-y-4 tw-bg-[#F8FCFE]
                     tw-border-solid tw-border-[1px] tw-border-[#E0E4E8]

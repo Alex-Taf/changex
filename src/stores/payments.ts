@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getPayments, getDisputes, approveDisput, cancelDisput, getAwaitingDisputesCount } from '@/api'
+import { getPayments, getDisputes, approveDisput, cancelDisput, getAwaitingDisputesCount, getCurrentDispute } from '@/api'
 import type { TFilterPaginationOptions } from '@/types'
 import { formatter, getDifferentTimeStatus, timestampToDatetime } from '@/utils'
 
@@ -110,6 +110,10 @@ export const usePaymentsStore = defineStore('payments', {
       } else {
         this.hasItems = true
       }
+    },
+    async fetchDisputeById(id: string) {
+      const res = await getCurrentDispute(id)
+      return res?.data.payment
     },
     async fetchDisputs(options: TFilterPaginationOptions) {
       this.showLoading()

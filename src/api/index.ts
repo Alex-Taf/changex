@@ -380,6 +380,23 @@ export const getDisputes = async (options: TFilterPaginationOptions) => {
     }
 }
 
+export const getCurrentDispute = async (id: string) => {
+    try {
+        return await $authHost.post(`/payments/${id}/info`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/payments/${id}/info`, {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
 export const approveDisput = async (id: string) => {
     try {
         return await $authHost.post(`disputes/${id}/approve`, {})
