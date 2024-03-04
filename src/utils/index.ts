@@ -53,7 +53,7 @@ export const getCookie = (name: string) => {
     return matches ? decodeURIComponent(matches[1]) : undefined
 }
 
-export const timestampToDatetime = (timestamp: number): string => {
+export const timestampToDatetime = (timestamp: number | string): string => {
     const dateFormat = new Date(timestamp)
 
     //const formattedDate = `${dateFormat.getDay()}.${dateFormat.getMonth() + 1}.${dateFormat.getFullYear()} ${dateFormat.getHours()}:${dateFormat.getMinutes()}`
