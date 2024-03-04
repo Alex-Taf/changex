@@ -97,7 +97,7 @@ const { awaitingItems } = storeToRefs(paymentsStore)
 
 onMounted(() => {
     paymentsStore.fetchAwaitingDisputesCount() // First request
-    interval = setInterval(() => paymentsStore.fetchAwaitingDisputesCount(), 200000)
+    interval = setInterval(() => paymentsStore.fetchAwaitingDisputesCount(), 60000)
 })
 
 onUnmounted(() => {
@@ -142,9 +142,11 @@ onUnmounted(() => {
                                                 v-if="
                                                     navItem.badge &&
                                                     navItem.name === 'disputs' &&
-                                                    awaitingItems > 0
+                                                    awaitingItems > 0 &&
+                                                    navOptions.rail
                                                 "
                                                 color="#EF4B27"
+                                                offset-y="20"
                                                 :content="
                                                     awaitingItems >= 10 ? '9+' : awaitingItems
                                                 "
@@ -181,6 +183,21 @@ onUnmounted(() => {
                                                 v-show="!navOptions.rail"
                                                 >{{ navItem.title }}</span
                                             >
+                                        </template>
+                                        <template v-slot:append>
+                                            <v-badge
+                                                v-if="
+                                                    navItem.badge &&
+                                                    navItem.name === 'disputs' &&
+                                                    awaitingItems > 0 &&
+                                                    !navOptions.rail
+                                                "
+                                                color="#EF4B27"
+                                                :content="
+                                                    awaitingItems >= 10 ? '9+' : awaitingItems
+                                                "
+                                                inline
+                                            ></v-badge>
                                         </template>
                                     </v-list-item>
                                 </template>
@@ -244,9 +261,11 @@ onUnmounted(() => {
                                         v-if="
                                             navItem.badge &&
                                             navItem.name === 'disputs' &&
-                                            awaitingItems > 0
+                                            awaitingItems > 0 &&
+                                            !navOptions.rail
                                         "
                                         color="#EF4B27"
+                                        offset-y="20"
                                         :content="awaitingItems >= 10 ? '9+' : awaitingItems"
                                     >
                                         <component
@@ -276,6 +295,19 @@ onUnmounted(() => {
                                     <span class="tw-ml-2 tw-text-[15px] tw-text-[#2B3A4C]">{{
                                         navItem.title
                                     }}</span>
+                                </template>
+                                <template v-slot:append>
+                                    <v-badge
+                                        v-if="
+                                            navItem.badge &&
+                                            navItem.name === 'disputs' &&
+                                            awaitingItems > 0 &&
+                                            !navOptions.drawer
+                                        "
+                                        color="#EF4B27"
+                                        :content="awaitingItems >= 10 ? '9+' : awaitingItems"
+                                        inline
+                                    ></v-badge>
                                 </template>
                             </v-list-item>
                         </template>
