@@ -26,7 +26,7 @@ const cardErrorSnackbar = reactive({
 const cardsStore = useCardsStore()
 const deviceStore = useDevicesStore()
 const { loading, hasItems, itemsAll, lastPage } = storeToRefs(cardsStore)
-const { deviceItemsAll } = storeToRefs(deviceStore)
+const { filteredDeviceList } = storeToRefs(deviceStore)
 
 const newCardForm = ref<HTMLFormElement>(null)
 const editCardForm = ref<HTMLFormElement>(null)
@@ -196,7 +196,18 @@ const statuses = reactive({
     ]
 })
 
-const newCard = reactive({
+const newCard = reactive<{
+    bank: {
+        select: Record<string, unknown> | undefined | null,
+        items: Array<Record<string, string>> | null
+    },
+    device: {
+        select: Record<string, unknown> | undefined | null,
+        items: Array<Record<string, string>> | null
+    },
+    cardNum : string,
+    comment: string
+}>({
     bank: {
         select: undefined,
         items: [
@@ -391,11 +402,11 @@ function closeMobileFilter() {
 
 onMounted(() => {
     cardsStore.fetchBanks()
-    deviceStore.fetchDevices({ page: page.value, countPerPage: 10 }).then(() => {
-        newCard.device.items = deviceItemsAll.value.map((device) => {
+    deviceStore.fetchFilteredDevices().then(() => {
+        newCard.device.items = filteredDeviceList.value.map((device) => {
             return {
-                value: device.id,
-                name: device.title.name
+                value: device.deviceId,
+                name: device.name
             }
         })
     })

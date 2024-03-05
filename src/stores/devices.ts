@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
-import { deleteDevice, editDeviceName, editDeviceComment, getDeviceId, getDevices, getTempToken, checkTempToken } from '@/api'
+import { deleteDevice, editDeviceName, editDeviceComment, getDeviceId, getDevices, getFilteredDevices, getTempToken, checkTempToken } from '@/api'
 import type { TFilterPaginationOptions } from '@/types'
 
 export const useDevicesStore = defineStore('devices', {
   state: () => ({
     deviceList: [] as any,
+    filteredDeviceList: [],
     qr: '',
     loading: true,
     hasItems: true,
@@ -53,6 +54,10 @@ export const useDevicesStore = defineStore('devices', {
       }
 
       console.log(this.deviceList)
+    },
+    async fetchFilteredDevices() {
+      const res = await getFilteredDevices()
+      this.filteredDeviceList = res?.data.devices
     },
     async loadMoreDevices(options: TFilterPaginationOptions) {
       this.showLoading()

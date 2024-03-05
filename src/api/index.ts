@@ -465,6 +465,23 @@ export const getDevices = async (options: TFilterPaginationOptions) => {
     }
 }
 
+export const getFilteredDevices = async () => {
+    try {
+        return await $authHost.post('/filters/devices', {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post('/filters/devices', {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
 export const editDeviceName = async (id: string, onSaveOptions: Record<string, unknown>) => {
     try {
         return await $authHost.post(`/devices/${id}/rename`, { ...onSaveOptions })
@@ -501,13 +518,13 @@ export const editDeviceComment = async (id: string, onSaveOptions: Record<string
 
 export const deleteDevice = async (id: string) => {
     try {
-        return await $authHost.post(`/devices/${id}/remove`, {})
+        return await $authHost.post(`/devices/${id}/hide`, {})
     } catch (error) {
         if (error.response.data.code === 'jwt_error') {
             if (localStorage.getItem('refreshToken')) {
                 const updateRes = await _refreshToken()
                 if (updateRes?.status === 200) {
-                    return await $authHost.post(`/devices/${uid}/remove`, {})
+                    return await $authHost.post(`/devices/${uid}/hide`, {})
                 }
             } else {
                 return
