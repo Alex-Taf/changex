@@ -537,7 +537,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                 </template>
                 <template v-slot:item.card="{ value }">
                     <div class="tw-flex tw-items-center tw-gap-x-4">
-                        <img :src="`/payment/${value.type}.png`" />
+                        <img :src="`/payment/${value.type}.svg`" />
                         <span class="tw-text-[15px]">**** **** **** {{ value.num }}</span>
                     </div>
                 </template>
@@ -691,7 +691,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                 <span class="tw-text-[15px]">{{ item.bank.name }}</span>
                             </div>
                             <div class="tw-flex tw-items-center tw-gap-x-1">
-                                <img :src="`/payment/${item.card.type}.png`" />
+                                <img :src="`/payment/${item.card.type}.svg`" />
                                 <span class="tw-text-[13px]">**** {{ item.card.num }}</span>
                             </div>
                         </div>
