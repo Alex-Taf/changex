@@ -154,7 +154,7 @@ export const useCardsStore = defineStore('cards', {
             bank: newCard.bank.select,
             pan: newCard.cardNum.replace(/\s/g, ''),
             deviceId: newCard.device.select,
-            maxDailyOrderSumUSD: newCard.limit,
+            maxDailyOrderSumUSD: Number(newCard.limit.replace(/\s/g, '')),
             comment: newCard.comment
         }
         const res = await addCard(createdCard)
