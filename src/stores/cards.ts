@@ -94,6 +94,7 @@ export const useCardsStore = defineStore('cards', {
 
         const onSaveCard = {
             pan,
+            maxDailyOrderSumUSD: Number(editedCard.limit.replace(/\s/g, '')),
             comment: editedCard.comment
         }
 
@@ -153,6 +154,7 @@ export const useCardsStore = defineStore('cards', {
             bank: newCard.bank.select,
             pan: newCard.cardNum.replace(/\s/g, ''),
             deviceId: newCard.device.select,
+            maxDailyOrderSumUSD: newCard.limit,
             comment: newCard.comment
         }
         const res = await addCard(createdCard)

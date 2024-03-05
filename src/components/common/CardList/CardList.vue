@@ -5,7 +5,7 @@ import { debounce } from 'vue-debounce'
 import { useCardsStore } from '@/stores/cards'
 import { useDevicesStore } from '@/stores/devices'
 import { storeToRefs } from 'pinia'
-import { vMaska } from 'maska'
+import { MaskInput, vMaska, type MaskType } from 'maska'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import Stars from '@/components/icons/Stars.vue'
 import Filter from '@/components/icons/Filter.vue'
@@ -31,8 +31,27 @@ const { filteredDeviceList } = storeToRefs(deviceStore)
 const newCardForm = ref<HTMLFormElement>(null)
 const editCardForm = ref<HTMLFormElement>(null)
 
-const maskOptions = {
+const panMaskOptions = {
     mask: '#### #### #### ####'
+}
+
+const limitMaskOptions = {
+  mask: (value: string) => {
+    switch (value.replace(/\s/g, '').length) {
+        case 4:
+            return '# ###' as MaskType
+        case 5:
+            return '## ###' as MaskType
+        case 6:
+            return '### ###' as MaskType
+        case 7:
+            return '# ### ###' as MaskType
+        case 8:
+            return '## ### ###' as MaskType
+        default:
+            return '## ### ###' as MaskType
+    }
+  }
 }
 
 const searchModel = ref('')
@@ -78,10 +97,10 @@ const dialogDelete = ref(false)
 
 const mobileFilter = ref(false)
 
-function switchToConfirm() {
-    dialog.value = false
-    dialogConfirm.value = true
-}
+// function switchToConfirm() {
+//     dialog.value = false
+//     dialogConfirm.value = true
+// }
 
 function openDialog() {
     dialog.value = true
@@ -95,9 +114,9 @@ function closeEditDialog() {
     editDialog.value = false
 }
 
-function closeConfirmDialog() {
-    dialogConfirm.value = false
-}
+// function closeConfirmDialog() {
+//     dialogConfirm.value = false
+// }
 
 async function openEditDialog(cardUid: string) {
     editCard.isEditable = false
@@ -107,6 +126,7 @@ async function openEditDialog(cardUid: string) {
 
     editCard.uid = cardUid
     editCard.cardNum = card.pan
+    editCard.limit = card.maxDailyOrderSumUSD
     editCard.comment = card.comment
 
     if (card) editCard.isEditable = true
@@ -206,6 +226,7 @@ const newCard = reactive<{
         items: Array<Record<string, string>> | null
     },
     cardNum : string,
+    limit: string,
     comment: string
 }>({
     bank: {
@@ -222,6 +243,7 @@ const newCard = reactive<{
         items: []
     },
     cardNum: '',
+    limit: '',
     comment: ''
 })
 
@@ -229,6 +251,7 @@ const editCard = reactive({
     isEditable: false,
     uid: '',
     cardNum: '',
+    limit: '',
     comment: ''
 })
 
@@ -751,8 +774,18 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                             class="tw-w-full"
                             label="0000 0000 0000 0000"
                             variant="outlined"
-                            v-maska:[maskOptions]
+                            v-maska:[panMaskOptions]
                             :rules="[newCardValidationRules.required, newCardValidationRules.isCardOccupied]"
+                        ></v-text-field>
+                    </div>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <span class="tw-text-[13px] tw-text-[#677483] tw-mb-2">Лимит операций в USDT</span>
+                        <v-text-field
+                            v-model="newCard.limit"
+                            class="tw-w-full"
+                            label="10 000"
+                            variant="outlined"
+                            v-maska:[limitMaskOptions]
                         ></v-text-field>
                     </div>
                     <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
@@ -838,8 +871,20 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                             class="tw-w-full sm:tw-w-[300px]"
                             label="0000 0000 0000 0000"
                             variant="outlined"
-                            v-maska:[maskOptions]
+                            v-maska:[panMaskOptions]
                             :rules="[editCardValidationRules.required, editCardValidationRules.isCardOccupied]"
+                        ></v-text-field>
+                        <v-skeleton-loader v-else type="text" width="320"></v-skeleton-loader>
+                    </div>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <span class="tw-text-[13px] tw-text-[#677483] tw-mb-2">Лимит операций в USDT</span>
+                        <v-text-field
+                            v-if="editCard.isEditable"
+                            v-model="editCard.limit"
+                            class="tw-w-full"
+                            label="10 000"
+                            variant="outlined"
+                            v-maska:[limitMaskOptions]
                         ></v-text-field>
                         <v-skeleton-loader v-else type="text" width="320"></v-skeleton-loader>
                     </div>
@@ -923,7 +968,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                         class="tw-w-full"
                         label="0000 0000 0000 0000"
                         variant="outlined"
-                        v-maska:[maskOptions]
+                        v-maska:[panMaskOptions]
                         :rules="[newCardValidationRules.required, newCardValidationRules.isCardOccupied]"
                     ></v-text-field>
                 </div>
