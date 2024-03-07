@@ -44,6 +44,18 @@ const perc = ref(60)
                     range
                     @cleared="date = ['', '']"
                 >
+                    <template v-slot:right-sidebar>
+                        <RenderOn :px-min="320" :px-max="839">
+                            <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-p-2">
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Сегодня</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Эта неделя</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Этот месяц</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Этот год</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Всё время</span>
+                            </div>
+                        </RenderOn>
+                    </template>
+
                     <template #left-sidebar="props">
                         <RenderOn :px="1280">
                             <aside class="tw-flex tw-flex-col tw-gap-y-6 tw-w-[120px] tw-py-5 tw-px-3">
