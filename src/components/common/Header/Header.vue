@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
+import { getCurrentInstance, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
@@ -36,6 +36,10 @@ function reload() {
     emit('reload', true)
 }
 
+function hasReloadListener() {
+    return !!getCurrentInstance()?.vnode.props?.onReload
+}
+
 onMounted(() => {
     userStore.fetchUserInfo() // First request
     interval = setInterval(() => userStore.fetchUserInfo(), 300000)
@@ -70,7 +74,7 @@ onUnmounted(() => {
             </section>
         </RenderOn>
         <RenderOn :px-min="320" :px-max="1279">
-            <div @click="reload">
+            <div v-if="hasReloadListener()" @click="reload">
                 <ReloadBtn />
             </div>
         </RenderOn>

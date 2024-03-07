@@ -14,43 +14,56 @@ import RenderOn from '@/components/utils/RenderOn.vue'
 
 const date = ref(['', ''])
 const perc = ref(60)
-
-const onDataReload = ref(false)
-
-function setReload(flag: boolean) {
-    onDataReload.value = false
-    setTimeout(() => {onDataReload.value = flag}, 500)
-}
 </script>
 
 <template>
-    <Header title="Дашборд" @reload="setReload" />
+    <Header title="Дашборд" />
     <section class="tw-flex tw-flex-col">
         <section class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-6">
             <div class="tw-flex tw-items-center tw-gap-x-4">
-                <ArrowsClockwise stroke="#677483" />
-                <div class="tw-flex tw-flex-col tw-leading-4">
+                <RenderOn :px="1280">
+                    <ArrowsClockwise stroke="#677483" />
+                </RenderOn>
+                <div class="tw-flex min-lg:tw-flex-col sm:tw-text-[10px] md:tw-text-[10px] sm:tw-gap-x-1 md:tw-gap-x-1 tw-leading-4">
                     <span class="tw-text-[15px] tw-text-[#677483]">Последнее обновление</span>
                     <span class="tw-text-[15px] tw-text-[#677483]">12.12.2024 09:46</span>
                 </div>
             </div>
-            <div class="tw-w-[300px]">
+            <div class="min-lg:tw-w-[300px] sm:!tw-w-[30px] md:!tw-w-[30px]">
                 <Datepicker
                     v-model="date"
-                    input-class-name="tw-h-[56px] !tw-rounded-xl !tw-border-gray-400"
+                    input-class-name="tw-h-[56px] !tw-rounded-xl !tw-border-gray-400
+                                    sm:!tw-bg-transparent md:!tw-bg-transparent
+                                    sm:!tw-border-none md:!tw-border-none
+                                    sm:!tw-w-[30px] md:!tw-w-[30px]"
+                    menu-class-name="sm:!tw-fixed sm:tw-top-0 sm:tw-left-0 sm:tw-w-full sm:tw-h-[100dvh]
+                                    md:!tw-fixed md:tw-top-0 md:tw-left-0 md:tw-w-full md:tw-h-[100dvh]"
                     :teleport="true"
+                    :enable-time-picker="false"
                     multi-calendars
                     range
                     @cleared="date = ['', '']"
                 >
                     <template #left-sidebar="props">
-                        <aside class="tw-flex tw-flex-col tw-gap-y-6 tw-w-[120px] tw-py-5 tw-px-3">
-                            <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Сегодня</span>
-                            <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Эта неделя</span>
-                            <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Этот месяц</span>
-                            <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Этот год</span>
-                            <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Всё время</span>
-                        </aside>
+                        <RenderOn :px="1280">
+                            <aside class="tw-flex tw-flex-col tw-gap-y-6 tw-w-[120px] tw-py-5 tw-px-3">
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Сегодня</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Эта неделя</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Этот месяц</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Этот год</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Всё время</span>
+                            </aside>
+                        </RenderOn>
+                    </template>
+
+                    <template #action-row="{ closePicker, selectDate }">
+                        <div class="tw-h-[100px]"></div>
+                        <section class="sm:tw-absolute sm:tw-bottom-2 tw-flex sm:tw-flex-col md:tw-flex-col sm:tw-gap-y-2 md:tw-gap-y-2 min-lg:tw-justify-end tw-items-center min-lg:tw-gap-x-1 tw-w-full">
+                            <v-btn class="!tw-rounded-xl sm:!tw-w-[90%] md:!tw-w-[90%]" variant="outlined" color="#04B6F5" size="large" @click="closePicker">Отменить</v-btn>
+                            <v-btn class="!tw-rounded-xl sm:!tw-w-[90%] md:!tw-w-[90%]" variant="elevated" color="#04B6F5" size="large" @click="selectDate">
+                                <span class="tw-text-white">Применить</span>
+                            </v-btn>
+                        </section>
                     </template>
                 </Datepicker>
             </div>
