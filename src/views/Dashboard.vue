@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import Header from '../components/common/Header/Header.vue'
 import Datepicker from '@vuepic/vue-datepicker'
+import type { DatePickerInstance } from "@vuepic/vue-datepicker"
 import '@vuepic/vue-datepicker/dist/main.css'
 import ArrowsClockwise from '@/components/icons/ArrowsClockwise.vue'
 import Lightning from '@/components/icons/Lightning.vue'
@@ -11,9 +12,135 @@ import ActiveDevices from '@/components/icons/ActiveDevices.vue'
 import PeriodGrow from '@/components/icons/PeriodGrow.vue'
 import Question from '@/components/icons/Question.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
+import { useDashboardStore } from '@/stores/dashboard'
+import { storeToRefs } from 'pinia'
 
-const date = ref(['', ''])
+const datepicker = ref<DatePickerInstance>(null)
+
+const dashboardStore = useDashboardStore()
+const { loading, dashboard, chart } = storeToRefs(dashboardStore)
+
+const date = ref<Array<Date | string>>(['', ''])
 const perc = ref(60)
+
+function setDate() {
+    if (datepicker.value) {
+        datepicker.value.selectDate()
+
+        dashboardStore.fetchDashboardForDateRange(date.value[0], date.value[1]).then(() => {
+            dashboardStore.hideLoading()
+        })
+
+        dashboardStore.fetchChartForDate(date.value[0]).then(() => {
+            dashboardStore.hideLoading()
+        })
+    }
+}
+
+function selectCurrentDate() {
+    const newDate = new Date()
+    date.value = [newDate]
+
+    dashboardStore.fetchDashboardForDate(date.value[0]).then(() => {
+        dashboardStore.hideLoading()
+    })
+
+    dashboardStore.fetchChartForDate(date.value[0]).then(() => {
+        dashboardStore.hideLoading()
+    })
+
+    if (datepicker.value) datepicker.value.closeMenu()
+}
+
+function selectCurrentWeek() {
+    const curr = new Date()
+
+    const first = curr.getDate() - curr.getDay() + 1
+    const last = first + 6
+
+    const firstday = new Date(curr.setDate(first))
+    const lastday = new Date(curr.setDate(last))
+
+    date.value = [firstday, lastday]
+
+    dashboardStore.fetchDashboardForDateRange(date.value[0], date.value[1]).then(() => {
+        dashboardStore.hideLoading()
+    })
+
+    dashboardStore.fetchChartForDate(date.value[0]).then(() => {
+        dashboardStore.hideLoading()
+    })
+
+    if (datepicker.value) datepicker.value.closeMenu()
+}
+
+function selectCurrentMonth() {
+    const curr = new Date()
+    
+    const firstday = new Date(curr.getFullYear(), curr.getMonth(), 1)
+    const lastday = new Date(curr.getFullYear(), curr.getMonth() + 1, 0)
+
+    date.value = [firstday, lastday]
+
+    dashboardStore.fetchDashboardForDateRange(date.value[0], date.value[1]).then(() => {
+        dashboardStore.hideLoading()
+    })
+
+    dashboardStore.fetchChartForDate(date.value[0]).then(() => {
+        dashboardStore.hideLoading()
+    })
+
+    if (datepicker.value) datepicker.value.closeMenu()
+}
+
+function selectCurrentYear() {
+    const curr = new Date()
+
+    const firstday = new Date(curr.getFullYear(), 0, 1)
+    const lastday = new Date(curr.getFullYear(), 11, 31)
+
+    date.value = [firstday, lastday]
+
+    dashboardStore.fetchDashboardForDateRange(date.value[0], date.value[1]).then(() => {
+        dashboardStore.hideLoading()
+    })
+
+    dashboardStore.fetchChartForDate(date.value[0]).then(() => {
+        dashboardStore.hideLoading()
+    })
+
+    if (datepicker.value) datepicker.value.closeMenu()
+}
+
+/** Select last two years **/
+function selectAllTime() {
+    const curr = new Date()
+
+    const firstday = new Date(curr.getFullYear() - 1, 0, 1)
+    const lastday = new Date(curr.getFullYear(), 11, 31)
+
+    date.value = [firstday, lastday]
+
+    dashboardStore.fetchDashboardForDateRange(date.value[0], date.value[1]).then(() => {
+        dashboardStore.hideLoading()
+    })
+
+    dashboardStore.fetchChartForDate(date.value[0]).then(() => {
+        dashboardStore.hideLoading()
+    })
+
+    if (datepicker.value) datepicker.value.closeMenu()
+}
+
+onMounted(() => {
+    dashboardStore.fetchDashboard().then(() => {
+        dashboardStore.hideLoading()
+    })
+
+    dashboardStore.fetchChart().then(() => {
+        dashboardStore.hideLoading()
+    })
+})
 </script>
 
 <template>
@@ -32,6 +159,7 @@ const perc = ref(60)
             <div class="min-lg:tw-w-[300px] sm:!tw-w-[30px] md:!tw-w-[30px]">
                 <Datepicker
                     v-model="date"
+                    ref="datepicker"
                     input-class-name="tw-h-[56px] !tw-rounded-xl !tw-border-gray-400
                                     sm:!tw-bg-transparent md:!tw-bg-transparent
                                     sm:!tw-border-none md:!tw-border-none
@@ -40,6 +168,7 @@ const perc = ref(60)
                                     md:!tw-fixed md:tw-top-0 md:tw-left-0 md:tw-w-full md:tw-h-[100dvh]"
                     :teleport="true"
                     :enable-time-picker="false"
+                    format="dd/MM/yyyy"
                     multi-calendars
                     range
                     @cleared="date = ['', '']"
@@ -47,11 +176,11 @@ const perc = ref(60)
                     <template v-slot:right-sidebar>
                         <RenderOn :px-min="320" :px-max="839">
                             <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-p-2">
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Сегодня</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Эта неделя</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Этот месяц</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Этот год</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Всё время</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentDate">Сегодня</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentWeek">Эта неделя</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentMonth">Этот месяц</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentYear">Этот год</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectAllTime">Всё время</span>
                             </div>
                         </RenderOn>
                     </template>
@@ -59,20 +188,20 @@ const perc = ref(60)
                     <template #left-sidebar="props">
                         <RenderOn :px="1280">
                             <aside class="tw-flex tw-flex-col tw-gap-y-6 tw-w-[120px] tw-py-5 tw-px-3">
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Сегодня</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Эта неделя</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Этот месяц</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Этот год</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]">Всё время</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentDate">Сегодня</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentWeek">Эта неделя</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentMonth">Этот месяц</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentYear">Этот год</span>
+                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectAllTime">Всё время</span>
                             </aside>
                         </RenderOn>
                     </template>
 
-                    <template #action-row="{ closePicker, selectDate }">
+                    <template #action-row="{ closePicker }">
                         <div class="tw-h-[100px]"></div>
                         <section class="sm:tw-absolute sm:tw-bottom-2 tw-flex sm:tw-flex-col md:tw-flex-col sm:tw-gap-y-2 md:tw-gap-y-2 min-lg:tw-justify-end tw-items-center min-lg:tw-gap-x-1 tw-w-full">
                             <v-btn class="!tw-rounded-xl sm:!tw-w-[90%] md:!tw-w-[90%]" variant="outlined" color="#04B6F5" size="large" @click="closePicker">Отменить</v-btn>
-                            <v-btn class="!tw-rounded-xl sm:!tw-w-[90%] md:!tw-w-[90%]" variant="elevated" color="#04B6F5" size="large" @click="selectDate">
+                            <v-btn class="!tw-rounded-xl sm:!tw-w-[90%] md:!tw-w-[90%]" variant="elevated" color="#04B6F5" size="large" @click="setDate">
                                 <span class="tw-text-white">Применить</span>
                             </v-btn>
                         </section>
@@ -98,21 +227,25 @@ const perc = ref(60)
                         <div class="tw-flex tw-flex-col tw-items-center tw-gap-y-2">
                             <Lightning />
                             <span class="tw-text-[#677483]">Всего сделок</span>
-                            <span class="tw-text-black tw-text-[40px] tw-font-extrabold">4 323</span>
+                            <span v-if="!loading" class="tw-text-black tw-text-[40px] tw-font-extrabold">{{ chart.paymentsCount }}</span>
+                            <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                         </div>
                     </v-progress-circular>
                 </div>
                 <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-3">
                     <span class="tw-text-[#677483] lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">Завершённых сделок</span>
-                    <span class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">1 454</span>
+                    <span v-if="!loading" class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ chart.completePaymentsCount }}</span>
+                    <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                 </div>
                 <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-3">
                     <span class="tw-text-[#677483] lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">Сделок в процессе</span>
-                    <span class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">1 433</span>
+                    <span v-if="!loading"  class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ chart.activePaymentsCount }}</span>
+                    <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                 </div>
                 <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-3">
                     <span class="tw-text-[#677483] lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">Сумма завершённых сделок, RUB</span>
-                    <span class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">2 456 433</span>
+                    <span v-if="!loading"  class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ chart.completePaymentsRUR }}</span>
+                    <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                 </div>
             </div>
             <div class="sm:tw-w-full md:tw-w-full sm:tw-h-[75px] md:tw-h-[75px]
@@ -127,7 +260,9 @@ const perc = ref(60)
                     </RenderOn>
                     <div>
                         <span class="tw-text-[#677483] sm:tw-text-[10px] md:tw-text-[10px]">Баланс депозита</span><br>
-                        <span class="sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">25 456.01</span><span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1]"> USD</span>
+                        <span v-if="!loading" class="sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.balance }}</span>
+                        <v-skeleton-loader v-else type="text" width="30"></v-skeleton-loader>
+                        <span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1]"> USD</span>
                     </div>
                 </div>
             </div>
@@ -143,7 +278,9 @@ const perc = ref(60)
                     </RenderOn>
                     <div>
                         <span class="tw-text-[#677483] sm:tw-text-[10px] md:tw-text-[10px]">Подтверждённые сделки</span><br>
-                        <span class="sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">25 456.01</span><span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1]"> USD</span>
+                        <span v-if="!loading" class="sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.completePaymentsUSD }}</span>
+                        <v-skeleton-loader v-else type="text" width="30"></v-skeleton-loader>
+                        <span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1]"> USD</span>
                     </div>
                 </div>
             </div>
@@ -159,7 +296,9 @@ const perc = ref(60)
                     </RenderOn>
                     <div>
                         <span class="tw-text-[#677483] sm:tw-text-[10px] md:tw-text-[10px]">Активные устройства</span><br>
-                        <span class="sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">4</span><span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1]"> / 5</span>
+                        <span v-if="!loading" class="sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.activeDevicesCount }}</span>
+                        <v-skeleton-loader v-else type="text" width="30"></v-skeleton-loader>
+                        <span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1]"> / {{ dashboard.devicesCount }}</span>
                     </div>
                 </div>
             </div>
@@ -175,7 +314,9 @@ const perc = ref(60)
                     </RenderOn>
                     <div>
                         <span class="tw-text-[#677483] sm:tw-text-[10px] md:tw-text-[10px]">Прибыль за период</span><br>
-                        <span class="sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">456</span><span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1]"> USD</span>
+                        <span v-if="!loading" class="sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.profitUSD }}</span>
+                        <v-skeleton-loader v-else type="text" width="30"></v-skeleton-loader>
+                        <span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1]"> USD</span>
                     </div>
                 </div>
             </div>

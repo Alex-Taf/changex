@@ -174,6 +174,91 @@ export const getLatestAppApk = async () => {
     }
 }
 
+export const getDashboard = async () => {
+    try {
+        return await $authHost.post('/dashboard', {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post('/dashboard', {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const getDashboardDate = async (dateValue: string) => {
+    try {
+        return await $authHost.post(`/dashboard/${dateValue}`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/dashboard/${dateValue}`, {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const getDashboardDateRange = async (dateStartValue: string, dateEndValue: string) => {
+    try {
+        return await $authHost.post(`/dashboard/${dateStartValue}/${dateEndValue}`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/dashboard/${dateStartValue}/${dateEndValue}`, {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const getDashboardChart = async () => {
+    try {
+        return await $authHost.post('/dashboard/chart', {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post('/dashboard/chart', {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const getDashboardChartDate = async (dateValue: string) => {
+    try {
+        return await $authHost.post(`/dashboard/chart/${dateValue}`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/dashboard/chart/${dateValue}`, {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
 export const getFinancesStory = async (options: TFilterPaginationOptions) => {
     try {
         return await $authHost.post('/balance/history', { ...options })
