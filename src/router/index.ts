@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { getCookie } from '@/utils'
 import Login from '../views/Login.vue'
+import Dashboard from '../views/Dashboard.vue'
 import Finances from '../views/Finances.vue'
 import Cards from '../views/Cards.vue'
 import Payments from '../views/Payments.vue'
@@ -19,6 +20,15 @@ const router = createRouter({
         title: 'Вход'
       },
       component: Login
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      meta: {
+        auth: true,
+        title: 'Дашборд'
+      },
+      component: Dashboard
     },
     {
       path: '/finances',

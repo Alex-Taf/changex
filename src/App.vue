@@ -41,6 +41,14 @@ function toggleMenu(options?: TMenuToggleOptions) {
 const navItems = ref([
     {
         id: 0,
+        title: 'Дашборд',
+        path: '/dashboard',
+        name: 'dashboard',
+        badge: false,
+        icon: Squares 
+    },
+    {
+        id: 1,
         title: 'Финансы',
         path: '/finances',
         name: 'finances',
@@ -48,7 +56,7 @@ const navItems = ref([
         icon: Squares
     },
     {
-        id: 1,
+        id: 2,
         title: 'Банковские карты',
         path: '/cards',
         name: 'cards',
@@ -56,7 +64,7 @@ const navItems = ref([
         icon: CreditCard
     },
     {
-        id: 2,
+        id: 3,
         title: 'Платежи',
         path: '/payments',
         name: 'payments',
@@ -64,7 +72,7 @@ const navItems = ref([
         icon: ArrowsLeftRight
     },
     {
-        id: 3,
+        id: 4,
         title: 'Диспуты',
         path: '/disputs',
         name: 'disputs',
@@ -72,7 +80,7 @@ const navItems = ref([
         icon: Warning
     },
     {
-        id: 4,
+        id: 5,
         title: 'Устройства',
         path: '/devices',
         name: 'devices',
@@ -80,7 +88,7 @@ const navItems = ref([
         icon: Mobile
     },
     {
-        id: 5,
+        id: 6,
         title: 'Уведомления',
         path: '/notifications',
         name: 'notifications',
