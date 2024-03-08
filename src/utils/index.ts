@@ -56,7 +56,6 @@ export const getCookie = (name: string) => {
 export const timestampToDatetime = (timestamp: number | string): string => {
     const dateFormat = new Date(timestamp)
 
-    //const formattedDate = `${dateFormat.getDay()}.${dateFormat.getMonth() + 1}.${dateFormat.getFullYear()} ${dateFormat.getHours()}:${dateFormat.getMinutes()}`
     const formatter = new Intl.DateTimeFormat('ru', {
         day: '2-digit',
         month: '2-digit',
@@ -79,20 +78,39 @@ export const datetimeToTimestamp = (datetime: string | Date): number => {
     }
 }
 
-export const getTimeFromTimestamp = (datetime: number) => {
-    const totalMinutes = Math.floor(datetime / 60000)
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
+export const dateToDMYString = (date: Date, options: { time: boolean } = { time: true }): string => {
+    const yyyy = date.getFullYear();
+    const mm = date.getMonth() + 1; // Months start at 0!
+    const dd = date.getDate();
 
-    console.log(new Date(totalMinutes * 60 * 1000).toISOString().substr(11, 8))
+    if (options.time) {
+        const hours = date.getHours()
+        const minutes = date.getMinutes()
 
-    // return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`
-    // return {
-    //     hours,
-    //     minutes
-    // }
-    return new Date(totalMinutes * 60 * 1000).toISOString().substr(11, 8)
-} 
+        const dateTimeString = `${dd.toString().padStart(2, '0')}-${mm.toString().padStart(2, '0')}-${yyyy} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+        return dateTimeString
+    } else {
+        const dateString = `${dd.toString().padStart(2, '0')}-${mm.toString().padStart(2, '0')}-${yyyy}`
+        return dateString
+    }
+}
+
+export const dateToYMDString = (date: Date, options: { time: boolean } = { time: true }): string => {
+    const yyyy = date.getFullYear();
+    const mm = date.getMonth() + 1; // Months start at 0!
+    const dd = date.getDate();
+
+    if (options.time) {
+        const hours = date.getHours()
+        const minutes = date.getMinutes()
+
+        const dateTimeString = `${yyyy}-${mm.toString().padStart(2, '0')}-${dd.toString().padStart(2, '0')} ${hours}:${minutes}`
+        return dateTimeString
+    } else {
+        const dateString = `${yyyy}-${mm.toString().padStart(2, '0')}-${dd.toString().padStart(2, '0')}`
+        return dateString
+    }
+}
 
 export const getDifferentTimeStatus = (datetime: string | Date): string | undefined => {
     const present = new Date().getTime()

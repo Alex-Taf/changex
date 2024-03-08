@@ -14,14 +14,22 @@ import Question from '@/components/icons/Question.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import { useDashboardStore } from '@/stores/dashboard'
 import { storeToRefs } from 'pinia'
+import { dateToDMYString } from '@/utils/index'
 
 const datepicker = ref<DatePickerInstance>(null)
 
 const dashboardStore = useDashboardStore()
-const { loading, dashboard, chart } = storeToRefs(dashboardStore)
+const { loading, dashboard, chart, percentage } = storeToRefs(dashboardStore)
 
 const date = ref<Array<Date | string>>(['', ''])
-const perc = ref(60)
+const lastUpdate = ref<Date>(new Date())
+
+function clear() {
+    date.value = ['', '']
+    dashboardStore.fetchDashboard().then(() => {
+        dashboardStore.hideLoading()
+    })
+}
 
 function setDate() {
     if (datepicker.value) {
@@ -31,9 +39,11 @@ function setDate() {
             dashboardStore.hideLoading()
         })
 
-        dashboardStore.fetchChartForDate(date.value[0]).then(() => {
-            dashboardStore.hideLoading()
-        })
+        lastUpdate.value = new Date()
+
+        // dashboardStore.fetchChartForDate(date.value[0]).then(() => {
+        //     dashboardStore.hideLoading()
+        // })
     }
 }
 
@@ -45,9 +55,11 @@ function selectCurrentDate() {
         dashboardStore.hideLoading()
     })
 
-    dashboardStore.fetchChartForDate(date.value[0]).then(() => {
-        dashboardStore.hideLoading()
-    })
+    lastUpdate.value = new Date()
+
+    // dashboardStore.fetchChartForDate(date.value[0]).then(() => {
+    //     dashboardStore.hideLoading()
+    // })
 
     if (datepicker.value) datepicker.value.closeMenu()
 }
@@ -67,9 +79,11 @@ function selectCurrentWeek() {
         dashboardStore.hideLoading()
     })
 
-    dashboardStore.fetchChartForDate(date.value[0]).then(() => {
-        dashboardStore.hideLoading()
-    })
+    lastUpdate.value = new Date()
+
+    // dashboardStore.fetchChartForDate(date.value[0]).then(() => {
+    //     dashboardStore.hideLoading()
+    // })
 
     if (datepicker.value) datepicker.value.closeMenu()
 }
@@ -86,9 +100,11 @@ function selectCurrentMonth() {
         dashboardStore.hideLoading()
     })
 
-    dashboardStore.fetchChartForDate(date.value[0]).then(() => {
-        dashboardStore.hideLoading()
-    })
+    lastUpdate.value = new Date()
+
+    // dashboardStore.fetchChartForDate(date.value[0]).then(() => {
+    //     dashboardStore.hideLoading()
+    // })
 
     if (datepicker.value) datepicker.value.closeMenu()
 }
@@ -105,9 +121,11 @@ function selectCurrentYear() {
         dashboardStore.hideLoading()
     })
 
-    dashboardStore.fetchChartForDate(date.value[0]).then(() => {
-        dashboardStore.hideLoading()
-    })
+    lastUpdate.value = new Date()
+
+    // dashboardStore.fetchChartForDate(date.value[0]).then(() => {
+    //     dashboardStore.hideLoading()
+    // })
 
     if (datepicker.value) datepicker.value.closeMenu()
 }
@@ -125,9 +143,11 @@ function selectAllTime() {
         dashboardStore.hideLoading()
     })
 
-    dashboardStore.fetchChartForDate(date.value[0]).then(() => {
-        dashboardStore.hideLoading()
-    })
+    lastUpdate.value = new Date()
+
+    // dashboardStore.fetchChartForDate(date.value[0]).then(() => {
+    //     dashboardStore.hideLoading()
+    // })
 
     if (datepicker.value) datepicker.value.closeMenu()
 }
@@ -153,7 +173,7 @@ onMounted(() => {
                 </RenderOn>
                 <div class="tw-flex min-lg:tw-flex-col sm:tw-text-[10px] md:tw-text-[10px] sm:tw-gap-x-1 md:tw-gap-x-1 tw-leading-4">
                     <span class="tw-text-[15px] tw-text-[#677483]">Последнее обновление</span>
-                    <span class="tw-text-[15px] tw-text-[#677483]">12.12.2024 09:46</span>
+                    <span class="tw-text-[15px] tw-text-[#677483]">{{ dateToDMYString(lastUpdate) }}</span>
                 </div>
             </div>
             <div class="min-lg:tw-w-[300px] sm:!tw-w-[30px] md:!tw-w-[30px]">
@@ -171,7 +191,7 @@ onMounted(() => {
                     format="dd/MM/yyyy"
                     multi-calendars
                     range
-                    @cleared="date = ['', '']"
+                    @cleared="clear"
                 >
                     <template v-slot:right-sidebar>
                         <RenderOn :px-min="320" :px-max="839">
@@ -217,7 +237,7 @@ onMounted(() => {
             >
                 <div class="tw-mb-8">
                     <v-progress-circular
-                        :model-value="perc"
+                        :model-value="percentage"
                         :rotate="360"
                         :size="269"
                         :width="23"

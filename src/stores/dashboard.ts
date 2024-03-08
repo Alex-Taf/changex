@@ -5,6 +5,7 @@ export const useDashboardStore = defineStore('dashboard', {
   state: () => ({
     dashboard: {},
     chart: {},
+    percentage: 0,
     loading: true,
   }),
   getters: {},
@@ -14,6 +15,7 @@ export const useDashboardStore = defineStore('dashboard', {
 
         const res = await getDashboardChart()
         this.chart = res?.data.chart[0]
+        this.calculatePercentage(this.chart)
     },
     async fetchDashboard() {
         this.showLoading()
@@ -40,7 +42,7 @@ export const useDashboardStore = defineStore('dashboard', {
         const mm = date.getMonth() + 1; // Months start at 0!
         const dd = date.getDate();
 
-        const dateString = dd.toString().padStart(2, '0') + '-' + mm.toString().padStart(2, '0') + '-' + yyyy
+        const dateString = yyyy + '-' + mm.toString().padStart(2, '0') + '-' + dd.toString().padStart(2, '0')
 
         const res = await getDashboardDate(dateString)
         this.dashboard = res?.data.dashboard
@@ -52,16 +54,19 @@ export const useDashboardStore = defineStore('dashboard', {
         const mmStart = dateStart.getMonth() + 1 // Months start at 0!
         const ddStart = dateStart.getDate()
 
-        const dateStringStart = ddStart.toString().padStart(2, '0') + '-' + mmStart.toString().padStart(2, '0') + '-' + yyyyStart
+        const dateStringStart = yyyyStart + '-' + mmStart.toString().padStart(2, '0') + '-' + ddStart.toString().padStart(2, '0')
 
         const yyyyEnd = dateEnd.getFullYear()
         const mmEnd = dateEnd.getMonth() + 1 // Months start at 0!
         const ddEnd = dateEnd.getDate()
 
-        const dateStringEnd = ddEnd.toString().padStart(2, '0') + '-' + mmEnd.toString().padStart(2, '0') + '-' + yyyyEnd
+        const dateStringEnd = yyyyEnd + '-' + mmEnd.toString().padStart(2, '0') + '-' + ddEnd.toString().padStart(2, '0')
 
-        const res = await getDashboardDate(dateStringStart, dateStringEnd)
+        const res = await getDashboardDateRange(dateStringStart, dateStringEnd)
         this.dashboard = res?.data.dashboard
+    },
+    calculatePercentage(chartData: Record<string, number | string>) {
+      this.percentage = (chartData.completePaymentsCount / chartData.paymentsCount) * 100
     },
     showLoading() {
       this.loading = true

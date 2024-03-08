@@ -12,7 +12,7 @@ import Stars from '@/components/icons/Stars.vue'
 import WarningCircle from '@/components/icons/WarningCircle.vue'
 import VueCountdown from '@chenfengyuan/vue-countdown'
 import ReloadBtn from '@/components/common/ReloadBtn/ReloadBtn.vue'
-import { datetimeToTimestamp, getTimeFromTimestamp } from '@/utils'
+import { datetimeToTimestamp } from '@/utils'
 
 const props = defineProps<{
     reload: boolean

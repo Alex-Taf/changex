@@ -9,6 +9,7 @@ import RenderOn from './components/utils/RenderOn.vue'
 import ArrowLeft from './components/icons/ArrowLeft.vue'
 import ArrowRight from './components/icons/ArrowRight.vue'
 import Squares from './components/icons/Squares.vue'
+import FinancesIcon from './components/icons/FinancesIcon.vue'
 import CreditCard from './components/icons/CreditCard.vue'
 import ArrowsLeftRight from './components/icons/ArrowsLeftRight.vue'
 import Warning from './components/icons/Warning.vue'
@@ -53,7 +54,7 @@ const navItems = ref([
         path: '/finances',
         name: 'finances',
         badge: false,
-        icon: Squares
+        icon: FinancesIcon
     },
     {
         id: 2,
