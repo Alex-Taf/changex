@@ -12,6 +12,7 @@ import ActiveDevices from '@/components/icons/ActiveDevices.vue'
 import PeriodGrow from '@/components/icons/PeriodGrow.vue'
 import Question from '@/components/icons/Question.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
+import ReloadBtn from '@/components/common/ReloadBtn/ReloadBtn.vue'
 import { useDashboardStore } from '@/stores/dashboard'
 import { storeToRefs } from 'pinia'
 import { dateToDMYString } from '@/utils/index'
@@ -29,6 +30,14 @@ function clear() {
     dashboardStore.fetchDashboard().then(() => {
         dashboardStore.hideLoading()
     })
+}
+
+function reload() {
+    dashboardStore.fetchDashboardForDateRange(date.value[0], date.value[1]).then(() => {
+        dashboardStore.hideLoading()
+    })
+
+    lastUpdate.value = new Date()
 }
 
 function setDate() {
@@ -176,7 +185,7 @@ onMounted(() => {
                     <span class="tw-text-[15px] tw-text-[#677483]">{{ dateToDMYString(lastUpdate) }}</span>
                 </div>
             </div>
-            <div class="min-lg:tw-w-[300px] sm:!tw-w-[30px] md:!tw-w-[30px]">
+            <div class="tw-flex tw-items-center tw-gap-x-2 min-lg:tw-w-[300px] sm:!tw-w-[30px] md:!tw-w-[30px]">
                 <Datepicker
                     v-model="date"
                     ref="datepicker"
@@ -227,6 +236,7 @@ onMounted(() => {
                         </section>
                     </template>
                 </Datepicker>
+                <div @click="reload"><ReloadBtn /></div>
             </div>
         </section>
         <section class="sm:tw-flex sm:tw-flex-col md:tw-flex md:tw-flex-col
