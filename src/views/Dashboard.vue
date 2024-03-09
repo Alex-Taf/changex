@@ -30,12 +30,20 @@ function clear() {
     dashboardStore.fetchDashboard().then(() => {
         dashboardStore.hideLoading()
     })
+
+    // dashboardStore.fetchChart().then(() => {
+    //     dashboardStore.hideLoading()
+    // })
 }
 
 function reload() {
     dashboardStore.fetchDashboardForDateRange(date.value[0], date.value[1]).then(() => {
         dashboardStore.hideLoading()
     })
+
+    // dashboardStore.fetchChartForDate(date.value[0]).then(() => {
+    //     dashboardStore.hideLoading()
+    // })
 
     lastUpdate.value = new Date()
 }
@@ -166,9 +174,9 @@ onMounted(() => {
         dashboardStore.hideLoading()
     })
 
-    dashboardStore.fetchChart().then(() => {
-        dashboardStore.hideLoading()
-    })
+    // dashboardStore.fetchChart().then(() => {
+    //     dashboardStore.hideLoading()
+    // })
 })
 </script>
 
@@ -257,24 +265,24 @@ onMounted(() => {
                         <div class="tw-flex tw-flex-col tw-items-center tw-gap-y-2">
                             <Lightning />
                             <span class="tw-text-[#677483]">Всего сделок</span>
-                            <span v-if="!loading" class="tw-text-black tw-text-[40px] tw-font-extrabold">{{ chart.paymentsCount }}</span>
+                            <span v-if="!loading" class="tw-text-black tw-text-[40px] tw-font-extrabold">{{ dashboard.paymentsCount }}</span>
                             <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                         </div>
                     </v-progress-circular>
                 </div>
                 <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-3">
                     <span class="tw-text-[#677483] lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">Завершённых сделок</span>
-                    <span v-if="!loading" class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ chart.completePaymentsCount }}</span>
+                    <span v-if="!loading" class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ dashboard.completePaymentsCount }}</span>
                     <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                 </div>
                 <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-3">
                     <span class="tw-text-[#677483] lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">Сделок в процессе</span>
-                    <span v-if="!loading"  class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ chart.activePaymentsCount }}</span>
+                    <span v-if="!loading"  class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ dashboard.activePaymentsCount }}</span>
                     <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                 </div>
                 <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-3">
                     <span class="tw-text-[#677483] lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">Сумма завершённых сделок, RUB</span>
-                    <span v-if="!loading"  class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ chart.completePaymentsRUR }}</span>
+                    <span v-if="!loading"  class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ dashboard.completePaymentsRUR }}</span>
                     <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                 </div>
             </div>
