@@ -83,8 +83,7 @@ export const usePaymentsStore = defineStore('payments', {
       this.page = res?.data.page
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
-      //this.lastPage = res?.data.lastPage
-      this.lastPage = 1000
+      this.lastPage = res?.data.lastPage
       if (this.paymentsList.length === 0) {
         this.hasItems = false
       } else {
