@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { RouterView, useRouter, type RouteLocationRaw } from 'vue-router'
-import { getNavItemStroke } from '@/utils'
+import { getCookie, getNavItemStroke } from '@/utils'
 import type { TMenuToggleOptions } from './types'
+import { useUserStore } from './stores/user'
 import { usePaymentsStore } from '@/stores/payments'
 import { storeToRefs } from 'pinia'
+import { logout } from '@/api'
 import RenderOn from './components/utils/RenderOn.vue'
 import ArrowLeft from './components/icons/ArrowLeft.vue'
 import ArrowRight from './components/icons/ArrowRight.vue'
@@ -19,7 +21,6 @@ import Menu from './components/icons/Menu.vue'
 import Close from './components/icons/Close.vue'
 import Avatar from './components/user/Avatar/Avatar.vue'
 import Rate from './components/info/Rate.vue'
-import { onUnmounted } from 'vue'
 
 const $router = useRouter()
 
@@ -98,15 +99,29 @@ const navItems = ref([
     }
 ])
 
+function exit() {
+    logout().then(() => {
+        console.log('logout')
+        navOptions.drawer = !navOptions.drawer
+        navOptions.rail = !navOptions.rail
+        $router.push('/')
+    })
+}
+
 /** Used for long polling requests to update badges data **/
 let interval: number | undefined
+
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const paymentsStore = usePaymentsStore()
 const { awaitingItems } = storeToRefs(paymentsStore)
 
 onMounted(() => {
-    paymentsStore.fetchAwaitingDisputesCount() // First request
-    interval = setInterval(() => paymentsStore.fetchAwaitingDisputesCount(), 60000)
+    if (getCookie('changexlogin') && localStorage.getItem('accessToken')) {
+        paymentsStore.fetchAwaitingDisputesCount() // first request before counter initialized
+        interval = setInterval(() => paymentsStore.fetchAwaitingDisputesCount(), 60000)
+    }
 })
 
 onUnmounted(() => {
@@ -154,6 +169,7 @@ onUnmounted(() => {
                                                     awaitingItems > 0 &&
                                                     navOptions.rail
                                                 "
+                                                :style="awaitingItems === 0 ? 'visibility: hidden;' : 'visibility: visible;'"
                                                 color="#EF4B27"
                                                 offset-y="20"
                                                 :content="
@@ -201,6 +217,7 @@ onUnmounted(() => {
                                                     awaitingItems > 0 &&
                                                     !navOptions.rail
                                                 "
+                                                :style="awaitingItems === 0 ? 'visibility: hidden;' : 'visibility: visible;'"
                                                 color="#EF4B27"
                                                 :content="
                                                     awaitingItems >= 10 ? '9+' : awaitingItems
@@ -273,6 +290,7 @@ onUnmounted(() => {
                                             awaitingItems > 0 &&
                                             !navOptions.rail
                                         "
+                                        :style="awaitingItems === 0 ? 'visibility: hidden;' : 'visibility: visible;'"
                                         color="#EF4B27"
                                         offset-y="20"
                                         :content="awaitingItems >= 10 ? '9+' : awaitingItems"
@@ -313,6 +331,7 @@ onUnmounted(() => {
                                             awaitingItems > 0 &&
                                             !navOptions.drawer
                                         "
+                                        :style="awaitingItems === 0 ? 'visibility: hidden;' : 'visibility: visible;'"
                                         color="#EF4B27"
                                         :content="awaitingItems >= 10 ? '9+' : awaitingItems"
                                         inline
@@ -324,10 +343,11 @@ onUnmounted(() => {
                     <div class="tw-flex tw-w-full tw-justify-between tw-items-center">
                         <div class="tw-flex tw-items-center tw-gap-x-2">
                             <Avatar />
-                            <span class="tw-text-[15px]">89876543210</span>
+                            <span v-if="userInfo && userInfo?.maskedToken" class="tw-text-[15px]">{{ userInfo?.maskedToken }}</span>
                         </div>
                         <span
                             class="tw-text-[#04B6F5] tw-text-[15px] tw-cursor-pointer tw-select-none"
+                            @click="exit"
                             >Выйти</span
                         >
                     </div>

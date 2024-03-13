@@ -74,7 +74,7 @@ function changePage(newPage: string, isActive: boolean) {
         return
     }
 
-    page.value = Number(newPage)
+    page.value = Number(newPage.replace(",", ""))
     financesStore.fetchFinancesStory({ page: page.value, sort: sort.value, countPerPage: 10 }).then(() => {
             financesStore.hideLoading()
         })

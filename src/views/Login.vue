@@ -2,11 +2,11 @@
 import { ref, reactive } from 'vue'
 import { login } from '@/api'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+import { usePaymentsStore } from '@/stores/payments'
 import RenderOn from '@/components/utils/RenderOn.vue'
 
 const $router = useRouter()
-const userStore = useUserStore()
+const paymentsStore = usePaymentsStore()
 
 const form = ref<HTMLFormElement>(null)
 
@@ -17,6 +17,7 @@ function tokenLogin() {
     if (token.value !== '') {
         login(token.value).then(() => {
             form.value.resetValidation()
+            paymentsStore.fetchAwaitingDisputesCount() // first request
             $router.push('/finances')
         }).catch((err) => {
             serverResponseCode.value = err.response.data.code
