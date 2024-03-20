@@ -7,6 +7,7 @@ import { useUserStore } from './stores/user'
 import { usePaymentsStore } from '@/stores/payments'
 import { storeToRefs } from 'pinia'
 import { logout } from '@/api'
+import { useTheme } from 'vuetify'
 import RenderOn from './components/utils/RenderOn.vue'
 import ArrowLeft from './components/icons/ArrowLeft.vue'
 import ArrowRight from './components/icons/ArrowRight.vue'
@@ -21,8 +22,12 @@ import Menu from './components/icons/Menu.vue'
 import Close from './components/icons/Close.vue'
 import Avatar from './components/user/Avatar/Avatar.vue'
 import Rate from './components/info/Rate.vue'
+import ThemeSwitcher from './components/user/ThemeSwitcher/ThemeSwitcher.vue'
 
 const $router = useRouter()
+
+const vTheme = useTheme()
+const theme = ref(localStorage.getItem('theme'))
 
 const navOptions = reactive({
     drawer: true,
@@ -122,6 +127,15 @@ onMounted(() => {
         paymentsStore.fetchAwaitingDisputesCount() // first request before counter initialized
         interval = setInterval(() => paymentsStore.fetchAwaitingDisputesCount(), 60000)
     }
+
+    if (!localStorage.getItem('theme')) {
+        localStorage.setItem('theme', 'light')
+    }
+
+    const theme = localStorage.getItem('theme') || 'light'
+
+    document.documentElement.classList.add(theme)
+    vTheme.global.name.value = theme
 })
 
 onUnmounted(() => {
@@ -135,7 +149,7 @@ onUnmounted(() => {
             <RenderOn :px="1280">
                 <v-navigation-drawer
                     v-if="$route.name !== 'login'"
-                    class="tw-rounded-2xl !tw-left-[20px] !tw-top-[24px] !tw-max-h-[95%] !tw-translate-x-0"
+                    class="tw-rounded-2xl !tw-left-[20px] !tw-top-[24px] !tw-max-h-[95%] !tw-translate-x-0 light:!tw-bg-light-panel dark:!tw-bg-dark-panel"
                     :width="navOptions.maxWidth"
                     :rail-width="navOptions.minWidth"
                     v-model="navOptions.drawer"
@@ -149,7 +163,7 @@ onUnmounted(() => {
                                 </div>
                                 <span
                                     v-show="!navOptions.rail"
-                                    class="tw-font-bold tw-text-2xl tw-ml-3"
+                                    class="tw-font-bold dark:tw-text-[#ABB2BF] tw-text-2xl tw-ml-3"
                                     >Changeex</span
                                 >
                             </div>
@@ -204,7 +218,7 @@ onUnmounted(() => {
                                         </template>
                                         <template v-slot:title>
                                             <span
-                                                class="tw-ml-2 tw-text-[15px] tw-text-[#2B3A4C]"
+                                                class="tw-ml-2 tw-text-[15px] light:tw-text-[#2B3A4C] dark:tw-text-[#ABB2BF]"
                                                 v-show="!navOptions.rail"
                                                 >{{ navItem.title }}</span
                                             >
@@ -229,27 +243,34 @@ onUnmounted(() => {
                                 </template>
                             </v-list>
                         </div>
-                        <div
-                            class="tw-flex tw-items-center tw-gap-x-4 tw-w-full tw-cursor-pointer"
-                            v-show="!navOptions.rail"
-                            @click="navOptions.rail = !navOptions.rail"
-                        >
-                            <ArrowLeft />
-                            <p class="tw-select-none tw-text-[15px]">Скрыть меню</p>
-                        </div>
-                        <div
-                            class="tw-flex tw-items-center tw-justify-center tw-self-end tw-w-full tw-cursor-pointer"
-                            v-show="navOptions.rail"
-                            @click="navOptions.rail = !navOptions.rail"
-                        >
-                            <span><ArrowRight /></span>
+                        <div class="tw-flex tw-flex-col tw-gap-y-8">
+                            <div class="tw-flex tw-items-center tw-gap-x-4 tw-w-full tw-cursor-pointer">
+                                <ThemeSwitcher />
+                                <p v-if="theme === 'dark'" class="tw-select-none light:tw-text-black dark:tw-text-[#ABB2BF] tw-text-[15px]">Тёмная тема</p>
+                                <p v-else class="tw-select-none light:!tw-text-black dark:tw-text-[#ABB2BF] tw-text-[15px]">Светлая тема</p>
+                            </div>
+                            <div
+                                class="tw-flex tw-items-center tw-gap-x-4 tw-w-full tw-cursor-pointer"
+                                v-show="!navOptions.rail"
+                                @click="navOptions.rail = !navOptions.rail"
+                            >
+                                <ArrowLeft :stroke="theme === 'dark' ? '#ABB2BF' : '#2B3A4C'" />
+                                <p class="tw-select-none dark:tw-text-[#ABB2BF] tw-text-[15px]">Скрыть меню</p>
+                            </div>
+                            <div
+                                class="tw-flex tw-items-center tw-justify-center tw-self-end tw-w-full tw-cursor-pointer"
+                                v-show="navOptions.rail"
+                                @click="navOptions.rail = !navOptions.rail"
+                            >
+                                <span><ArrowRight :stroke="theme === 'dark' ? '#ABB2BF' : '#2B3A4C'" /></span>
+                            </div>
                         </div>
                     </div>
                 </v-navigation-drawer>
             </RenderOn>
 
             <RenderOn :px-min="320" :px-max="1279">
-                <v-app-bar v-if="$route.name !== 'login'" color="white" prominent :height="101">
+                <v-app-bar v-if="$route.name !== 'login'" class="dark:!tw-bg-dark-panel" prominent :height="101">
                     <div class="tw-flex tw-flex-col tw-items-center tw-w-[calc(100%-0px)] tw-p-4">
                         <div class="tw-flex tw-justify-between tw-items-center tw-w-full">
                             <div class="tw-flex tw-items-center">
@@ -259,8 +280,8 @@ onUnmounted(() => {
                                 <span class="tw-font-bold tw-text-xl tw-ml-3">Changeex</span>
                             </div>
                             <div class="tw-cursor-pointer" @click.stop="toggleMenu()">
-                                <Menu v-if="navOptions.drawer" />
-                                <Close v-else />
+                                <Menu v-if="navOptions.drawer" :stroke="theme === 'dark' ? '#ABB2BF' : '#2B3A4C'" />
+                                <Close v-else :stroke="theme === 'dark' ? '#ABB2BF' : '#2B3A4C'" />
                             </div>
                         </div>
                         <div class="tw-mt-1">
@@ -269,10 +290,10 @@ onUnmounted(() => {
                     </div>
                 </v-app-bar>
                 <div
-                    class="tw-fixed tw-flex tw-flex-col tw-justify-between tw-w-full tw-h-[calc(100vh-101px)] tw-bg-white tw-z-10 tw-left-0 tw-top-[101px] tw-px-8 tw-py-5"
+                    class="tw-fixed tw-flex tw-flex-col tw-justify-between tw-w-full tw-h-[calc(100vh-101px)] tw-bg-white dark:tw-bg-[#282C34] tw-z-10 tw-left-0 tw-top-[101px] tw-px-8 tw-py-5"
                     v-show="!navOptions.drawer"
                 >
-                    <v-list density="compact" nav>
+                    <v-list class="dark:!tw-bg-dark-panel" density="compact" nav>
                         <template v-for="navItem in navItems" :key="navItem.id">
                             <v-list-item
                                 class="tw-h-[68px]"
@@ -319,7 +340,7 @@ onUnmounted(() => {
                                     ></component>
                                 </template>
                                 <template v-slot:title>
-                                    <span class="tw-ml-2 tw-text-[15px] tw-text-[#2B3A4C]">{{
+                                    <span class="tw-ml-2 tw-text-[15px] tw-text-[#2B3A4C] dark:tw-text-light">{{
                                         navItem.title
                                     }}</span>
                                 </template>
@@ -340,6 +361,11 @@ onUnmounted(() => {
                             </v-list-item>
                         </template>
                     </v-list>
+                    <div class="tw-flex tw-items-center tw-gap-x-4 tw-w-full tw-cursor-pointer">
+                                <ThemeSwitcher />
+                                <p v-if="theme === 'dark'" class="tw-select-none light:tw-text-black dark:tw-text-[#ABB2BF] tw-text-[15px]">Тёмная тема</p>
+                                <p v-else class="tw-select-none light:!tw-text-black dark:tw-text-[#ABB2BF] tw-text-[15px]">Светлая тема</p>
+                            </div>
                     <div class="tw-flex tw-w-full tw-justify-between tw-items-center">
                         <div class="tw-flex tw-items-center tw-gap-x-2">
                             <Avatar />

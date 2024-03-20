@@ -160,11 +160,11 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
 <template>
   <FinancesBalance @reload="updateData()"/>
   <RenderOn :px="840">
-    <v-card v-if="hasItems" class="!tw-rounded-2xl tw-mb-6">
-        <v-tabs v-model="tab" bg-color="white" align-tabs="center">
-        <v-tab value="one" color="blue" width="33.3%" class="!tw-normal-case !tw-tracking-normal">Все</v-tab>
-        <v-tab value="two" color="blue" width="33.3%" class="!tw-normal-case !tw-tracking-normal">Пополнения</v-tab>
-        <v-tab value="three" color="blue" width="33.3%" class="!tw-normal-case !tw-tracking-normal">Списания</v-tab>
+    <v-card v-if="hasItems" class="!tw-rounded-2xl tw-mb-6 dark:tw-bg-dark-panel">
+        <v-tabs v-model="tab" align-tabs="center">
+            <v-tab value="one" color="blue" width="33.3%" class="!tw-normal-case !tw-tracking-normal">Все</v-tab>
+            <v-tab value="two" color="blue" width="33.3%" class="!tw-normal-case !tw-tracking-normal">Пополнения</v-tab>
+            <v-tab value="three" color="blue" width="33.3%" class="!tw-normal-case !tw-tracking-normal">Списания</v-tab>
         </v-tabs>
 
         <v-card-text>
@@ -395,7 +395,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
             </section>
             <section class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-p-2 tw-h-[420px]">
                 <template v-for="item in itemsAll" :key="item">
-                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-p-4 tw-rounded-2xl">
+                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-p-4 tw-rounded-2xl dark:tw-bg-dark-panel">
                         <div class="tw-flex tw-justify-between tw-mb-2">
                             <div class="tw-flex tw-items-center tw-gap-x-2">
                                 <ArrowUpRight v-if="item.direction === 'deposit'" :width="32" :height="32" />
@@ -453,7 +453,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
             </section>
             <section class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-p-2 tw-h-[420px]">
                 <template v-for="item in itemsDeposit" :key="item">
-                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-p-4 tw-rounded-2xl">
+                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white dark:tw-bg-dark-panel tw-p-4 tw-rounded-2xl">
                         <div class="tw-flex tw-justify-between tw-mb-2">
                             <div class="tw-flex tw-items-center tw-gap-x-2">
                                 <ArrowUpRight v-if="item.direction === 'deposit'" :width="32" :height="32" />
@@ -511,7 +511,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
             </section>
             <section class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-p-2 tw-h-[420px]">
                 <template v-for="item in itemsWithdrawal" :key="item">
-                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-p-4 tw-rounded-2xl">
+                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white dark:tw-bg-dark-panel tw-p-4 tw-rounded-2xl">
                         <div class="tw-flex tw-justify-between tw-mb-2">
                             <div class="tw-flex tw-items-center tw-gap-x-2">
                                 <ArrowUpRight v-if="item.direction === 'deposit'" :width="32" :height="32" />
@@ -575,7 +575,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
         :total-visible="7"
     >
         <template v-slot:prev>
-            <div class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+            <div class="tw-bg-white dark:tw-bg-dark-panel tw-border-[1px] tw-border-solid tw-text-[17px]
                 tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer
                 tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200"
                 @click="decPage"
@@ -588,7 +588,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
             </div>
         </template>
         <template v-slot:item="{ isActive, page }">
-            <div v-if="page !== '...'" class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+            <div v-if="page !== '...'" class="tw-bg-white dark:tw-bg-dark-panel tw-border-[1px] tw-border-solid tw-text-[17px]
                 tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer"
                 :class="{ 'tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200': !isActive, 'tw-border-[#AEB7C1] tw-text-[#AEB7C1]': isActive }"
                 @click="changePage(page, isActive)"
@@ -600,7 +600,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
             </div>
         </template>
         <template v-slot:next>
-            <div class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+            <div class="tw-bg-white dark:tw-bg-dark-panel tw-border-[1px] tw-border-solid tw-text-[17px]
                 tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer
                 tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200"
                 @click="incPage"

@@ -245,7 +245,7 @@ onUnmounted(() => {
 
 <template>
     <RenderOn :px="840">
-        <v-card class="tw-w-full tw-h-[94px] !tw-rounded-2xl !tw-py-[23px] !tw-px-[24px] tw-mb-6">
+        <v-card class="tw-w-full tw-h-[94px] !tw-rounded-2xl !tw-py-[23px] !tw-px-[24px] tw-mb-6 dark:tw-bg-dark-panel">
             <section class="tw-w-full tw-flex tw-items-center">
                 <section class="tw-w-full tw-flex tw-items-center tw-gap-x-4">
                     <v-responsive class="mx-auto" min-width="92" max-width="1600">
@@ -321,7 +321,7 @@ onUnmounted(() => {
                     <v-menu>
                         <template v-slot:activator="{ props }">
                             <v-btn
-                                class="!tw-border-none !tw-bg-none !tw-shadow-none"
+                                class="!tw-border-none !tw-bg-none !tw-shadow-none dark:tw-bg-dark-panel"
                                 icon="mdi-dots-vertical"
                                 v-bind="props"
                             ></v-btn>
@@ -365,7 +365,7 @@ onUnmounted(() => {
                 </span>
             </div>
                 <template v-for="item in deviceItemsAll" :key="item">
-                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-p-4 tw-rounded-2xl">
+                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white dark:tw-bg-dark-panel tw-p-4 tw-rounded-2xl">
                         <div class="tw-flex tw-justify-between tw-mb-2">
                             <div class="tw-flex tw-flex-col tw-gap-x-2">
                                 <div class="tw-leading-4">
@@ -380,7 +380,7 @@ onUnmounted(() => {
                             <v-menu>
                                     <template v-slot:activator="{ props }">
                                         <v-btn
-                                            class="!tw-border-none !tw-bg-none !tw-shadow-none"
+                                            class="!tw-border-none !tw-bg-none !tw-shadow-none dark:tw-bg-dark-panel"
                                             icon="mdi-dots-vertical"
                                             v-bind="props"
                                         ></v-btn>
@@ -532,7 +532,7 @@ onUnmounted(() => {
             :total-visible="7"
         >
             <template v-slot:prev>
-                <div class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+                <div class="tw-bg-white dark:tw-bg-dark-panel tw-border-[1px] tw-border-solid tw-text-[17px]
                     tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer
                     tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200"
                     @click="decPage"
@@ -545,7 +545,7 @@ onUnmounted(() => {
                 </div>
             </template>
             <template v-slot:item="{ isActive, page }">
-                <div v-if="page !== '...'" class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+                <div v-if="page !== '...'" class="tw-bg-white dark:tw-bg-dark-panel tw-border-[1px] tw-border-solid tw-text-[17px]
                     tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer"
                     :class="{ 'tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200': !isActive, 'tw-border-[#AEB7C1] tw-text-[#AEB7C1]': isActive }"
                     @click="changePage(page, isActive)"
@@ -557,7 +557,7 @@ onUnmounted(() => {
                 </div>
             </template>
             <template v-slot:next>
-                <div class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+                <div class="tw-bg-white dark:tw-bg-dark-panel tw-border-[1px] tw-border-solid tw-text-[17px]
                     tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer
                     tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200"
                     @click="incPage"

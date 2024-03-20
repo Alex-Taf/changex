@@ -38,11 +38,11 @@ watch(props, async (nextValue: Record<any, boolean>, _prevValue: Record<any, boo
         v-model="dialog"
         width="auto"
     >
-    <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl sm:!tw-p-[28px] md:!tw-p-[48px] min-lg:!tw-p-[48px]">
+    <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl dark:!tw-bg-dark-panel sm:!tw-p-[28px] md:!tw-p-[48px] min-lg:!tw-p-[48px]">
         <WarningCircle stroke="#EF4B27" />
-        <span class="tw-text-2xl tw-mb-[10px] tw-text-center tw-max-w-[320px]">{{ props.title }}</span>
+        <span class="dark:tw-text-light tw-text-2xl tw-mb-[10px] tw-text-center tw-max-w-[320px]">{{ props.title }}</span>
         <div class="tw-flex tw-flex-col tw-items-center tw-mb-5">
-            <span>{{ props.entity.title }}</span>
+            <span class="dark:tw-text-light">{{ props.entity.title }}</span>
         </div>
         <v-btn class="!tw-rounded-xl !tw-h-[50px] tw-w-full tw-mt-5" variant="elevated" color="#EF4B27" @click="deleteEvt(false, props.entity.id)">
             <span class="tw-tracking-normal tw-normal-case">Удалить</span>

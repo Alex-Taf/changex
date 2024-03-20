@@ -446,7 +446,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
 
 <template>
     <RenderOn :px="840">
-        <v-card class="tw-w-full tw-h-[94px] !tw-rounded-2xl !tw-py-[23px] !tw-px-[24px] tw-mb-6">
+        <v-card class="tw-w-full tw-h-[94px] !tw-rounded-2xl !tw-py-[23px] !tw-px-[24px] tw-mb-6 dark:tw-bg-dark-panel">
             <section class="tw-w-full tw-flex tw-items-center">
                 <section class="tw-w-full tw-flex tw-items-center tw-gap-x-4">
                     <v-responsive class="mx-auto" min-width="92" max-width="462">
@@ -568,21 +568,21 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                 <template v-slot:item.status="{ value }">
                     <div
                         v-if="value === 'connect'"
-                        class="tw-bg-gray-200 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-400 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                        class="tw-bg-gray-200 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                     >
-                        <span class="tw-text-gray-400 tw-text-xs">Подключение</span>
+                        <span class="tw-text-gray tw-text-xs">Подключение</span>
                     </div>
                     <div
                         v-if="value === 'stopped'"
-                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-yellow-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-orange tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                     >
-                        <span class="tw-text-yellow-400 tw-text-xs">Отключена</span>
+                        <span class="tw-text-orange tw-text-xs">Отключена</span>
                     </div>
                     <div
                         v-if="value === 'active'"
-                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-green-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-green tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                     >
-                        <span class="tw-text-green-400 tw-text-xs">Активна</span>
+                        <span class="tw-text-green tw-text-xs">Активна</span>
                     </div>
                 </template>
                 <template v-slot:item.switch="{ value }">
@@ -592,7 +592,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                     <v-menu>
                         <template v-slot:activator="{ props }">
                             <v-btn
-                                class="!tw-border-none !tw-bg-none !tw-shadow-none"
+                                class="!tw-border-none !tw-bg-none !tw-shadow-none dark:tw-bg-dark-panel"
                                 icon="mdi-dots-vertical"
                                 v-bind="props"
                             ></v-btn>
@@ -642,33 +642,33 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
         </section>
         <section v-if="itemsAll.length > 0" class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-h-[520px]">
                 <template v-for="item in itemsAll" :key="item">
-                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-px-3 tw-py-1 tw-rounded-2xl">
+                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white dark:tw-bg-dark-panel tw-px-3 tw-py-1 tw-rounded-2xl">
                         <div class="tw-flex tw-justify-between tw-items-center tw-w-full">
                             <!-- <span><span class="tw-text-[15px]">{{ formatter.format(item.amount) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span> -->
                             <div
                                 v-if="item.status === 'connect'"
-                                class="tw-flex tw-flex-col tw-justify-start tw-bg-gray-200 tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-400 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                                class="tw-flex tw-flex-col tw-justify-start tw-bg-gray tw-rounded-xl tw-border-2 tw-border-solid tw-border-gray-400 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                             >
-                                <span class="tw-text-gray-400 tw-text-xs">Подключение</span>
+                                <span class="tw-text-gray tw-text-xs">Подключение</span>
                             </div>
                             <div
                                 v-if="item.status === 'stopped'"
-                                class="tw-flex tw-flex-col tw-justify-start tw-rounded-xl tw-border-2 tw-border-solid tw-border-yellow-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                                class="tw-flex tw-flex-col tw-justify-start tw-rounded-xl tw-border-2 tw-border-solid tw-border-orange tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                             >
-                                <span class="tw-text-yellow-400 tw-text-xs">Отключена</span>
+                                <span class="tw-text-orange tw-text-xs">Отключена</span>
                             </div>
                             <div
                                 v-if="item.status === 'active'"
-                                class="tw-flex tw-flex-col tw-justify-start tw-rounded-xl tw-border-2 tw-border-solid tw-border-green-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                                class="tw-flex tw-flex-col tw-justify-start tw-rounded-xl tw-border-2 tw-border-solid tw-border-green tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                             >
-                                <span class="tw-text-green-400 tw-text-xs">Активна</span>
+                                <span class="tw-text-green tw-text-xs">Активна</span>
                             </div>
                             <div class="tw-flex">
                                 <v-switch class="!tw-flex-none" :style="'grid-template-areas: none;'" :model-value="item.switch.isSwitched" color="#04B6F5" @click="cardsStore.toggleCard(item.switch.cardUid, item.switch.isSwitched)"></v-switch>
                                 <v-menu>
                                     <template v-slot:activator="{ props }">
                                         <v-btn
-                                            class="!tw-border-none !tw-bg-none !tw-shadow-none"
+                                            class="!tw-border-none !tw-bg-none !tw-shadow-none dark:tw-bg-dark-panel"
                                             icon="mdi-dots-vertical"
                                             v-bind="props"
                                         ></v-btn>
@@ -695,7 +695,11 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                 <span class="tw-text-[13px]">**** {{ item.card.num }}</span>
                             </div>
                         </div>
-                        <div class="tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed">
+                        <div class="tw-flex tw-items-center tw-gap-x-2 tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed">
+                            <IsOnline :online="item.device.isOnline" />
+                            <span class="tw-text-[15px]">{{ item.device.name }}</span>
+                        </div>
+                        <div>
                             <span class="tw-text-[13px] tw-min-w-[300px]">{{ item.comment }}</span>
                         </div>
                     </div>
@@ -1106,7 +1110,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
             :total-visible="7"
         >
             <template v-slot:prev>
-                <div class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+                <div class="tw-bg-white dark:tw-bg-dark-panel tw-border-[1px] tw-border-solid tw-text-[17px]
                     tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer
                     tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200"
                     @click="decPage"
@@ -1119,7 +1123,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                 </div>
             </template>
             <template v-slot:item="{ isActive, page }">
-                <div v-if="page !== '...'" class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+                <div v-if="page !== '...'" class="tw-bg-white dark:tw-bg-dark-panel tw-border-[1px] tw-border-solid tw-text-[17px]
                     tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer"
                     :class="{ 'tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200': !isActive, 'tw-border-[#AEB7C1] tw-text-[#AEB7C1]': isActive }"
                     @click="changePage(page, isActive)"
@@ -1131,7 +1135,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                 </div>
             </template>
             <template v-slot:next>
-                <div class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+                <div class="tw-bg-white dark:tw-bg-dark-panel tw-border-[1px] tw-border-solid tw-text-[17px]
                     tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer
                     tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200"
                     @click="incPage"

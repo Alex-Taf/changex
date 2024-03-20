@@ -5,6 +5,10 @@ export const formatter = new Intl.NumberFormat('ru', {
 })
 
 export const getNavItemStroke: IGetNavItemStroke = (navItemRouteName, currentRouteName, colors) => {
+    if (localStorage.getItem('theme') === 'dark') {
+        colors.default = '#FFFFFF'
+    }
+
     return navItemRouteName === currentRouteName ? colors.active : colors.default
 }
 

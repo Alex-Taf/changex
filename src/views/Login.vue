@@ -5,6 +5,8 @@ import { useRouter } from 'vue-router'
 import { usePaymentsStore } from '@/stores/payments'
 import RenderOn from '@/components/utils/RenderOn.vue'
 
+const theme = localStorage.getItem('theme')
+
 const $router = useRouter()
 const paymentsStore = usePaymentsStore()
 
@@ -42,7 +44,7 @@ const validationRules = reactive({
 <template>
     <section
         tabindex="0"
-        class="tw-flex tw-flex-col tw-justify-center tw-h-[calc(100vh-0px)] sm:tw-bg-white"
+        class="tw-flex tw-flex-col tw-justify-center tw-h-[calc(100vh-0px)] sm:tw-bg-white sm:dark:tw-bg-dark"
         @keydown.enter="tokenLogin"
     >
         <RenderOn :px="1280">
@@ -61,9 +63,9 @@ const validationRules = reactive({
                 class="tw-flex tw-flex-col tw-justify-center tw-items-center
                         md:tw-w-[512px] md:tw-h-[485px] min-lg:tw-w-[512px]
                         sm:tw-w-full sm:tw-h-full
-                        min-lg:tw-h-[485px] tw-bg-white tw-rounded-2xl tw-gap-y-6"
+                        min-lg:tw-h-[485px] light:tw-bg-white dark:tw-bg-dark-panel tw-rounded-2xl tw-gap-y-6"
             >
-                <span class="tw-text-2xl tw-font-semibold">Авторизация</span>
+                <span class="light:tw-text-black dark:tw-text-white tw-text-2xl tw-font-semibold">Авторизация</span>
                 <v-form ref="form" validate-on="submit lazy" @submit.prevent="tokenLogin">
                     <v-responsive class="mx-auto" min-width="320" max-width="462" min-height="82" max-height="82">
                         <v-text-field
@@ -71,6 +73,8 @@ const validationRules = reactive({
                             label="Token"
                             variant="outlined"
                             single-line
+                            :base-color="theme === 'dark' ? '#F7FBFD' : ''"
+                            :color="theme === 'dark' ? '#F7FBFD' : ''"
                             :rules="[validationRules.required, validationRules.wrongToken]"
                             @keydown.enter="tokenLogin"
                         ></v-text-field>

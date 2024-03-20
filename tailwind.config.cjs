@@ -2,6 +2,7 @@
 module.exports = {
   mode: 'jit',
   prefix: 'tw-',
+  darkMode: ['class', '[class="dark"]'],
   corePlugins: {
     preflight: false
   },
@@ -22,6 +23,26 @@ module.exports = {
       'min-lg': {'min': '1280px'},
       'max-lg': {'max': '1279px'},
       'xl': {'min': '1440px'}
+    },
+    colors: {
+      'white': 'var(--white)',
+      'black': 'var(--black)',
+      'light': 'var(--light)',
+      'light-panel': 'var(--light-panel)',
+      'dark': 'var(--dark)',
+      'dark-panel': 'var(--dark-panel)',
+      'gray-light': 'var(--gray-light)',
+      'gray-mid': 'var(--gray-mid)',
+      'gray': 'var(--gray)',
+      'gray-dark': 'var(--gray-dark)',
+      'gray-extra-dark': 'var(--gray-extra-dark)',
+      'blue-primary': 'var(--blue-primary)',
+      'blue-primary-hover': 'var(--blue-primary-hover)',
+      'blue-primary-active': 'var(--blue-primary-active)',
+      'sky': 'var(--sky)',
+      'green': 'var(--green)',
+      'orange': 'var(--orange)',
+      'red': 'var(--red)'
     }
   },
   plugins: [

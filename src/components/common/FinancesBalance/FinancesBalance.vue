@@ -34,7 +34,7 @@ onMounted(() => {
 
 <template>
     <RenderOn :px="1280">
-        <v-card class="tw-w-full tw-h-[132px] !tw-rounded-2xl !tw-p-[24px] tw-mb-6">
+        <v-card class="tw-w-full tw-h-[132px] !tw-rounded-2xl !tw-p-[24px] tw-mb-6 dark:tw-bg-dark-panel">
             <section class="tw-flex tw-justify-between tw-items-center">
                 <section class="tw-flex tw-items-center tw-gap-x-8">
                     <section class="tw-flex tw-items-center tw-gap-x-4">
@@ -42,11 +42,11 @@ onMounted(() => {
                         <div class="tw-flex tw-flex-col tw-leading-7">
                             <span class="tw-text-[13px] tw-text-[#AEB7C1]">Баланс</span>
                             <span>
-                                <span v-if="userInfo && userInfo.balance !== undefined" class="tw-text-[30px] tw-text-[#2B3A4C] tw-font-bold">{{ userInfo.balance.toFixed(2) }}</span>
+                                <span v-if="userInfo && userInfo.balance !== undefined" class="tw-text-[30px] tw-text-[#2B3A4C] dark:tw-text-light tw-font-bold">{{ userInfo.balance.toFixed(2) }}</span>
                                 <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                                 <span class="tw-text-[16px] tw-text-[#AEB7C1]"> USDT</span>
                             </span>
-                            <span class="tw-text-[13px] tw-text-[#677483]">~{{ userInfo.balanceRUR }} RUB</span>
+                            <span class="tw-text-[13px] tw-text-[#677483] dark:tw-text-light">~{{ userInfo.balanceRUR }} RUB</span>
                         </div>
                     </section>
                     <section class="tw-flex tw-items-center tw-gap-x-4">
@@ -54,11 +54,11 @@ onMounted(() => {
                         <div class="tw-flex tw-flex-col tw-leading-7">
                             <span class="tw-text-[13px] tw-text-[#AEB7C1]">Замороженно средств</span>
                             <span>
-                                <span v-if="userInfo && userInfo.openedOrderSumUSD !== undefined" class="tw-text-[30px] tw-text-[#2B3A4C] tw-font-bold">{{ userInfo.openedOrderSumUSD.toFixed(2) }}</span>
+                                <span v-if="userInfo && userInfo.openedOrderSumUSD !== undefined" class="tw-text-[30px] tw-text-[#2B3A4C] dark:tw-text-light tw-font-bold">{{ userInfo.openedOrderSumUSD.toFixed(2) }}</span>
                                 <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                                 <span class="tw-text-[16px] tw-text-[#AEB7C1]"> USDT</span>
                             </span>
-                            <span class="tw-text-[13px] tw-text-[#677483]">~{{ userInfo.openedOrderSumRUR }} RUB</span>
+                            <span class="tw-text-[13px] tw-text-[#677483] dark:tw-text-light">~{{ userInfo.openedOrderSumRUR }} RUB</span>
                         </div>
                     </section>
                 </section>
@@ -84,18 +84,18 @@ onMounted(() => {
         </v-card>
     </RenderOn>
     <RenderOn :px-min="320" :px-max="839">
-        <v-card class="tw-flex tw-flex-col tw-w-full !tw-rounded-2xl !tw-p-[10px] tw-mb-6">
+        <v-card class="tw-flex tw-flex-col tw-w-full !tw-rounded-2xl !tw-p-[10px] tw-mb-6 dark:tw-bg-dark-panel">
             <section class="tw-flex tw-justify-between tw-items-center">
                 <section class="tw-flex tw-items-center tw-gap-x-4">
                         <Wallet />
                         <div class="tw-flex tw-flex-col tw-leading-7">
                             <span class="tw-text-[13px] tw-text-[#AEB7C1]">Баланс</span>
                             <span>
-                                <span v-if="userInfo && userInfo.balance !== undefined" class="tw-text-[30px] tw-text-[#2B3A4C] tw-font-bold">{{ userInfo.balance.toFixed(2) }}</span>
+                                <span v-if="userInfo && userInfo.balance !== undefined" class="tw-text-[30px] tw-text-[#2B3A4C] dark:tw-text-light tw-font-bold">{{ userInfo.balance.toFixed(2) }}</span>
                                 <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                                 <span class="tw-text-[16px] tw-text-[#AEB7C1]"> USDT</span>
                             </span>
-                            <span class="tw-text-[13px] tw-text-[#677483]">~{{ userInfo.balanceRUR }} RUB</span>
+                            <span class="tw-text-[13px] tw-text-[#677483] dark:tw-text-light">~{{ userInfo.balanceRUR }} RUB</span>
                         </div>
                     </section>
                 <v-btn class="!tw-rounded-xl !tw-min-w-[52px] min-lg:!tw-w-[172px] min-lg:!tw-h-[52px]
@@ -120,11 +120,11 @@ onMounted(() => {
                         <div class="tw-flex tw-flex-col tw-leading-7">
                             <span class="tw-text-[13px] tw-text-[#AEB7C1]">Замороженно средств</span>
                             <span>
-                                <span v-if="userInfo && userInfo.openedOrderSumUSD !== undefined" class="tw-text-[30px] tw-text-[#2B3A4C] tw-font-bold">{{ userInfo.openedOrderSumUSD.toFixed(2) }}</span>
+                                <span v-if="userInfo && userInfo.openedOrderSumUSD !== undefined" class="tw-text-[30px] tw-text-[#2B3A4C] dark:tw-text-light tw-font-bold">{{ userInfo.openedOrderSumUSD.toFixed(2) }}</span>
                                 <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                                 <span class="tw-text-[16px] tw-text-[#AEB7C1]"> USDT</span>
                             </span>
-                            <span class="tw-text-[13px] tw-text-[#677483]">~{{ userInfo.openedOrderSumRUR }} RUB</span>
+                            <span class="tw-text-[13px] tw-text-[#677483] dark:tw-text-light">~{{ userInfo.openedOrderSumRUR }} RUB</span>
                         </div>
                     </section>
             </section>

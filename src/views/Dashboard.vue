@@ -37,9 +37,15 @@ function clear() {
 }
 
 function reload() {
-    dashboardStore.fetchDashboardForDateRange(date.value[0], date.value[1]).then(() => {
-        dashboardStore.hideLoading()
-    })
+    if (date.value[0] !== '' && date.value[1] !== '') {
+        dashboardStore.fetchDashboardForDateRange(date.value[0], date.value[1]).then(() => {
+            dashboardStore.hideLoading()
+        })
+    } else {
+        dashboardStore.fetchDashboard().then(() => {
+            dashboardStore.hideLoading()
+        })
+    }
 
     // dashboardStore.fetchChartForDate(date.value[0]).then(() => {
     //     dashboardStore.hideLoading()
@@ -188,21 +194,21 @@ onMounted(() => {
                 <RenderOn :px="1280">
                     <ArrowsClockwise stroke="#677483" />
                 </RenderOn>
-                <div class="tw-flex min-lg:tw-flex-col sm:tw-text-[10px] md:tw-text-[10px] sm:tw-gap-x-1 md:tw-gap-x-1 tw-leading-4">
+                <div class="tw-flex tw-flex-col sm:tw-text-[10px] md:tw-text-[10px] sm:tw-gap-x-1 md:tw-gap-x-1 tw-leading-4">
                     <span class="tw-text-[15px] tw-text-[#677483]">Последнее обновление</span>
                     <span class="tw-text-[15px] tw-text-[#677483]">{{ dateToDMYString(lastUpdate) }}</span>
                 </div>
             </div>
-            <div class="tw-flex tw-items-center tw-gap-x-2 min-lg:tw-w-[300px] sm:!tw-w-[30px] md:!tw-w-[30px]">
+            <div class="tw-flex tw-items-center tw-gap-x-2 min-lg:tw-w-[300px] sm:tw-w-[100px] md:tw-w-[100px]">
                 <Datepicker
                     v-model="date"
                     ref="datepicker"
                     input-class-name="tw-h-[56px] !tw-rounded-xl !tw-border-gray-400
                                     sm:!tw-bg-transparent md:!tw-bg-transparent
                                     sm:!tw-border-none md:!tw-border-none
-                                    sm:!tw-w-[30px] md:!tw-w-[30px]"
+                                    sm:!tw-w-[30px] md:!tw-w-[30px] min-lg:dark:tw-bg-dark-panel"
                     menu-class-name="sm:!tw-fixed sm:tw-top-0 sm:tw-left-0 sm:tw-w-full sm:tw-h-[100dvh]
-                                    md:!tw-fixed md:tw-top-0 md:tw-left-0 md:tw-w-full md:tw-h-[100dvh]"
+                                    md:!tw-fixed md:tw-top-0 md:tw-left-0 md:tw-w-full md:tw-h-[100dvh] dark:tw-bg-dark-panel dark:tw-text-light"
                     :teleport="true"
                     :enable-time-picker="false"
                     format="dd/MM/yyyy"
@@ -213,11 +219,11 @@ onMounted(() => {
                     <template v-slot:right-sidebar>
                         <RenderOn :px-min="320" :px-max="839">
                             <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-p-2">
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentDate">Сегодня</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentWeek">Эта неделя</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentMonth">Этот месяц</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentYear">Этот год</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectAllTime">Всё время</span>
+                                <span class="dark:tw-text-light tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentDate">Сегодня</span>
+                                <span class="dark:tw-text-light tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentWeek">Эта неделя</span>
+                                <span class="dark:tw-text-light tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentMonth">Этот месяц</span>
+                                <span class="dark:tw-text-light tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentYear">Этот год</span>
+                                <span class="dark:tw-text-light tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectAllTime">Всё время</span>
                             </div>
                         </RenderOn>
                     </template>
@@ -225,11 +231,11 @@ onMounted(() => {
                     <template #left-sidebar="props">
                         <RenderOn :px="1280">
                             <aside class="tw-flex tw-flex-col tw-gap-y-6 tw-w-[120px] tw-py-5 tw-px-3">
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentDate">Сегодня</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentWeek">Эта неделя</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentMonth">Этот месяц</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentYear">Этот год</span>
-                                <span class="tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectAllTime">Всё время</span>
+                                <span class="dark:tw-text-light tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentDate">Сегодня</span>
+                                <span class="dark:tw-text-light tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentWeek">Эта неделя</span>
+                                <span class="dark:tw-text-light tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentMonth">Этот месяц</span>
+                                <span class="dark:tw-text-light tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectCurrentYear">Этот год</span>
+                                <span class="dark:tw-text-light tw-text-[15px] tw-cursor-pointer hover:tw-text-[#677483]" @click="selectAllTime">Всё время</span>
                             </aside>
                         </RenderOn>
                     </template>
@@ -250,7 +256,7 @@ onMounted(() => {
         <section class="sm:tw-flex sm:tw-flex-col md:tw-flex md:tw-flex-col
                         min-lg:tw-grid min-lg:tw-grid-cols-3 min-lg:tw-grid-rows-2 tw-gap-4">
             <div class="tw-flex tw-flex-col tw-items-center min-lg:tw-row-span-2 min-lg:tw-min-w-[320px]
-                        sm:tw-w-full md:tw-w-full tw-min-h-[226px] tw-max-h-[467px] tw-bg-white tw-rounded-2xl
+                        sm:tw-w-full md:tw-w-full tw-min-h-[226px] tw-max-h-[467px] tw-bg-white dark:tw-bg-dark-panel tw-rounded-2xl
                         tw-py-8 tw-px-4"
             >
                 <div class="tw-mb-8">
@@ -264,30 +270,30 @@ onMounted(() => {
                     >
                         <div class="tw-flex tw-flex-col tw-items-center tw-gap-y-2">
                             <Lightning />
-                            <span class="tw-text-[#677483]">Всего сделок</span>
-                            <span v-if="!loading" class="tw-text-black tw-text-[40px] tw-font-extrabold">{{ dashboard.paymentsCount }}</span>
+                            <span class="tw-text-[#677483] dark:tw-text-light">Всего сделок</span>
+                            <span v-if="!loading" class="tw-text-black dark:tw-text-light tw-text-[40px] tw-font-extrabold">{{ dashboard.paymentsCount }}</span>
                             <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                         </div>
                     </v-progress-circular>
                 </div>
                 <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-3">
-                    <span class="tw-text-[#677483] lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">Завершённых сделок</span>
-                    <span v-if="!loading" class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ dashboard.completePaymentsCount }}</span>
+                    <span class="tw-text-[#677483] dark:tw-text-gray-mid lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">Завершённых сделок</span>
+                    <span v-if="!loading" class="tw-font-semibold dark:tw-text-light lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ dashboard.completePaymentsCount }}</span>
                     <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                 </div>
                 <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-3">
-                    <span class="tw-text-[#677483] lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">Сделок в процессе</span>
-                    <span v-if="!loading"  class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ dashboard.activePaymentsCount }}</span>
+                    <span class="tw-text-[#677483] dark:tw-text-gray-mid lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">Сделок в процессе</span>
+                    <span v-if="!loading"  class="tw-font-semibold dark:tw-text-light lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ dashboard.activePaymentsCount }}</span>
                     <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                 </div>
                 <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-3">
-                    <span class="tw-text-[#677483] lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">Сумма завершённых сделок, RUB</span>
-                    <span v-if="!loading"  class="tw-font-semibold lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ dashboard.completePaymentsRUR }}</span>
+                    <span class="tw-text-[#677483] dark:tw-text-gray-mid lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">Сумма завершённых сделок, RUB</span>
+                    <span v-if="!loading"  class="tw-font-semibold dark:tw-text-light lg:tw-text-[15px] md:tw-text-[13px] sm:tw-text-[13px]">{{ dashboard.completePaymentsRUR }}</span>
                     <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                 </div>
             </div>
             <div class="sm:tw-w-full md:tw-w-full sm:tw-h-[75px] md:tw-h-[75px]
-                        min-lg:tw-min-w-[320px] min-lg:tw-min-h-[226px] min-lg:tw-max-h-[467px] tw-bg-white tw-rounded-2xl sm:tw-p-4 md:tw-p-4 min-lg:tw-p-8"
+                        min-lg:tw-min-w-[320px] min-lg:tw-min-h-[226px] min-lg:tw-max-h-[467px] tw-bg-white dark:tw-bg-dark-panel tw-rounded-2xl sm:tw-p-4 md:tw-p-4 min-lg:tw-p-8"
             >
                 <div class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-h-full">
                     <RenderOn :px="1280">
@@ -297,15 +303,15 @@ onMounted(() => {
                         </div>
                     </RenderOn>
                     <div>
-                        <span class="tw-text-[#677483] sm:tw-text-[10px] md:tw-text-[10px]">Баланс депозита</span><br>
-                        <span v-if="!loading" class="sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.balance }}</span>
+                        <span class="tw-text-[#677483] dark:tw-text-light sm:tw-text-[10px] md:tw-text-[10px]">Баланс депозита</span><br>
+                        <span v-if="!loading" class="dark:tw-text-light sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.balance }}</span>
                         <v-skeleton-loader v-else type="text" width="30"></v-skeleton-loader>
-                        <span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1]"> USD</span>
+                        <span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1] dark:tw-text-gray"> USD</span>
                     </div>
                 </div>
             </div>
             <div class="sm:tw-w-full md:tw-w-full sm:tw-h-[75px] md:tw-h-[75px]
-                        min-lg:tw-min-w-[320px] min-lg:tw-min-h-[226px] min-lg:tw-max-h-[467px] tw-bg-white tw-rounded-2xl sm:tw-p-4 md:tw-p-4 min-lg:tw-p-8"
+                        min-lg:tw-min-w-[320px] min-lg:tw-min-h-[226px] min-lg:tw-max-h-[467px] tw-bg-white dark:tw-bg-dark-panel tw-rounded-2xl sm:tw-p-4 md:tw-p-4 min-lg:tw-p-8"
             >
                 <div class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-h-full">
                     <RenderOn :px="1280">
@@ -315,15 +321,15 @@ onMounted(() => {
                         </div>
                     </RenderOn>
                     <div>
-                        <span class="tw-text-[#677483] sm:tw-text-[10px] md:tw-text-[10px]">Подтверждённые сделки</span><br>
-                        <span v-if="!loading" class="sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.completePaymentsUSD }}</span>
+                        <span class="tw-text-[#677483] dark:tw-text-light sm:tw-text-[10px] md:tw-text-[10px]">Подтверждённые сделки</span><br>
+                        <span v-if="!loading" class="dark:tw-text-light sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.completePaymentsUSD }}</span>
                         <v-skeleton-loader v-else type="text" width="30"></v-skeleton-loader>
-                        <span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1]"> USD</span>
+                        <span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1] dark:tw-text-gray"> USD</span>
                     </div>
                 </div>
             </div>
             <div class="sm:tw-w-full md:tw-w-full sm:tw-h-[75px] md:tw-h-[75px]
-                        min-lg:tw-min-w-[320px] min-lg:tw-min-h-[226px] min-lg:tw-max-h-[467px] tw-bg-white tw-rounded-2xl sm:tw-p-4 md:tw-p-4 min-lg:tw-p-8"
+                        min-lg:tw-min-w-[320px] min-lg:tw-min-h-[226px] min-lg:tw-max-h-[467px] tw-bg-white dark:tw-bg-dark-panel tw-rounded-2xl sm:tw-p-4 md:tw-p-4 min-lg:tw-p-8"
             >
                 <div class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-h-full">
                     <RenderOn :px="1280">
@@ -333,15 +339,15 @@ onMounted(() => {
                         </div>
                     </RenderOn>
                     <div>
-                        <span class="tw-text-[#677483] sm:tw-text-[10px] md:tw-text-[10px]">Активные устройства</span><br>
-                        <span v-if="!loading" class="sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.activeDevicesCount }}</span>
+                        <span class="tw-text-[#677483] dark:tw-text-light sm:tw-text-[10px] md:tw-text-[10px]">Активные устройства</span><br>
+                        <span v-if="!loading" class="dark:tw-text-light sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.activeDevicesCount }}</span>
                         <v-skeleton-loader v-else type="text" width="30"></v-skeleton-loader>
-                        <span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1]"> / {{ dashboard.devicesCount }}</span>
+                        <span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1] dark:tw-text-gray"> / {{ dashboard.devicesCount }}</span>
                     </div>
                 </div>
             </div>
             <div class="sm:tw-w-full md:tw-w-full sm:tw-h-[75px] md:tw-h-[75px]
-                        min-lg:tw-min-w-[320px] min-lg:tw-min-h-[226px] min-lg:tw-max-h-[467px] tw-bg-white tw-rounded-2xl sm:tw-p-4 md:tw-p-4 min-lg:tw-p-8"
+                        min-lg:tw-min-w-[320px] min-lg:tw-min-h-[226px] min-lg:tw-max-h-[467px] tw-bg-white dark:tw-bg-dark-panel tw-rounded-2xl sm:tw-p-4 md:tw-p-4 min-lg:tw-p-8"
             >
                 <div class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-h-full">
                     <RenderOn :px="1280">
@@ -351,10 +357,10 @@ onMounted(() => {
                         </div>
                     </RenderOn>
                     <div>
-                        <span class="tw-text-[#677483] sm:tw-text-[10px] md:tw-text-[10px]">Прибыль за период</span><br>
-                        <span v-if="!loading" class="sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.profitUSD }}</span>
+                        <span class="tw-text-[#677483] dark:tw-text-light sm:tw-text-[10px] md:tw-text-[10px]">Прибыль за период</span><br>
+                        <span v-if="!loading" class="dark:tw-text-light sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.profitUSD }}</span>
                         <v-skeleton-loader v-else type="text" width="30"></v-skeleton-loader>
-                        <span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1]"> USD</span>
+                        <span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1] dark:tw-text-gray"> USD</span>
                     </div>
                 </div>
             </div>

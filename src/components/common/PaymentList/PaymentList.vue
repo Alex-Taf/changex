@@ -296,7 +296,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
 
 <template>
     <RenderOn :px="840">
-        <v-card class="tw-w-full tw-h-[94px] !tw-rounded-2xl !tw-py-[23px] !tw-px-[24px] tw-mb-6">
+        <v-card class="tw-w-full tw-h-[94px] !tw-rounded-2xl !tw-py-[23px] !tw-px-[24px] tw-mb-6 dark:tw-bg-dark-panel">
             <section class="tw-w-full tw-flex tw-items-center">
                 <section class="tw-w-full tw-flex tw-items-center tw-gap-x-4">
                     <v-responsive class="mx-auto" min-width="92" max-width="462">
@@ -312,12 +312,24 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                     <v-responsive class="mx-auto -tw-mt-5" min-width="92" max-width="462">
                         <Datepicker
                             v-model="date"
-                            input-class-name="tw-h-[56px] !tw-rounded-xl !tw-border-gray-400 !tw-w-full"
+                            input-class-name="tw-h-[56px] !tw-rounded-xl !tw-border-gray-400 dark:tw-bg-dark-panel"
+                            menu-class-name="sm:!tw-fixed sm:tw-top-0 sm:tw-left-0 sm:tw-w-full sm:tw-h-[100dvh]
+                                    md:!tw-fixed md:tw-top-0 md:tw-left-0 md:tw-w-full md:tw-h-[100dvh] dark:tw-bg-dark-panel dark:tw-text-light"
                             :teleport="true"
                             @internal-model-change="fetchData"
                             @cleared="date = ['', '']"
                             range
-                        />
+                       >
+                            <template #action-row="{ closePicker }">
+                                <div class="tw-h-[100px]"></div>
+                                <section class="sm:tw-absolute sm:tw-bottom-2 tw-flex sm:tw-flex-col md:tw-flex-col sm:tw-gap-y-2 md:tw-gap-y-2 min-lg:tw-justify-end tw-items-center min-lg:tw-gap-x-1 tw-w-full">
+                                    <v-btn class="!tw-rounded-xl sm:!tw-w-[90%] md:!tw-w-[90%]" variant="outlined" color="#04B6F5" size="large" @click="closePicker">Отменить</v-btn>
+                                    <v-btn class="!tw-rounded-xl sm:!tw-w-[90%] md:!tw-w-[90%]" variant="elevated" color="#04B6F5" size="large" @click="setDate">
+                                        <span class="tw-text-white">Применить</span>
+                                    </v-btn>
+                                </section>
+                            </template>
+                        </Datepicker>
                     </v-responsive>
                     <v-responsive class="mx-auto" min-width="92" max-width="462">
                         <v-autocomplete
@@ -408,7 +420,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                 </template>
                 <template v-slot:item.card="{ value }">
                     <div class="tw-flex tw-items-center tw-gap-x-4">
-                        <img :src="`/payment/${value.type}.png`" :alt="value.type" />
+                        <img :src="`/payment/${value.type}.svg`" :alt="value.type" />
                         <span class="tw-text-[15px]">**** {{ value.num }}</span>
                     </div>
                 </template>
@@ -454,20 +466,20 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                     </div>
                     <div
                         v-if="value === 'cancelled'"
-                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-red-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-red tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                     >
-                        <span class="tw-text-red-400 tw-text-xs">Отменён</span>
+                        <span class="tw-text-red tw-text-xs">Отменён</span>
                     </div>
                     <div
                         v-if="value === 'dispute'"
                         class="tw-flex tw-gap-x-1"
                     >
-                        <div class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-red-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center">
-                            <span class="tw-text-red-400 tw-text-xs">Диспут</span>
+                        <div class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-red tw-w-[104px] tw-px-2 tw-py-1 tw-text-center">
+                            <span class="tw-text-red tw-text-xs">Диспут</span>
                         </div>
                         <div class="tw-flex tw-flex-col tw-items-center tw-justify-center
                                     tw-border-solid tw-border-[2px] tw-border-[#AEB7C1] tw-rounded-xl tw-w-[35px]
-                                    tw-cursor-pointer hover:tw-bg-gray-100"
+                                    tw-cursor-pointer hover:tw-bg-gray-mid"
                             @click="$router.push(`/disputs?id=${paymentsItemsAll[index].id}`)"
                         >
                             <CaretRight />
@@ -475,15 +487,15 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                     </div>
                     <div
                         v-if="value === 'done'"
-                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-green-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-green tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                     >
-                        <span class="tw-text-green-400 tw-text-xs">Завершён</span>
+                        <span class="tw-text-green tw-text-xs">Завершён</span>
                     </div>
                     <div
                         v-if="value === 'dispute_closed'"
-                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-yellow-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                        class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-orange tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                     >
-                        <span class="tw-text-yellow-400 tw-text-xs">Завершён</span>
+                        <span class="tw-text-orange tw-text-xs">Завершён</span>
                     </div>
                 </template>
                 <template v-slot:loading>
@@ -520,7 +532,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
         </section>
         <section v-if="paymentsItemsAll.length > 0" class="tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-scroll tw-h-[520px]">
                 <template v-for="(item, index) in paymentsItemsAll" :key="item">
-                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white tw-px-4 tw-py-2 tw-rounded-2xl">
+                    <div class="tw-flex tw-flex-col tw-w-full tw-bg-white dark:tw-bg-dark-panel tw-px-4 tw-py-2 tw-rounded-2xl">
                         <div class="tw-flex tw-justify-between tw-items-center tw-w-full tw-mb-2">
                             <div class="tw-flex tw-flex-col">
                                 <span class="tw-text-[10px] tw-text-[#AEB7C1]">{{ item.id }}</span>
@@ -535,20 +547,20 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                             </div>
                             <div
                                 v-if="item.status === 'cancelled'"
-                                class="tw-flex tw-flex-col tw-justify-start tw-border-red-500 tw-rounded-xl tw-border-2 tw-border-solid tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                                class="tw-flex tw-flex-col tw-justify-start tw-border-red tw-rounded-xl tw-border-2 tw-border-solid tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                             >
-                                <span class="tw-text-red-400 tw-text-xs">Отменён</span>
+                                <span class="tw-text-red tw-text-xs">Отменён</span>
                             </div>
                             <div
                                 v-if="item.status === 'dispute'"
                                 class="tw-flex tw-gap-x-1"
                             >
-                                <div class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-red-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center">
-                                    <span class="tw-text-red-400 tw-text-xs">Диспут</span>
+                                <div class="tw-rounded-xl tw-border-2 tw-border-solid tw-border-red tw-w-[104px] tw-px-2 tw-py-1 tw-text-center">
+                                    <span class="tw-text-red tw-text-xs">Диспут</span>
                                 </div>
                                 <div class="tw-flex tw-flex-col tw-items-center tw-justify-center
                                         tw-border-solid tw-border-[2px] tw-border-[#AEB7C1] tw-rounded-xl tw-w-[35px]
-                                        tw-cursor-pointer hover:tw-bg-gray-100"
+                                        tw-cursor-pointer hover:tw-bg-gray-mid"
                                 @click="$router.push(`/disputs?id=${paymentsItemsAll[index].id}`)"
                             >
                                 <CaretRight />
@@ -556,15 +568,15 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                             </div>
                             <div
                                 v-if="item.status === 'done'"
-                                class="tw-flex tw-flex-col tw-justify-start tw-rounded-xl tw-border-2 tw-border-solid tw-border-green-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                                class="tw-flex tw-flex-col tw-justify-start tw-rounded-xl tw-border-2 tw-border-solid tw-border-green tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                             >
-                                <span class="tw-text-green-400 tw-text-xs">Завершён</span>
+                                <span class="tw-text-green tw-text-xs">Завершён</span>
                             </div>
                             <div
                                 v-if="item.status === 'dispute_closed'"
-                                class="tw-flex tw-flex-col tw-justify-start tw-rounded-xl tw-border-2 tw-border-solid tw-border-yellow-500 tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
+                                class="tw-flex tw-flex-col tw-justify-start tw-rounded-xl tw-border-2 tw-border-solid tw-border-orange tw-w-[104px] tw-px-2 tw-py-1 tw-text-center"
                             >
-                                <span class="tw-text-yellow-400 tw-text-xs">Завершён</span>
+                                <span class="tw-text-orange tw-text-xs">Завершён</span>
                             </div>
                         </div>
                         
@@ -584,9 +596,9 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                 >
                             </div>
                         </div>
-                        <div class="tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed">
+                        <div class="tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed tw-py-2">
                             <div class="tw-flex tw-items-center tw-gap-x-4">
-                                <img :src="`/payment/${item.card.type}.png`" :alt="item.card.type" />
+                                <img :src="`/payment/${item.card.type}.svg`" :alt="item.card.type" />
                                 <span class="tw-text-[15px]">**** {{ item.card.num }}</span>
                             </div>
                         </div>
@@ -623,13 +635,25 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                 </div>
                 <div class="tw-flex tw-flex-col tw-items-start tw-w-full tw-mb-5">
                     <Datepicker
-                        v-model="date"
-                        input-class-name="tw-h-[56px] !tw-rounded-xl !tw-border-gray-400 !tw-w-full"
-                        :teleport="true"
-                        @internal-model-change="fetchData"
-                        @cleared="date = ['', '']"
-                        range
-                    />
+                            v-model="date"
+                            input-class-name="tw-h-[56px] !tw-rounded-xl !tw-border-gray-400 dark:tw-bg-dark-panel"
+                            menu-class-name="sm:!tw-fixed sm:tw-top-0 sm:tw-left-0 sm:tw-w-full sm:tw-h-[100dvh]
+                                    md:!tw-fixed md:tw-top-0 md:tw-left-0 md:tw-w-full md:tw-h-[100dvh] dark:tw-bg-dark-panel dark:tw-text-light"
+                            :teleport="true"
+                            @internal-model-change="fetchData"
+                            @cleared="date = ['', '']"
+                            range
+                       >
+                            <template #action-row="{ closePicker }">
+                                <div class="tw-h-[100px]"></div>
+                                <section class="sm:tw-absolute sm:tw-bottom-2 tw-flex sm:tw-flex-col md:tw-flex-col sm:tw-gap-y-2 md:tw-gap-y-2 min-lg:tw-justify-end tw-items-center min-lg:tw-gap-x-1 tw-w-full">
+                                    <v-btn class="!tw-rounded-xl sm:!tw-w-[90%] md:!tw-w-[90%]" variant="outlined" color="#04B6F5" size="large" @click="closePicker">Отменить</v-btn>
+                                    <v-btn class="!tw-rounded-xl sm:!tw-w-[90%] md:!tw-w-[90%]" variant="elevated" color="#04B6F5" size="large" @click="setDate">
+                                        <span class="tw-text-white">Применить</span>
+                                    </v-btn>
+                                </section>
+                            </template>
+                        </Datepicker>
                 </div>
                 <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
                     <v-autocomplete
@@ -700,7 +724,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
             :total-visible="7"
         >
             <template v-slot:prev>
-                <div class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+                <div class="tw-bg-white dark:tw-bg-dark-panel tw-border-[1px] tw-border-solid tw-text-[17px]
                     tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer
                     tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200"
                     @click="decPage"
@@ -713,7 +737,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                 </div>
             </template>
             <template v-slot:item="{ isActive, page }">
-                <div v-if="page !== '...'" class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+                <div v-if="page !== '...'" class="tw-bg-white dark:tw-bg-dark-panel tw-border-[1px] tw-border-solid tw-text-[17px]
                     tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer"
                     :class="{ 'tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200': !isActive, 'tw-border-[#AEB7C1] tw-text-[#AEB7C1]': isActive }"
                     @click="changePage(page, isActive)"
@@ -725,7 +749,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                 </div>
             </template>
             <template v-slot:next>
-                <div class="tw-bg-white tw-border-[1px] tw-border-solid tw-text-[17px]
+                <div class="tw-bg-white dark:tw-bg-dark-panel tw-border-[1px] tw-border-solid tw-text-[17px]
                     tw-rounded-xl tw-w-[40px] tw-h-[40px] tw-text-center tw-select-none tw-cursor-pointer
                     tw-border-[#04B6F5] tw-text-[#04B6F5] hover:tw-bg-blue-200"
                     @click="incPage"
