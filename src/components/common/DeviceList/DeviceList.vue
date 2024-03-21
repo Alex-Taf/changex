@@ -27,6 +27,9 @@ const qrScanDoneSnackbar = reactive({
 /** Used for long polling requests to check QR is scanned **/
 let interval: number | undefined
 
+/** Used for long polling requests to get a new QR while dialog is open **/
+let updateInterval: number | undefined
+
 const searchModel = ref('')
 const searchQuery = ref('')
 
@@ -55,7 +58,6 @@ function fetchData() {
 }
 
 async function openEditDialog(deviceId: string) {
-    console.log(deviceId)
     editDevice.isEditable = false
     editDialog.value = true
 
@@ -80,8 +82,6 @@ function submitEditDevice() {
 }
 
 function onDeleteDevice(id: number | string, title: Record<string, unknown>) {
-
-    console.log(title)
     deleteDevice.id = id
     deleteDevice.title = title.name as string
     dialogDelete.value = true
@@ -95,6 +95,7 @@ function openDialog() {
     dialog.value = true
     devicesStore.loadQR()
     interval = setInterval(() => devicesStore.checkToken(), 3000)
+    updateInterval = setInterval(() => devicesStore.loadQR(), 20000)
 }
 
 function closeDialog() {
@@ -240,6 +241,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     clearInterval(interval)
+    clearInterval(updateInterval)
 })
 </script>
 
