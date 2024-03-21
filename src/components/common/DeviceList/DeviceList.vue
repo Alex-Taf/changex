@@ -463,7 +463,7 @@ onUnmounted(() => {
     >
       <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl !tw-p-[48px]">
         <span class="tw-text-2xl tw-mb-[24px] tw-text-center">Добавление нового устройства</span>
-        <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-y-8
+        <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-y-8 tw-bg-white
                     tw-mb-[24px] tw-w-[352px] tw-h-[352px] tw-text-center tw-border tw-border-solid tw-border-[#AEB7C1]
                     tw-rounded-xl"
         >
