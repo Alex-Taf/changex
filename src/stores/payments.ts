@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { getPayments, getDisputes, approveDisput, cancelDisput, getAwaitingDisputesCount, getCurrentDispute } from '@/api'
 import type { TFilterPaginationOptions } from '@/types'
-import { formatter, getDifferentTimeStatus, timestampToDatetime } from '@/utils'
+import { formatter, getDifferentTimeStatus, timestampToDatetime, timestampToDatetimeOffset } from '@/utils'
 
 export const usePaymentsStore = defineStore('payments', {
   state: () => ({
@@ -49,7 +49,7 @@ export const usePaymentsStore = defineStore('payments', {
               different: getDifferentTimeStatus(item.timestamp as string)
             },
             date: {
-              value: item.disputePaidTime ? `${timestampToDatetime(item.disputePaidTime)} MSK` : '',
+              value: item.disputePaidTime ? `${timestampToDatetimeOffset(item.disputePaidTime)} MSK` : '',
               different: getDifferentTimeStatus(item.timestamp as string)
             },
             sum: {

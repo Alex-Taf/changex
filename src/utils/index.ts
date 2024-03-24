@@ -73,6 +73,24 @@ export const timestampToDatetime = (timestamp: number | string): string => {
     return formattedDate
 }
 
+export const timestampToDatetimeOffset = (timestamp: number | string): string => {
+    const dateFormat = new Date(timestamp)
+
+    dateFormat.setHours(dateFormat.getHours() - 3)
+
+    const formatter = new Intl.DateTimeFormat('ru', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        minute: '2-digit',
+        hour: '2-digit'
+    })
+
+    const formattedDate = formatter.format(dateFormat)
+
+    return formattedDate
+}
+
 export const datetimeToTimestamp = (datetime: string | Date): number => {
     if (typeof datetime === 'string') {
         const date = new Date(datetime)

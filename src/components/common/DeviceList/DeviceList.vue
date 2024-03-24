@@ -101,6 +101,7 @@ function openDialog() {
 function closeDialog() {
     dialog.value = false
     clearInterval(interval)
+    clearInterval(updateInterval)
 }
 
 const sort = reactive({
