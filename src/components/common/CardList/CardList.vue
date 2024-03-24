@@ -29,6 +29,7 @@ const { loading, hasItems, itemsAll, lastPage } = storeToRefs(cardsStore)
 const { filteredDeviceList } = storeToRefs(deviceStore)
 
 const newCardForm = ref<HTMLFormElement>(null)
+const newCardMobileForm = ref<HTMLFormElement>(null)
 const editCardForm = ref<HTMLFormElement>(null)
 
 const panMaskOptions = {
@@ -349,6 +350,18 @@ async function submitNewCard() {
         cardsStore.createCard(newCard).then(() => {
             cardsStore.hideLoading()
             dialogConfirm.value = false
+        })
+    }
+}
+
+async function submitNewCardMobile() {
+    const { valid } = await newCardMobileForm.value.validate()
+
+    if (valid) {
+        cardsStore.createCard(newCard).then(() => {
+            cardsStore.hideLoading()
+            dialogConfirm.value = false
+            dialog.value = false
         })
     }
 }
@@ -939,69 +952,81 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
     <RenderOn :px-min="320" :px-max="839">
         <v-card v-if="dialog" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[2000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-center !tw-items-center !tw-rounded-2xl lg:!tw-p-[48px] xl:!tw-p-[48px] md:!tw-p-[26px] sm:!tw-p-[20px]">
                 <span class="tw-text-2xl tw-mb-[14px]">Добавление новой карты</span>
-                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                    <span class="tw-text-[13px] tw-text-[#677483] tw-mb-2">Банк</span>
-                    <v-select
-                        v-model="newCard.bank.select"
-                        :items="newCard.bank.items"
-                        item-title="name"
-                        item-value="value"
-                        class="tw-w-full"
-                        label="Выберите"
-                        variant="outlined"
-                        :rules="[newCardValidationRules.required]"
-                    ></v-select>
-                </div>
-                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                    <span class="tw-text-[13px] tw-text-[#677483] tw-mb-2">Устройство</span>
-                    <v-select
-                        v-model="newCard.device.select"
-                        :items="newCard.device.items"
-                        item-title="name"
-                        item-value="value"
-                        class="tw-w-full"
-                        label="Выберите"
-                        variant="outlined"
-                        :rules="[newCardValidationRules.required]"
-                    ></v-select>
-                </div>
-                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                    <span class="tw-text-[13px] tw-text-[#677483] tw-mb-2">Номер карты</span>
-                    <v-text-field
-                        v-model="newCard.cardNum"
-                        class="tw-w-full"
-                        label="0000 0000 0000 0000"
-                        variant="outlined"
-                        v-maska:[panMaskOptions]
-                        :rules="[newCardValidationRules.required, newCardValidationRules.isCardOccupied]"
-                    ></v-text-field>
-                </div>
-                <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
-                    <span class="tw-text-[13px] tw-text-[#677483] tw-mb-2">Комментарий</span>
-                    <v-textarea
-                        v-model="newCard.comment"
-                        class="tw-w-full"
-                        label="Комментарий к карте"
-                        variant="outlined"
-                        :rules="[newCardValidationRules.required]"
-                    ></v-textarea>
-                </div>
-                <v-card-actions>
-                    <section class="tw-flex tw-flex-col tw-gap-y-4">
-                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="submitNewCard">
-                            <v-progress-circular
-                                v-if="loading"
-                                class="tw-mr-3"
-                                indeterminate
-                                color="white"
-                            ></v-progress-circular>
-                            <span class="tw-text-white tw-text-[15px] !tw-normal-case">Добавить</span>
-                        </v-btn>
-                        <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="closeDialog">
-                            Отмена
-                        </v-btn>
-                    </section>
-                </v-card-actions>
+                <v-form ref="newCardMobileForm">
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <span class="tw-text-[13px] tw-text-[#677483] tw-mb-2">Банк</span>
+                        <v-select
+                            v-model="newCard.bank.select"
+                            :items="newCard.bank.items"
+                            item-title="name"
+                            item-value="value"
+                            class="tw-w-full"
+                            label="Выберите"
+                            variant="outlined"
+                            :rules="[newCardValidationRules.required]"
+                        ></v-select>
+                    </div>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <span class="tw-text-[13px] tw-text-[#677483] tw-mb-2">Устройство</span>
+                        <v-select
+                            v-model="newCard.device.select"
+                            :items="newCard.device.items"
+                            item-title="name"
+                            item-value="value"
+                            class="tw-w-full"
+                            label="Выберите"
+                            variant="outlined"
+                            :rules="[newCardValidationRules.required]"
+                        ></v-select>
+                    </div>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <span class="tw-text-[13px] tw-text-[#677483] tw-mb-2">Лимит операций в USDT</span>
+                        <v-text-field
+                            v-model="newCard.limit"
+                            class="tw-w-full"
+                            label="10 000"
+                            variant="outlined"
+                            v-maska:[limitMaskOptions]
+                        ></v-text-field>
+                    </div>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <span class="tw-text-[13px] tw-text-[#677483] tw-mb-2">Номер карты</span>
+                        <v-text-field
+                            v-model="newCard.cardNum"
+                            class="tw-w-full"
+                            label="0000 0000 0000 0000"
+                            variant="outlined"
+                            v-maska:[panMaskOptions]
+                            :rules="[newCardValidationRules.required, newCardValidationRules.isCardOccupied]"
+                        ></v-text-field>
+                    </div>
+                    <div class="tw-flex tw-flex-col tw-items-start tw-w-full">
+                        <span class="tw-text-[13px] tw-text-[#677483] tw-mb-2">Комментарий</span>
+                        <v-textarea
+                            v-model="newCard.comment"
+                            class="tw-w-full"
+                            label="Комментарий к карте"
+                            variant="outlined"
+                            :rules="[newCardValidationRules.required]"
+                        ></v-textarea>
+                    </div>
+                    <v-card-actions>
+                        <section class="tw-flex tw-flex-col tw-gap-y-4">
+                            <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case" color="#04B6F5" variant="elevated" block @click="submitNewCardMobile">
+                                <v-progress-circular
+                                    v-if="loading"
+                                    class="tw-mr-3"
+                                    indeterminate
+                                    color="white"
+                                ></v-progress-circular>
+                                <span class="tw-text-white tw-text-[15px] !tw-normal-case">Добавить</span>
+                            </v-btn>
+                            <v-btn class="tw-w-[326px] !tw-h-[50px] !tw-rounded-xl !tw-normal-case !tw-m-auto" color="#04B6F5" variant="outlined" @click="closeDialog">
+                                Отмена
+                            </v-btn>
+                        </section>
+                    </v-card-actions>
+                </v-form>
             </v-card>
 
             <!-- <v-card v-if="dialogConfirm" class="!tw-fixed !tw-top-0 !tw-left-0 !tw-z-[2000] !tw-h-screen !tw-w-screen !tw-flex !tw-flex-col !tw-justify-center !tw-items-center !tw-rounded-2xl !tw-p-[48px]">
