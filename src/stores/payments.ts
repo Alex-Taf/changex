@@ -49,7 +49,7 @@ export const usePaymentsStore = defineStore('payments', {
               different: getDifferentTimeStatus(item.timestamp as string)
             },
             date: {
-              value: item.disputePaidTime ? `${timestampToDatetimeOffset(item.disputePaidTime)} MSK` : '',
+              value: item.disputePaidTime ? `${timestampToDatetimeOffset(item.disputePaidTime, 'Europe/Moscow')} MSK` : '',
               different: getDifferentTimeStatus(item.timestamp as string)
             },
             sum: {
