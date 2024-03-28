@@ -292,6 +292,7 @@ onMounted(() => {
                     <v-skeleton-loader v-else type="text" width="100"></v-skeleton-loader>
                 </div>
             </div>
+
             <div class="sm:tw-w-full md:tw-w-full sm:tw-h-[75px] md:tw-h-[75px]
                         min-lg:tw-min-w-[320px] min-lg:tw-min-h-[226px] min-lg:tw-max-h-[467px] tw-bg-white dark:tw-bg-dark-panel tw-rounded-2xl sm:tw-p-4 md:tw-p-4 min-lg:tw-p-8"
             >
@@ -299,7 +300,13 @@ onMounted(() => {
                     <RenderOn :px="1280">
                         <div class="tw-flex tw-justify-between tw-w-full">
                             <DepositeBalance />
-                            <Question />
+                            <div class="tw-cursor-help">
+                                <Question />
+                                <v-tooltip
+                                    activator="parent"
+                                    location="top"
+                                >Баланс на текущий момент</v-tooltip>
+                            </div>
                         </div>
                     </RenderOn>
                     <div>
@@ -310,6 +317,7 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
+
             <div class="sm:tw-w-full md:tw-w-full sm:tw-h-[75px] md:tw-h-[75px]
                         min-lg:tw-min-w-[320px] min-lg:tw-min-h-[226px] min-lg:tw-max-h-[467px] tw-bg-white dark:tw-bg-dark-panel tw-rounded-2xl sm:tw-p-4 md:tw-p-4 min-lg:tw-p-8"
             >
@@ -317,7 +325,13 @@ onMounted(() => {
                     <RenderOn :px="1280">
                         <div class="tw-flex tw-justify-between tw-w-full">
                             <ConfirmedDeal />
-                            <Question />
+                            <div class="tw-cursor-help">
+                                <Question />
+                                <v-tooltip
+                                    activator="parent"
+                                    location="top"
+                                >Сумма подтвержденных сделок за выбранный период в USDT</v-tooltip>
+                            </div>
                         </div>
                     </RenderOn>
                     <div>
@@ -328,6 +342,7 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
+
             <div class="sm:tw-w-full md:tw-w-full sm:tw-h-[75px] md:tw-h-[75px]
                         min-lg:tw-min-w-[320px] min-lg:tw-min-h-[226px] min-lg:tw-max-h-[467px] tw-bg-white dark:tw-bg-dark-panel tw-rounded-2xl sm:tw-p-4 md:tw-p-4 min-lg:tw-p-8"
             >
@@ -335,7 +350,13 @@ onMounted(() => {
                     <RenderOn :px="1280">
                         <div class="tw-flex tw-justify-between tw-w-full">
                             <ActiveDevices />
-                            <Question />
+                            <div class="tw-cursor-help">
+                                <Question />
+                                <v-tooltip
+                                    activator="parent"
+                                    location="top"
+                                >Подключенные устройства в сети</v-tooltip>
+                            </div>
                         </div>
                     </RenderOn>
                     <div>
@@ -346,6 +367,7 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
+
             <div class="sm:tw-w-full md:tw-w-full sm:tw-h-[75px] md:tw-h-[75px]
                         min-lg:tw-min-w-[320px] min-lg:tw-min-h-[226px] min-lg:tw-max-h-[467px] tw-bg-white dark:tw-bg-dark-panel tw-rounded-2xl sm:tw-p-4 md:tw-p-4 min-lg:tw-p-8"
             >
@@ -353,7 +375,13 @@ onMounted(() => {
                     <RenderOn :px="1280">
                         <div class="tw-flex tw-justify-between tw-w-full">
                             <PeriodGrow />
-                            <Question />
+                            <div class="tw-cursor-help">
+                                <Question />
+                                <v-tooltip
+                                    activator="parent"
+                                    location="top"
+                                >Сумма прибыли за выбранный период. Сумма прибыли - это Ваш процент от оборота в USDT</v-tooltip>
+                            </div>
                         </div>
                     </RenderOn>
                     <div>
