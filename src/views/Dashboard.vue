@@ -360,8 +360,8 @@ onMounted(() => {
                         </div>
                     </RenderOn>
                     <div>
-                        <span class="tw-text-[#677483] dark:tw-text-light sm:tw-text-[10px] md:tw-text-[10px]">Активные устройства</span><br>
-                        <span v-if="!loading" class="dark:tw-text-light sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.activeDevicesCount }}</span>
+                        <span class="tw-text-[#677483] dark:tw-text-light sm:tw-text-[10px] md:tw-text-[10px]">Устройства онлайн</span><br>
+                        <span v-if="!loading" class="dark:tw-text-light sm:tw-text-2xl md:tw-text-2xl min-lg:tw-text-[32px] tw-font-semibold">{{ dashboard.onlineDevicesCount }}</span>
                         <v-skeleton-loader v-else type="text" width="30"></v-skeleton-loader>
                         <span class="sm:tw-text-[15px] md:tw-text-[15px] min-lg:tw-text-2xl tw-font-semibold tw-text-[#AEB7C1] dark:tw-text-gray"> / {{ dashboard.devicesCount }}</span>
                     </div>
