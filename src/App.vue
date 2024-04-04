@@ -218,7 +218,7 @@ onUnmounted(() => {
                                         </template>
                                         <template v-slot:title>
                                             <span
-                                                class="tw-ml-2 tw-text-[15px] light:tw-text-[#2B3A4C] dark:tw-text-[#ABB2BF]"
+                                                class="tw-ml-2 tw-text-[15px] tw-text-[#2B3A4C] dark:tw-text-[#ABB2BF]"
                                                 v-show="!navOptions.rail"
                                                 >{{ navItem.title }}</span
                                             >
