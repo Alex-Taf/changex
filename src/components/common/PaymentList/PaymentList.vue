@@ -11,6 +11,7 @@ import Stars from '@/components/icons/Stars.vue'
 import CaretRight from '@/components/icons/CaretRight.vue'
 import ReloadBtn from '@/components/common/ReloadBtn/ReloadBtn.vue'
 import { datetimeToTimestamp } from '@/utils'
+import { watchEffect } from 'vue'
 
 const props = defineProps<{
     reload: boolean
@@ -116,7 +117,7 @@ const statuses = reactive({
     ]
 })
 
-function fetchData() {
+function fetchData() {    
     paymentsStore.fetchPayments({
         search: searchQuery.value,
         page: page.value,
@@ -125,8 +126,8 @@ function fetchData() {
         filter: {
             fromTimestamp: datetimeToTimestamp(date?.value[0]),
             toTimestamp: datetimeToTimestamp(date?.value[1]),
-            cardUID: cards.selected?.uid,
-            status: statuses.select
+            cardUID: cards.selected?.uid || undefined,
+            status: statuses.select || undefined
         }
     }).then(() => {
         paymentsStore.hideLoading()
@@ -135,7 +136,6 @@ function fetchData() {
 
 function clearStatuses() {
     statuses.select = undefined
-    fetchData()
 }
 
 const cards = reactive({

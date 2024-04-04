@@ -129,7 +129,6 @@ const statuses = reactive({
 
 function clearStatuses() {
     statuses.select = undefined
-    fetchData()
 }
 
 const cards = reactive({
@@ -165,8 +164,8 @@ function fetchData() {
         filter: {
             fromTimestamp: datetimeToTimestamp(date?.value[0]),
             toTimestamp: datetimeToTimestamp(date?.value[1]),
-            cardUID: cards.selected?.uid,
-            disputeStatus: statuses.select
+            cardUID: cards.selected?.uid || undefined,
+            disputeStatus: statuses.select || undefined
         }
     }).then(() => {
         paymentsStore.hideLoading()
