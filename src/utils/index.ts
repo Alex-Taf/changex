@@ -69,6 +69,7 @@ export const timestampToDatetime = (timestamp: number | string): string => {
     })
 
     const formattedDate = formatter.format(dateFormat)
+    // console.log(formattedDate)
 
     return formattedDate
 }
@@ -86,6 +87,7 @@ export const timestampToDatetimeOffset = (timestamp: number | string, timezone: 
     })
 
     const formattedDate = formatter.format(dateFormat)
+    console.log(formattedDate)
 
     return formattedDate
 }
@@ -188,6 +190,10 @@ export const getDifferentTimeStatus = (datetime: string | Date): string | undefi
 
     if (days === 7) {
         return 'Неделю назад'
+    }
+
+    if (days >= 8 && days <= 11) {
+        return 'Более недели назад'
     }
 
     if (days >= 12 && days <= 14) {
