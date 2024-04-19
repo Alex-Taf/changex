@@ -69,6 +69,7 @@ export const usePaymentsStore = defineStore('payments', {
               value: item.disputeStatus,
               timeout: item.disputeTimeoutAfter
             },
+            receipt: item.receiptURL
         }
       })
     }

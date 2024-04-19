@@ -87,7 +87,6 @@ export const timestampToDatetimeOffset = (timestamp: number | string, timezone: 
     })
 
     const formattedDate = formatter.format(dateFormat)
-    console.log(formattedDate)
 
     return formattedDate
 }

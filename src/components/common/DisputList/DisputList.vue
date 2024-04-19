@@ -7,12 +7,17 @@ import { usePaymentsStore } from '@/stores/payments'
 import { useCardsStore } from '@/stores/cards'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
+import { datetimeToTimestamp } from '@/utils'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import Stars from '@/components/icons/Stars.vue'
 import WarningCircle from '@/components/icons/WarningCircle.vue'
 import VueCountdown from '@chenfengyuan/vue-countdown'
 import ReloadBtn from '@/components/common/ReloadBtn/ReloadBtn.vue'
-import { datetimeToTimestamp } from '@/utils'
+import Receipt from '@/components/icons/Receipt.vue'
+import Download from '@/components/icons/Download.vue'
+import Close from '@/components/icons/Close.vue'
+
+const theme = ref(localStorage.getItem('theme'))
 
 const props = defineProps<{
     reload: boolean
@@ -38,6 +43,9 @@ const page = ref(1)
 const mobileFilter = ref(false)
 const confirmDisputDialog = ref(false)
 const cancelDisputDialog = ref(false)
+
+const receipt = ref('')
+const receiptDialog = ref(false)
 
 const headers = ref([
     {
@@ -102,6 +110,11 @@ const headers = ref([
             name: 'Статусу'
         },
         key: 'status'
+    },
+    {
+        title: '',
+        sortable: false,
+        key: 'receipt'
     }
 ])
 
@@ -329,6 +342,16 @@ function applyMobileFilter() {
 /** Reset filter on close mobile filter window **/
 function closeMobileFilter() {
     mobileFilter.value = !mobileFilter.value
+}
+
+function openReceiptDialog(receiptURL: string) {
+    receipt.value = receiptURL
+    receiptDialog.value = true
+}
+
+function closeReceiptDialog() {
+    receipt.value = ''
+    receiptDialog.value = false
 }
 
 function changePage(newPage: string, isActive: boolean) {
@@ -594,6 +617,14 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                         <span class="tw-text-orange tw-text-xs">Истекло время</span>
                     </div>
                 </template>
+                <template v-slot:item.receipt="{ value }">
+                    <template v-if="value">
+                        <Receipt :has-receipt="value" @click="openReceiptDialog(value)"/>
+                    </template>
+                    <template v-else>
+                        <Receipt :has-receipt="value" />
+                    </template>
+                </template>
                 <template v-slot:loading>
                     <v-skeleton-loader type="table-row@6"></v-skeleton-loader>
                 </template>
@@ -709,6 +740,14 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                         <path d="M9.125 1.375L3.875 6.625L1.25 4" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
                                 </v-btn>
+                            </div>
+                            <div>
+                                <template v-if="item.receipt">
+                                    <Receipt :has-receipt="item.receipt" @click="openReceiptDialog(item.receipt)"/>
+                                </template>
+                                <template v-else>
+                                    <Receipt :has-receipt="item.receipt" />
+                                </template>
                             </div>
                         </div>
                     </div>
@@ -939,6 +978,40 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
             <v-btn class="!tw-rounded-xl !tw-h-[50px] tw-w-full tw-mt-5" variant="outlined" color="#04B6F5" @click="closeConfirmDisputDialog">
                 <span class="tw-tracking-normal tw-normal-case">Отмена</span>
             </v-btn>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog
+        v-model="receiptDialog"
+        width="auto"
+    >
+        <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl sm:!tw-p-[28px] md:!tw-p-[48px] min-lg:!tw-p-[48px]">
+            <section class="tw-flex tw-justify-between tw-w-full tw-mb-5">
+                <span class="tw-text-2xl">Чек по операции</span>
+                <Close :stroke="theme === 'dark' ? '#ABB2BF' : '#2B3A4C'" @click="closeReceiptDialog" />
+            </section>
+            <section class="tw-flex tw-flex-col tw-items-center tw-gap-y-4">
+                <v-img
+                    min-width="320"
+                    aspect-ratio="1/1"
+                    cover
+                    :src="receipt"
+                >
+                    <template v-slot:placeholder>
+                        <div class="d-flex align-center justify-center fill-height">
+                            <v-progress-circular
+                                color="grey-lighten-4"
+                                indeterminate
+                            ></v-progress-circular>
+                        </div>
+                    </template>
+                </v-img>
+                <a :href="receipt" target="_blank" class="tw-no-underline">
+                    <div class="tw-flex tw-items-center tw-gap-x-2 tw-cursor-pointer">
+                        <Download /> <span class="tw-text-[15px] tw-text-[#04B6F5] tw-select-none">Сохранить чек на устройство</span>
+                    </div>
+                </a>
+            </section>
         </v-card>
     </v-dialog>
 
