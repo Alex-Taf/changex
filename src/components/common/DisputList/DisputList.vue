@@ -985,10 +985,12 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
         v-model="receiptDialog"
         width="auto"
     >
-        <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl sm:!tw-p-[28px] md:!tw-p-[48px] min-lg:!tw-p-[48px]">
+        <v-card class="tw-flex tw-flex-col tw-items-center !tw-rounded-2xl sm:!tw-p-[28px] md:!tw-p-[28px] min-lg:!tw-p-[28px]">
             <section class="tw-flex tw-justify-between tw-w-full tw-mb-5">
                 <span class="tw-text-2xl">Чек по операции</span>
-                <Close :stroke="theme === 'dark' ? '#ABB2BF' : '#2B3A4C'" @click="closeReceiptDialog" />
+                <div class="tw-p-1 tw-cursor-pointer" @click="closeReceiptDialog">
+                    <Close :stroke="theme === 'dark' ? '#ABB2BF' : '#2B3A4C'" />
+                </div>
             </section>
             <section class="tw-flex tw-flex-col tw-items-center tw-gap-y-4">
                 <v-img
