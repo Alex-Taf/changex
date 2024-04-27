@@ -16,6 +16,7 @@ import FinancesIcon from './components/icons/FinancesIcon.vue'
 import CreditCard from './components/icons/CreditCard.vue'
 import ArrowsLeftRight from './components/icons/ArrowsLeftRight.vue'
 import Warning from './components/icons/Warning.vue'
+import PayoffIcon from './components/icons/PayoffIcon.vue'
 import Mobile from './components/icons/Mobile.vue'
 import NotificationsIcon from './components/icons/NotificationsIcon.vue'
 import Menu from './components/icons/Menu.vue'
@@ -88,6 +89,14 @@ const navItems = ref([
     },
     {
         id: 5,
+        title: 'Откупы',
+        path: '/bids',
+        name: 'bids',
+        badge: false,
+        icon: PayoffIcon
+    },
+    {
+        id: 6,
         title: 'Устройства',
         path: '/devices',
         name: 'devices',
@@ -95,7 +104,7 @@ const navItems = ref([
         icon: Mobile
     },
     {
-        id: 6,
+        id: 7,
         title: 'Уведомления',
         path: '/notifications',
         name: 'notifications',

@@ -703,3 +703,91 @@ export const deleteAccount = async (uid: string) => {
         }
     }
 }
+
+export const getBids = async (options: TFilterPaginationOptions) => {
+    try {
+        return await $authHost.post('/bids/free/list', { ...options })
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post('/bids/free/list', { ...options })
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const getUserBids = async (options: TFilterPaginationOptions) => {
+    try {
+        return await $authHost.post('/bids/taken/list', { ...options })
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post('/bids/taken/list', { ...options })
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const cancelUserBid = async (uid: string) => {
+    try {
+        return await $authHost.post(`/bids/${uid}/cancel`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/bids/${uid}/cancel`, {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const takeBid = async (uid: string) => {
+    try {
+        return await $authHost.post(`/bids/${uid}/take`, {})
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/bids/${uid}/take`, {})
+                }
+            } else {
+                return
+            }
+        }
+    }
+}
+
+export const confirmTakenBid = async (uid: string, bid: Record<string, unknown>) => {
+    const formData = new FormData()
+    formData.append("receipt", bid.receipt)
+
+    try {
+        return await $authHost.post(`/bids/${uid}/addReceipt`, formData)
+    } catch (error) {
+        if (error.response.data.code === 'jwt_error') {
+            if (localStorage.getItem('refreshToken')) {
+                const updateRes = await _refreshToken()
+                if (updateRes?.status === 200) {
+                    return await $authHost.post(`/bids/${uid}/addReceipt`, formData)
+                }
+            } else {
+                return
+            }
+        }
+    }
+}

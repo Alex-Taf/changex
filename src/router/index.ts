@@ -6,6 +6,7 @@ import Finances from '../views/Finances.vue'
 import Cards from '../views/Cards.vue'
 import Payments from '../views/Payments.vue'
 import Disputs from '../views/Disputs.vue'
+import Bids from '../views/Bids.vue'
 import Devices from '../views/Devices.vue'
 import Notifications from '../views/Notifications.vue'
 
@@ -65,6 +66,15 @@ const router = createRouter({
         title: 'Диспуты'
       },
       component: Disputs
+    },
+    {
+      path: '/bids',
+      name: 'bids',
+      meta: {
+        auth: true,
+        title: 'Откупы'
+      },
+      component: Bids
     },
     {
       path: '/devices',
