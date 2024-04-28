@@ -22,7 +22,8 @@ export const useDevicesStore = defineStore('devices', {
             id: item.deviceId,
             title: {
               name: item.name,
-              isOnline: item.isOnline
+              isOnline: item.isOnline,
+              batteryLevel: item.batteryLevel
             },
             device: item.model,
             status: item.status,

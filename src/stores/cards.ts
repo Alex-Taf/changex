@@ -51,7 +51,8 @@ export const useCardsStore = defineStore('cards', {
                 device: {
                     name: item.deviceName,
                     comment: item.deviceComment,
-                    isOnline: item.isDeviceOnline
+                    isOnline: item.isDeviceOnline,
+                    batteryLevel: item.deviceBatteryLevel
                 },
                 comment: item.comment,
                 status: item.status,

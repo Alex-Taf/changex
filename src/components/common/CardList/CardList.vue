@@ -12,6 +12,7 @@ import Filter from '@/components/icons/Filter.vue'
 import IsOnline from '@/components/info/IsOnline.vue'
 import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
 import ReloadBtn from '@/components/common/ReloadBtn/ReloadBtn.vue'
+import PhoneBattery from '@/components/info/PhoneBattery.vue'
 
 const props = defineProps<{
     reload: boolean
@@ -565,6 +566,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                         <div class="tw-flex tw-items-center tw-gap-x-2">
                             <IsOnline :online="value.isOnline" />
                             <span class="tw-text-[15px]">{{ value.name }}</span>
+                            <PhoneBattery :percent-value="value.batteryLevel" />
                         </div>
                         <span class="tw-text-[12px] tw-text-[#677483]">{{ value.comment }}</span>
                     </div>
@@ -711,6 +713,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                         <div class="tw-flex tw-items-center tw-gap-x-2 tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed">
                             <IsOnline :online="item.device.isOnline" />
                             <span class="tw-text-[15px]">{{ item.device.name }}</span>
+                            <PhoneBattery :percent-value="item.device.batteryLevel" />
                         </div>
                         <div>
                             <span class="tw-text-[13px] tw-min-w-[300px]">{{ item.comment }}</span>

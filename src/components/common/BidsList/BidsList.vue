@@ -14,8 +14,6 @@ import ReloadBtn from '../ReloadBtn/ReloadBtn.vue'
 import Download from '@/components/icons/Download.vue'
 import WarningCircle from '@/components/icons/WarningCircle.vue'
 
-const theme = ref(localStorage.getItem('theme'))
-
 const props = defineProps<{
     reload: boolean
 }>()
@@ -227,23 +225,7 @@ const sortOptions = ref([
     {
         value: 'timestamp',
         name: 'Времени'
-    },
-    // {
-    //     value: 'amount',
-    //     name: 'Сумме заявки'
-    // },
-    // {
-    //     value: 'withdrawalAmount',
-    //     name: 'Сумме клиента'
-    // },
-    // {
-    //     value: 'card',
-    //     name: 'Карте'
-    // },
-    // {
-    //     value: 'status',
-    //     name: 'Статусу'
-    // }
+    }
 ])
 
 function setSort(sortOption: Record<string, unknown>) {

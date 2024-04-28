@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { getBids, getUserBids, cancelUserBid, takeBid, confirmTakenBid } from '@/api'
 import type { TFilterPaginationOptions } from '@/types'
-import { formatter, getDifferentTimeStatus, timestampToDatetime, timestampToDatetimeOffset } from '@/utils'
+import { getDifferentTimeStatus, timestampToDatetime } from '@/utils'
 
 export const useBidsStore = defineStore('bids', {
   state: () => ({
@@ -63,16 +63,6 @@ export const useBidsStore = defineStore('bids', {
         this.hasItems = true
       }
 
-      // this.bidsAllList = [
-      //   {
-      //     amount: 200,
-      //     amountUSD: 2.07,
-      //     timestamp: 1713875420298,
-      //     method: "Some method",
-      //     uid: "0715cb7f-78aa-4f0e-a1f9-6b319c20ea5a"
-      //   }
-      // ]
-
       console.log(this.bidsAllList)
     },
     async loadMoreBids(options: TFilterPaginationOptions) {
@@ -108,22 +98,6 @@ export const useBidsStore = defineStore('bids', {
         } else {
           this.hasItems = true
         }
-
-        // this.bidsUserList = [
-        //   {
-        //     amount: 200,
-        //     amountUSD: 2.07,
-        //     timestamp: 1713875420298,
-        //     uid: "0715cb7f-78aa-4f0e-a1f9-6b319c20ea5a",
-        //     receiptURL: null,
-        //     bidTimeoutAfter: 3583732,
-        //     requisites: "Перевести на сбер по номеру карты 2200...",
-        //     method: "someMethod",
-        //     takenTimestamp: 1713875884223,
-        //     status: "taken",
-        //     exchangeTimestamp: null
-        //   }
-        // ]
   
         console.log(this.bidsUserList)
     },

@@ -9,6 +9,7 @@ import Download from '../../icons/Download.vue'
 import RenderOn from '@/components/utils/RenderOn.vue'
 import ReloadBtn from '@/components/common/ReloadBtn/ReloadBtn.vue'
 import DeleteDialog from '@/components/common/DeleteDialog/DeleteDialog.vue'
+import PhoneBattery from '@/components/info/PhoneBattery.vue'
 
 const props = defineProps<{
     reload: boolean
@@ -312,6 +313,7 @@ onUnmounted(() => {
                     <div class="tw-flex tw-items-center tw-gap-x-2">
                         <IsOnline :online="value.isOnline" />
                         <span class="tw-text-[15px]">{{ value.name }}</span>
+                        <PhoneBattery :percent-value="value.batteryLevel" />
                     </div>
                 </template>
                 <template v-slot:item.device="{ value }">
@@ -370,7 +372,7 @@ onUnmounted(() => {
                 <template v-for="item in deviceItemsAll" :key="item">
                     <div class="tw-flex tw-flex-col tw-w-full tw-bg-white dark:tw-bg-dark-panel tw-p-4 tw-rounded-2xl">
                         <div class="tw-flex tw-justify-between tw-mb-2">
-                            <div class="tw-flex tw-flex-col tw-gap-x-2">
+                            <div class="tw-flex tw-flex-col tw-gap-x-3">
                                 <div class="tw-leading-4">
                                     <span class="tw-text-[10px] tw-text-[#AEB7C1]">{{ item.id }}, {{ item.device }}</span>
                                     <div class="tw-flex tw-items-center tw-gap-x-2">
@@ -378,6 +380,7 @@ onUnmounted(() => {
                                         <span class="tw-text-[15px]">{{ item.title.name }}</span>
                                     </div>
                                 </div>
+                                <PhoneBattery :percent-value="item.title.batteryLevel" />
                                 <!-- <span class="tw-text-[15px]">{{ item.title }}</span> -->
                             </div>
                             <v-menu>
