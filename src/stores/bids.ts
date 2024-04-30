@@ -57,7 +57,7 @@ export const useBidsStore = defineStore('bids', {
       this.offset = res?.data.offset
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
-      if (this.bidsAllList && this.bidsAllList.length === 0) {
+      if (this.bidsUserList.length === 0 && this.bidsAllList.length === 0) {
         this.hasItems = false
       } else {
         this.hasItems = true
@@ -77,7 +77,7 @@ export const useBidsStore = defineStore('bids', {
       this.totalCount = res?.data.totalCount
       this.lastPage = res?.data.lastPage
 
-      if (this.bidsAllList.length === 0) {
+      if (this.bidsUserList.length === 0 && this.bidsAllList.length === 0) {
         this.hasItems = false
       } else {
         this.hasItems = true
@@ -93,7 +93,7 @@ export const useBidsStore = defineStore('bids', {
         this.offset = res?.data.offset
         this.totalCount = res?.data.totalCount
         this.lastPage = res?.data.lastPage
-        if (this.bidsUserList.length === 0) {
+        if (this.bidsUserList.length === 0 && this.bidsAllList.length === 0) {
           this.hasItems = false
         } else {
           this.hasItems = true
@@ -113,7 +113,7 @@ export const useBidsStore = defineStore('bids', {
         this.totalCount = res?.data.totalCount
         this.lastPage = res?.data.lastPage
   
-        if (this.bidsUserList.length === 0) {
+        if (this.bidsUserList.length === 0 && this.bidsAllList.length === 0) {
           this.hasItems = false
         } else {
           this.hasItems = true
@@ -123,12 +123,16 @@ export const useBidsStore = defineStore('bids', {
       const res = await takeBid(id)
 
       this.bidsAllList = this.bidsAllList.filter((bid) => bid.uid !== id)
+      
+      return res
     },
     async confirmUserBid(id: string, bid: Record<string, unknown>) {
       const res = await confirmTakenBid(id, bid)
 
       const idx = this.bidsUserList.findIndex((bid) => bid.uid === id)
       this.bidsUserList[idx] = res?.data.bid
+
+      return res
     }, 
     async cancelUserBidByID(id: string) {
       const res = await cancelUserBid(id)

@@ -183,7 +183,7 @@ export const getDifferentTimeStatus = (datetime: string | Date): string | undefi
         return 'Сутки назад'
     }
 
-    if (days > 1 && days <= 4) {
+    if (days > 1 && days <= 6) {
         return 'Несколько дней назад'
     }
 

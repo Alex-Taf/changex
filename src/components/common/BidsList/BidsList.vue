@@ -38,6 +38,13 @@ const confirmTakenBidDialog = ref(false)
 
 const datepicker = ref<DatePickerInstance>(null)
 
+const bidErrorSnackbar = reactive({
+    show: false,
+    text: '',
+    timeout: 2000,
+})
+
+
 const headersAll = ref([
     {
         title: 'ID',
@@ -160,6 +167,41 @@ const methods = reactive({
 
 function clearMethods() {
     methods.select = undefined
+}
+
+function firstLoad() {
+    bidsStore
+        .fetchBids({
+            search: searchQuery.value,
+            page: page.value,
+            countPerPage: 10,
+             sort: sort.value,
+            filter: {
+                fromTimestamp: datetimeToTimestamp(date?.value[0]),
+                toTimestamp: datetimeToTimestamp(date?.value[1]),
+                method: methods.select || undefined,
+            }
+        })
+        .then(() => {
+            bidsStore.hideLoading()
+            
+            // Call get user bids from store after all bids loaded
+            bidsStore
+            .fetchUserBids({
+                search: searchQuery.value,
+                page: page.value,
+                countPerPage: 10,
+                sort: sort.value,
+                filter: {
+                    fromTimestamp: datetimeToTimestamp(date?.value[0]),
+                    toTimestamp: datetimeToTimestamp(date?.value[1]),
+                    method: methods.select || undefined,
+                }
+            })
+            .then(() => {
+                bidsStore.hideLoading()
+            })
+        })
 }
 
 function fetchData() {
@@ -296,8 +338,6 @@ async function openOnCancelUser(userBid: Record<string, unknown>) {
 }
 
 async function openOnTakeBid(bid: Record<string, unknown>) {
-
-    console.log(bid)
     bidOnTake.isEditable = false
 
     bidOnTake.id = bid.id as string
@@ -309,8 +349,6 @@ async function openOnTakeBid(bid: Record<string, unknown>) {
 }
 
 async function openOnConfirmBid(bid: Record<string, unknown>) {
-
-    console.log(bid)
     bidOnConfirm.isEditable = false
 
     bidOnConfirm.id = bid.id as string
@@ -344,13 +382,25 @@ function removeReceipt() {
     bidOnConfirm.receiptDataURL = ''
 }
 
-async function confirmTakenBid(id: string) {
-    await bidsStore.confirmUserBid(id, bidOnConfirm)
+function confirmTakenBid(id: string) {
+    bidsStore.confirmUserBid(id, bidOnConfirm).then((res) => {
+        if (res.response) {
+            bidErrorSnackbar.text = res.response.data.msg
+            bidErrorSnackbar.show = true
+        }
+    })
+
     closeConfirmBidDialog()
 }
 
-async function confirmBidTake(id: string) {
-    await bidsStore.takeBidAction(id)
+function confirmBidTake(id: string) {
+    bidsStore.takeBidAction(id).then((res) => {
+        if (res.response) {
+            bidErrorSnackbar.text = res.response.data.msg
+            bidErrorSnackbar.show = true
+        }
+    })
+    
     takeBidDialog.value = false
 }
 
@@ -446,7 +496,7 @@ onMounted(() => {
         searchQuery.value = params.id
     }
 
-    fetchData()
+    firstLoad()
 })
 
 watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, boolean>) => {
@@ -623,7 +673,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                     ><span class="tw-text-[15px]">{{
                                         formatter.format(value)
                                     }}</span>
-                                    <span class="tw-ml-2 tw-text-[13px] tw-text-gray-400">USDT</span></span
+                                    <span class="tw-ml-2 tw-text-[13px] tw-text-gray-400">RUB</span></span
                                 >
                             </template>
                             <template v-slot:item.bidTake="{ value, index }">
@@ -714,7 +764,12 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                 <span class="tw-text-[15px]">{{ value }}</span>
                             </template>
                             <template v-slot:item.paymentSum="{ value }">
-                                <span class="tw-text-[15px]">{{ value }}</span>
+                                <span
+                                    ><span class="tw-text-[15px]">{{
+                                        formatter.format(value)
+                                    }}</span>
+                                    <span class="tw-ml-2 tw-text-[13px] tw-text-gray-400">RUB</span></span
+                                >
                             </template>
                             <template v-slot:item.sumUSDT="{ value }">
                                 <span
@@ -821,7 +876,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                     </div>
                     <div class="tw-flex tw-justify-between tw-text-[15px]">
                         <span>Сумма</span>
-                        <span>{{ bidOnConfirm.paymentSum }} <span class="tw-text-gray-400">USD</span></span>
+                        <span>{{ bidOnConfirm.paymentSum }} <span class="tw-text-gray-400">RUB</span></span>
                     </div>
                 </div>
                 <span>Реквизиты:</span>
@@ -901,7 +956,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                 </div>
                 <div class="tw-flex tw-justify-between tw-text-[15px]">
                     <span>Сумма</span>
-                    <span>{{ bidOnTake.paymentSum }} <span class="tw-text-gray-400">USD</span></span>
+                    <span>{{ bidOnTake.paymentSum }} <span class="tw-text-gray-400">RUB</span></span>
                 </div>
             </div>
             <div v-else class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-y-4 tw-bg-[#F8FCFE] dark:tw-bg-dark
@@ -940,7 +995,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                     </div>
                     <div class="tw-flex tw-justify-between tw-text-[15px]">
                         <span>Сумма</span>
-                        <span>{{ bidOnCancel.paymentSum }} <span class="tw-text-gray-400">USD</span></span>
+                        <span>{{ bidOnCancel.paymentSum }} <span class="tw-text-gray-400">RUB</span></span>
                     </div>
                 </div>
                 <span>Реквизиты:</span>
@@ -1060,7 +1115,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                                     formatter.format(item.paymentSum)
                                                 }}</span>
                                                 <span class="tw-ml-2 tw-text-[13px] tw-text-gray-400"
-                                                    >USD</span
+                                                    >RUB</span
                                                 ></span
                                             >
                                             <span>/</span>
@@ -1205,7 +1260,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                                     formatter.format(item.paymentSum)
                                                 }}</span>
                                                 <span class="tw-ml-2 tw-text-[13px] tw-text-gray-400"
-                                                    >USD</span
+                                                    >RUB</span
                                                 ></span
                                             >
                                             <span>/</span>
@@ -1333,7 +1388,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
     </RenderOn>
 
     <section
-        v-if="bidsItemsAll.length === 0 || bidsItemsUser.length === 0 && !hasItems"
+        v-if="bidsItemsUser.length === 0 && bidsItemsAll.length === 0"
         class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-h-[calc(100vh-400px)]"
     >
         <div class="tw-text-center">
@@ -1342,9 +1397,27 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
         </div>
     </section>
 
+    <v-snackbar
+        v-model="bidErrorSnackbar.show"
+        :timeout="bidErrorSnackbar.timeout"
+        color="red"
+    >
+        {{ bidErrorSnackbar.text }}
+
+        <template v-slot:actions>
+            <v-btn
+                color="white"
+                variant="text"
+                @click="bidErrorSnackbar.show = false"
+            >
+                Скрыть
+            </v-btn>
+        </template>
+    </v-snackbar>
+
     <RenderOn :px="840">
         <v-pagination
-            v-if="bidsItemsAll.length > 0 || bidsItemsUser.length > 0"
+            v-if="bidsItemsUser.length === 0 || bidsItemsAll.length === 0"
             class="tw-self-start"
             v-model="page"
             :length="lastPage"

@@ -751,6 +751,8 @@ export const cancelUserBid = async (uid: string) => {
             } else {
                 return
             }
+        } else {
+            return error
         }
     }
 }
@@ -769,6 +771,8 @@ export const takeBid = async (uid: string) => {
                 return
             }
         }
+
+        return error
     }
 }
 
@@ -788,6 +792,8 @@ export const confirmTakenBid = async (uid: string, bid: Record<string, unknown>)
             } else {
                 return
             }
+        } else {
+            return error
         }
     }
 }
