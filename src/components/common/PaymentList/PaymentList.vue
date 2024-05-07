@@ -427,13 +427,13 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                 <template v-slot:item.sum="{ value }">
                     <span
                         ><span class="tw-text-[15px]">{{ value.value }}</span>
-                        <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">{{ value.currency }}</span></span
+                        <span class="tw-text-[13px] tw-text-gray-dark tw-ml-1">{{ value.currency }}</span></span
                     >
                 </template>
                 <template v-slot:item.debit="{ value }">
                     <span
                         ><span class="tw-text-[15px]">{{ value.value }}</span>
-                        <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">USDT</span></span
+                        <span class="tw-text-[13px] tw-text-gray-dark tw-ml-1">USDT</span></span
                     >
                 </template>
                 <template v-slot:item.status="{ value, index }">
@@ -585,14 +585,14 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                 <span class="tw-text-[10px] tw-text-[#AEB7C1]">Сумма</span>
                                 <span
                                     ><span class="tw-text-[15px]">{{ item.sum.value }}</span>
-                                    <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">{{ item.sum.currency }}</span></span
+                                    <span class="tw-text-[13px] tw-text-gray-dark tw-ml-1">{{ item.sum.currency }}</span></span
                                 >
                             </div>
                             <div class="tw-flex tw-flex-col">
                                 <span class="tw-text-[10px] tw-text-[#AEB7C1]">Списано</span>
                                 <span
                                     ><span class="tw-text-[15px]">{{ item.debit.value }}</span>
-                                    <span class="tw-text-[13px] tw-text-gray-400 tw-ml-1">USDT</span></span
+                                    <span class="tw-text-[13px] tw-text-gray-dark tw-ml-1">USDT</span></span
                                 >
                             </div>
                         </div>

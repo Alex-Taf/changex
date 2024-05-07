@@ -204,7 +204,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                     <span class="tw-text-[15px]">{{ value }}</span>
                 </template>
                 <template v-slot:item.amount="{ value }">
-                    <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USDT</span></span>
+                    <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-dark">USDT</span></span>
                 </template>
                 <!-- <template v-slot:item.status="{ value }">
                     <div
@@ -268,7 +268,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                     <span class="tw-text-[15px]">{{ value }}</span>
                 </template>
                 <template v-slot:item.amount="{ value }">
-                    <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USDT</span></span>
+                    <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-dark">USDT</span></span>
                 </template>
                 <!-- <template v-slot:item.status="{ value }">
                     <div
@@ -332,7 +332,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                     <span class="tw-text-[15px]">{{ value }}</span>
                 </template>
                 <template v-slot:item.amount="{ value }">
-                    <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USDT</span></span>
+                    <span><span class="tw-text-[15px]">{{ formatter.format(value) }}</span> <span class="tw-text-[13px] tw-text-gray-dark">USDT</span></span>
                 </template>
                 <!-- <template v-slot:item.status="{ value }">
                     <div
@@ -402,7 +402,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                 <ArrowDownLeft v-if="item.direction === 'withdrawal'" :width="32" :height="32" />
                                 <div class="tw-leading-4">
                                     <span class="tw-text-[10px] tw-text-[#AEB7C1]">{{ item.date }}</span><br>
-                                    <span><span class="tw-text-[15px]">{{ formatter.format(item.amount) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USDT</span></span>
+                                    <span><span class="tw-text-[15px]">{{ formatter.format(item.amount) }}</span> <span class="tw-text-[13px] tw-text-gray-dark">USDT</span></span>
                                 </div>
                             </div>
                             <!-- <div
@@ -460,7 +460,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                 <ArrowDownLeft v-if="item.direction === 'withdrawal'" :width="32" :height="32" />
                                 <div class="tw-leading-4">
                                     <span class="tw-text-[10px] tw-text-[#AEB7C1]">{{ item.date }}</span><br>
-                                    <span><span class="tw-text-[15px]">{{ formatter.format(item.amount) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
+                                    <span><span class="tw-text-[15px]">{{ formatter.format(item.amount) }}</span> <span class="tw-text-[13px] tw-text-gray-dark">USD</span></span>
                                 </div>
                             </div>
                             <!-- <div
@@ -518,7 +518,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                 <ArrowDownLeft v-if="item.direction === 'withdrawal'" :width="32" :height="32" />
                                 <div class="tw-leading-4">
                                     <span class="tw-text-[10px] tw-text-[#AEB7C1]">{{ item.date }}</span><br>
-                                    <span><span class="tw-text-[15px]">{{ formatter.format(item.amount) }}</span> <span class="tw-text-[13px] tw-text-gray-400">USD</span></span>
+                                    <span><span class="tw-text-[15px]">{{ formatter.format(item.amount) }}</span> <span class="tw-text-[13px] tw-text-gray-dark">USD</span></span>
                                 </div>
                             </div>
                             <!-- <div

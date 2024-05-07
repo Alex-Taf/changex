@@ -577,7 +577,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                 <template v-slot:item.amount="{ value }">
                     <span
                         ><span class="tw-text-[15px]">{{ formatter.format(value) }}</span>
-                        <span class="tw-text-[13px] tw-text-gray-400">USD</span></span
+                        <span class="tw-text-[13px] tw-text-gray-dark">USD</span></span
                     >
                 </template>
                 <template v-slot:item.status="{ value }">

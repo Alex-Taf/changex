@@ -674,7 +674,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                     ><span class="tw-text-[15px]">{{
                                         formatter.format(value)
                                     }}</span>
-                                    <span class="tw-ml-2 tw-text-[13px] tw-text-gray-400">RUB</span></span
+                                    <span class="tw-ml-2 tw-text-[13px] tw-text-gray-dark">RUB</span></span
                                 >
                             </template>
                             <template v-slot:item.bidTake="{ value, index }">
@@ -770,7 +770,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                     ><span class="tw-text-[15px]">{{
                                         formatter.format(value)
                                     }}</span>
-                                    <span class="tw-ml-2 tw-text-[13px] tw-text-gray-400">RUB</span></span
+                                    <span class="tw-ml-2 tw-text-[13px] tw-text-gray-dark">RUB</span></span
                                 >
                             </template>
                             <template v-slot:item.sumUSDT="{ value }">
@@ -778,7 +778,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                     ><span class="tw-text-[15px]">{{
                                         formatter.format(value)
                                     }}</span>
-                                    <span class="tw-ml-2 tw-text-[13px] tw-text-gray-400">USDT</span></span
+                                    <span class="tw-ml-2 tw-text-[13px] tw-text-gray-dark">USDT</span></span
                                 >
                             </template>
                             <template v-slot:item.date="{ value }">
@@ -878,7 +878,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                     </div>
                     <div class="tw-flex tw-justify-between tw-text-[15px]">
                         <span>Сумма</span>
-                        <span>{{ bidOnConfirm.paymentSum }} <span class="tw-text-gray-400">RUB</span></span>
+                        <span>{{ bidOnConfirm.paymentSum }} <span class="tw-text-gray-dark">RUB</span></span>
                     </div>
                 </div>
                 <span>Реквизиты:</span>
@@ -958,7 +958,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                 </div>
                 <div class="tw-flex tw-justify-between tw-text-[15px]">
                     <span>Сумма</span>
-                    <span>{{ bidOnTake.paymentSum }} <span class="tw-text-gray-400">RUB</span></span>
+                    <span>{{ bidOnTake.paymentSum }} <span class="tw-text-gray-dark">RUB</span></span>
                 </div>
             </div>
             <div v-else class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-y-4 tw-bg-[#F8FCFE] dark:tw-bg-dark
@@ -997,7 +997,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                     </div>
                     <div class="tw-flex tw-justify-between tw-text-[15px]">
                         <span>Сумма</span>
-                        <span>{{ bidOnCancel.paymentSum }} <span class="tw-text-gray-400">RUB</span></span>
+                        <span>{{ bidOnCancel.paymentSum }} <span class="tw-text-gray-dark">RUB</span></span>
                     </div>
                 </div>
                 <span>Реквизиты:</span>
@@ -1116,7 +1116,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                                 ><span class="tw-text-[17px]">{{
                                                     formatter.format(item.paymentSum)
                                                 }}</span>
-                                                <span class="tw-ml-2 tw-text-[13px] tw-text-gray-400"
+                                                <span class="tw-ml-2 tw-text-[13px] tw-text-gray-dark"
                                                     >RUB</span
                                                 ></span
                                             >
@@ -1125,7 +1125,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                                 ><span class="tw-text-[17px]">{{
                                                     formatter.format(item.sumUSDT)
                                                 }}</span>
-                                                <span class="tw-ml-2 tw-text-[13px] tw-text-gray-400"
+                                                <span class="tw-ml-2 tw-text-[13px] tw-text-gray-dark"
                                                     >USDT</span
                                                 ></span
                                             >
@@ -1262,7 +1262,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                                 ><span class="tw-text-[17px]">{{
                                                     formatter.format(item.paymentSum)
                                                 }}</span>
-                                                <span class="tw-ml-2 tw-text-[13px] tw-text-gray-400"
+                                                <span class="tw-ml-2 tw-text-[13px] tw-text-gray-dark"
                                                     >RUB</span
                                                 ></span
                                             >
@@ -1271,7 +1271,7 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                                 ><span class="tw-text-[17px]">{{
                                                     formatter.format(item.sumUSDT)
                                                 }}</span>
-                                                <span class="tw-ml-2 tw-text-[13px] tw-text-gray-400"
+                                                <span class="tw-ml-2 tw-text-[13px] tw-text-gray-dark"
                                                     >USDT</span
                                                 ></span
                                             >
