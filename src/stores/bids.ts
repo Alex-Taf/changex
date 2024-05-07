@@ -19,7 +19,10 @@ export const useBidsStore = defineStore('bids', {
       return state.bidsAllList.map((item: Record<string, unknown>) => {
         return {
             id: item.uid,
-            method: item.method,
+            method: {
+              methodValue: item.method,
+              methodBank: item.bank
+            },
             paymentSum: item.amount,
             sumUSDT: item.amountUSD
         }
@@ -29,7 +32,10 @@ export const useBidsStore = defineStore('bids', {
       return state.bidsUserList.map((item: Record<string, unknown>) => {
         return {
             id: item.uid,
-            method: item.method,
+            method: {
+              methodValue: item.method,
+              methodBank: item.bank
+            },
             requisites: item.requisites,
             paymentSum: item.amount,
             sumUSDT: item.amountUSD,

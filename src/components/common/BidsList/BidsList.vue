@@ -328,7 +328,7 @@ async function openOnCancelUser(userBid: Record<string, unknown>) {
     bidOnCancel.isEditable = false
 
     bidOnCancel.id = userBid.id as string
-    bidOnCancel.method = userBid.method as string
+    bidOnCancel.method = userBid.method.methodValue as string
     bidOnCancel.paymentSum = userBid.paymentSum as number
     bidOnCancel.requisites = userBid.requisites as string
 
@@ -341,7 +341,7 @@ async function openOnTakeBid(bid: Record<string, unknown>) {
     bidOnTake.isEditable = false
 
     bidOnTake.id = bid.id as string
-    bidOnTake.method = bid.method as string
+    bidOnTake.method = bid.method.methodValue as string
     bidOnTake.paymentSum = bid.paymentSum as number
 
     takeBidDialog.value = true
@@ -663,7 +663,8 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                 </tr>
                             </template>
                             <template v-slot:item.method="{ value }">
-                                <span class="tw-text-[15px]">{{ value }}</span>
+                                <span class="tw-text-[15px]">{{ value.methodValue }}</span>
+                                <span class="tw-text-[15px]">{{ value.methodBank }}</span>
                             </template>
                             <template v-slot:item.bidSum="{ value }">
                                 <span class="tw-text-[15px]">{{ value }}</span>
@@ -758,7 +759,8 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                 </tr>
                             </template>
                             <template v-slot:item.method="{ value }">
-                                <span class="tw-text-[15px]">{{ value }}</span>
+                                <span class="tw-text-[15px]">{{ value.methodValue }}</span><br>
+                                <span class="tw-text-[15px] tw-text-gray-dark">{{ value.methodBank }}</span>
                             </template>
                             <template v-slot:item.requisites="{ value }">
                                 <span class="tw-text-[15px]">{{ value }}</span>
@@ -1128,7 +1130,8 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                                 ></span
                                             >
                                         </div>
-                                        <span>{{ item.method }}</span>
+                                        <span>{{ item.method.methodValue }}</span><br>
+                                        <span class="tw-text-[15px] tw-text-gray-dark">{{ item.method.methodBank }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1273,7 +1276,8 @@ watch(props, (newValue: Record<string, boolean>, _prevValue: Record<string, bool
                                                 ></span
                                             >
                                         </div>
-                                        <span>{{ item.method }}</span>
+                                        <span>{{ item.method.methodValue }}</span><br>
+                                        <span class="tw-text-[15px] tw-text-gray-dark">{{ item.method.methodBank }}</span>
                                         <div class="tw-flex tw-flex-col tw-gap-y-3 tw-py-2 tw-border-t-2 tw-border-l-0 tw-border-r-0 tw-border-b-0 tw-border-[#E0E4E8] tw-border-dashed">
                                             <span class="tw-text-[15px]">{{ item.requisites }}</span>
                                             <span>
